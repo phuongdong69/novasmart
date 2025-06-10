@@ -129,78 +129,79 @@
         </div>
       </div>
 
-     <!-- Sidebar Menu -->
-<nav class="mt-2">
-  <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-    
-    <li class="nav-item menu-open">
-      <a href="#" class="nav-link active">
-        <i class="nav-icon fas fa-tachometer-alt"></i>
-        <p>Bảng điều khiển</p>
-      </a>
-    </li>
-
-    {{-- Dòng mới chuyển sang category --}}
-    <li class="nav-item">
-      <a href="{{ route('categories.index') }}" class="nav-link">
-        <i class="nav-icon fas fa-list"></i>
-        <p>Danh sách danh mục</p>
-      </a>
-    </li>
-
-    <li class="nav-item">
-      <a href="#" class="nav-link">
-        <i class="nav-icon fas fa-table"></i>
-        <p>
-          Bảng
-          <i class="fas fa-angle-left right"></i>
-        </p>
-      </a>
-      <ul class="nav nav-treeview">
-        <li class="nav-item">
-          <a href="pages/tables/simple.html" class="nav-link">
-            <i class="far fa-circle nav-icon"></i>
-            <p>Bảng đơn giản</p>
-          </a>
-        </li>
-      </ul>
-    </li>
-
-  </ul>
-</nav>
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link active">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Bảng điều khiển</p>
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+                Bảng
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="pages/tables/simple.html" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Bảng đơn giản</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
     </div>
   </aside>
 
-  <!-- Content Wrapper -->
-  <div class="content-wrapper">
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Bảng điều khiển</h1>
-          </div>
+<div class="content-wrapper">
+  <section class="content">
+    <div class="container-fluid pt-3">
+      <div class="mb-3 d-flex justify-content-between">
+        <h4 class="mb-0">Chỉnh sửa danh mục</h4>
+        <a href="{{ route('categories.index') }}" class="btn btn-secondary">← Quay lại</a>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Thông tin danh mục</h3>
         </div>
+
+        <form action="{{ route('categories.update', $category->id) }}" method="POST">
+          @csrf
+          @method('PUT')
+          <div class="card-body">
+           <div class="form-group">
+  <label for="name">Tên danh mục</label>
+  <input type="text"
+         name="name"
+         id="name"
+         class="form-control @error('name') is-invalid @enderror"
+         value="{{ old('name', $category->name) }}"
+         placeholder="Nhập tên danh mục">
+
+  @error('name')
+    <span class="text-danger">{{ $message }}</span>
+  @enderror
+</div>
+
+
+
+          <div class="card-footer text-right">
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
+          </div>
+        </form>
       </div>
     </div>
-    
-    <section class="content">
-      <div class="container-fluid">
-        <!-- Main content -->
-        <div class="row">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">Chào mừng đến với Nova Smart</h3>
-              </div>
-              <div class="card-body">
-                <p>Nội dung bảng điều khiển của bạn sẽ hiển thị tại đây.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+  </section>
+</div>
 
   <!-- Footer -->
   <footer class="main-footer">
