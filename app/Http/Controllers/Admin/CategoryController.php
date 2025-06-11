@@ -8,11 +8,22 @@ use App\Models\Category;
 use App\Http\Requests\CategoryRequest;
 class CategoryController extends Controller
 {
-    public function index()
-    {
-        $categories = Category::latest()->paginate(10);
-        return view('admin.category.index', compact('categories'));
+    public function index(Request $request)
+{
+    $query = Category::query();
+
+    if ($request->filled('keyword')) {
+        $keyword = $request->keyword;
+        $query->where(function ($q) use ($keyword) {
+            $q->where('name', 'like', "%$keyword%")
+              ->orWhere('id', $keyword);
+        });
     }
+
+    $categories = $query->orderBy('id')->paginate(10)->withQueryString();
+
+    return view('admin.category.index', compact('categories'));
+}
 
    public function create()
 {
@@ -35,7 +46,7 @@ public function store(CategoryRequest $request)
 public function toggleStatus($id)
 {
     $category = Category::findOrFail($id);
-    $category->status = !$category->status; // Đảo ngược trạng thái
+    $category->status = !$category->status; 
     $category->save();
 
     return redirect()->back()->with('success', 'Đã cập nhật trạng thái danh mục.');

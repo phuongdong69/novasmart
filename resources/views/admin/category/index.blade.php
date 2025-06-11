@@ -38,9 +38,15 @@
             <i class="fas fa-search"></i>
           </a>
           <div class="navbar-search-block">
-            <form class="form-inline">
+            <form method="GET" action="{{ route('categories.index') }}" class="form-inline">
               <div class="input-group input-group-sm">
-                <input class="form-control form-control-navbar" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm">
+                <input
+                  class="form-control form-control-navbar"
+                  type="search"
+                  name="keyword"
+                  placeholder="Tìm theo ID hoặc tên..."
+                  aria-label="Tìm kiếm"
+                  value="{{ request('keyword') }}">
                 <div class="input-group-append">
                   <button class="btn btn-navbar" type="submit">
                     <i class="fas fa-search"></i>
@@ -167,25 +173,30 @@
       <section class="content">
         <div class="container-fluid">
 
-          <div class="mb-3 d-flex justify-content-between">
+
+
+
+
+          <div class="mb-3 d-flex justify-content-between" style="margin: 20px;">
             <h4 class="mb-0">Danh sách danh mục</h4>
+
             <a href="{{ route('categories.create') }}" class="btn btn-primary">+ Thêm mới</a>
 
           </div>
 
           @if (session('success'))
-  <div class="alert alert-success">{{ session('success') }}</div>
-@endif
+          <div class="alert alert-success">{{ session('success') }}</div>
+          @endif
 
-@if (session('error'))
-  <div class="alert alert-danger">{{ session('error') }}</div>
-@endif
+          @if (session('error'))
+          <div class="alert alert-danger">{{ session('error') }}</div>
+          @endif
 
           <div class="table-responsive">
             <table class="table table-bordered table-striped w-100">
               <thead>
                 <tr>
-                  <th>#</th>
+                  <th>STT</th>
                   <th>Tên danh mục</th>
                   <th>Trạng thái</th>
                   <th>Thời gian tạo</th>
@@ -195,17 +206,17 @@
               <tbody>
                 @forelse($categories as $index => $category)
                 <tr>
-                  <td>{{ $index + 1 }}</td>
+                  <td>{{ $category->id }}</td>
                   <td>{{ $category->name }}</td>
-                 <td>
-  <form action="{{ route('admin.categories.toggleStatus', $category->id) }}" method="POST">
-    @csrf
-    @method('PUT')
-    <button type="submit" class="btn btn-sm {{ $category->status ? 'btn-success' : 'btn-secondary' }}">
-      {{ $category->status ? 'Hiển thị' : 'Ẩn' }}
-    </button>
-  </form>
-</td>
+                  <td>
+                    <form action="{{ route('admin.categories.toggleStatus', $category->id) }}" method="POST">
+                      @csrf
+                      @method('PUT')
+                      <button type="submit" class="btn btn-sm {{ $category->status ? 'btn-success' : 'btn-secondary' }}">
+                        {{ $category->status ? 'Hiển thị' : 'Ẩn' }}
+                      </button>
+                    </form>
+                  </td>
                   <td>{{ $category->created_at->format('d/m/Y') }}</td>
                   <td>
                     <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-sm btn-warning">Sửa</a>
@@ -222,13 +233,13 @@
                 @endforelse
               </tbody>
             </table>
-            
+
           </div>
           <div class="mt-3 d-flex justify-content-center">
-  {{ $categories->links('pagination::bootstrap-4') }}
-</div>
+            {{ $categories->links('pagination::bootstrap-4') }}
+          </div>
         </div>
-        
+
       </section>
     </div>
 
