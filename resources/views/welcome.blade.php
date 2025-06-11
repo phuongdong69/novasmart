@@ -131,3 +131,6 @@
         </div>
     </body>
 </html>
+
+
+@include('includes.index')

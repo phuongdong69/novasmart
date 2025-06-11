@@ -11,3 +11,5 @@ class DashBoardController extends Controller
         return view('admin.index');
     }
 }
+
+
