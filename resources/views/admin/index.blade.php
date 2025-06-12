@@ -15,8 +15,7 @@
         @include('admin.contentwrapper')
         @include('admin.footer')
     </main>
-
-    
     @include('layouts.scripts')
 </body>
+.
 </html>
