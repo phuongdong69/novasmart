@@ -51,14 +51,7 @@
                   </div>
                 </a>
               </li>
-              <li class="flex items-center px-4">
-                <a href="javascript:;" class="p-0 text-sm text-white transition-all ease-nav-brand">
-                  <i fixed-plugin-button-nav class="cursor-pointer fa fa-cog"></i>
-                  <!-- fixed-plugin-button-nav  -->
-                </a>
-              </li>
-
-              
+            
             </ul>
           </div>
         </div>
