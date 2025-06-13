@@ -13,7 +13,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-        OriginSeeder::class,
-    ]);
+            CategorySeeder::class,
+            OriginSeeder::class,
+        ]);
     }
 }
