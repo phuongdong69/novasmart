@@ -13,4 +13,10 @@ class Role extends Model
         'name',
         'description',
     ];
+
+    // ✅ Quan hệ: 1 role có nhiều user
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }
