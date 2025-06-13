@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Admin\DashBoardController;
 use App\Http\Controllers\Admin\CategoryController;
 
@@ -19,16 +20,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
+    Route::get('/', [DashBoardController::class, 'index'])->name('user.index');
 
-Route::prefix('admin')-> group(function (){
-Route::get('/',[DashBoardController::class, 'index']) -> name('user.index');
-Route::get('categories',[CategoryController::class, 'index']) -> name('user.index');
-Route::put('admin/categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus'])->name('admin.categories.toggleStatus');
+    // Categories
+    Route::get('categories', [CategoryController::class, 'index'])->name('user.index');
+    Route::put('categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus'])->name('categories.toggleStatus');
     Route::resource('categories', CategoryController::class);
     Route::get('/create', [CategoryController::class, 'create'])->name('create'); 
     Route::post('/', [CategoryController::class, 'store'])->name('store');
-     Route::get('/{id}/edit', [CategoryController::class, 'edit'])->name('edit');
+    Route::get('/{id}/edit', [CategoryController::class, 'edit'])->name('edit');
     Route::put('/{id}', [CategoryController::class, 'update'])->name('update');
     Route::delete('/{id}', [CategoryController::class, 'destroy'])->name('destroy');
 
+    // Roles
+    Route::resource('roles', RoleController::class);
 });
