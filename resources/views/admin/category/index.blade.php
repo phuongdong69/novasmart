@@ -38,7 +38,7 @@
             <i class="fas fa-search"></i>
           </a>
           <div class="navbar-search-block">
-            <form method="GET" action="{{ route('categories.index') }}" class="form-inline">
+            <form method="GET" action="{{ route('admin.categories.index') }}" class="form-inline">
               <div class="input-group input-group-sm">
                 <input
                   class="form-control form-control-navbar"
@@ -180,7 +180,7 @@
           <div class="mb-3 d-flex justify-content-between" style="margin: 20px;">
             <h4 class="mb-0">Danh sách danh mục</h4>
 
-            <a href="{{ route('categories.create') }}" class="btn btn-primary">+ Thêm mới</a>
+            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">+ Thêm mới</a>
 
           </div>
 
@@ -210,17 +210,17 @@
                   <td>{{ $category->name }}</td>
                   <td>
                     <form action="{{ route('admin.categories.toggleStatus', $category->id) }}" method="POST">
-                      @csrf
-                      @method('PUT')
-                      <button type="submit" class="btn btn-sm {{ $category->status ? 'btn-success' : 'btn-secondary' }}">
-                        {{ $category->status ? 'Hiển thị' : 'Ẩn' }}
-                      </button>
-                    </form>
+    @csrf
+    @method('PUT')
+    <button type="submit" class="btn btn-sm {{ $category->status ? 'btn-success' : 'btn-secondary' }}">
+        {{ $category->status ? 'Hiển thị' : 'Ẩn' }}
+    </button>
+</form>
                   </td>
                   <td>{{ $category->created_at->format('d/m/Y') }}</td>
                   <td>
-                    <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-sm btn-warning">Sửa</a>
-                    <form action="{{ route('categories.destroy', $category->id) }}" method="POST" style="display:inline-block;">
+                    <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-warning">Sửa</a>
+                    <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" style="display:inline-block;">
                       @csrf @method('DELETE')
                       <button type="submit" onclick="return confirm('Xác nhận xoá?')" class="btn btn-sm btn-danger">Xoá</button>
                     </form>
