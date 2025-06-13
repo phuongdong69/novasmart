@@ -9,22 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
-{
-    Schema::create('origins', function (Blueprint $table) {
-        $table->id(); 
-        $table->string('country'); 
-        $table->timestamps(); 
-
-    });
-}
-
+    public function up(): void
+    {
+        Schema::table('origins', function (Blueprint $table) {
+            $table->softDeletes();
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('origins');
+        Schema::table('origins', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

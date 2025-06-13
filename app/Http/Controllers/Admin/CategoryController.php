@@ -49,7 +49,7 @@ public function toggleStatus($id)
     $category->status = !$category->status; 
     $category->save();
 
-    return redirect()->back()->with('success', 'Đã cập nhật trạng thái danh mục.');
+    return redirect()->route('admin.categories.index')->with('success', 'Đã cập nhật trạng thái danh mục.');
 }
    public function edit($id)
     {
