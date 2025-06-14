@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashBoardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\VoucherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,3 +61,7 @@ Route::get('/dashboard', function () {
 
 // Route đăng xuất
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+
+//Route VOUCHER
+Route::resource('vouchers', VoucherController::class);
