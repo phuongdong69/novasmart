@@ -1,262 +1,95 @@
-<!DOCTYPE html>
-<html lang="vi">
+@extends('layouts.body')
+@section('content')
+<div class="w-full px-6 py-6 mx-auto">
+  <div class="flex flex-wrap -mx-3">
+    <div class="flex-none w-full max-w-full px-3">
+      <div class="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nova Smart</title>
+        <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent">
+{{--  tìm kiếm --}}
+  <div class="flex justify-end mb-2">
+    <form method="GET" action="{{ route('admin.categories.index') }}" class="flex items-center gap-2">
+      <input
+        type="search"
+        name="keyword"
+        class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300"
+        placeholder="Tìm theo ID hoặc tên..."
+        value="{{ request('keyword') }}"
+      >
+      <button type="submit" class="text-sm px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+        Tìm
+      </button>
+    </form>
+  </div>
+  {{-- Tiêu đề và nút thêm mới --}}
+  <div class="flex items-center justify-between mb-4">
+    <h6 class="dark:text-white text-lg font-semibold">Danh sách danh mục</h6>
+    <a href="{{ route('admin.categories.create') }}"
+       class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
+      + Thêm mới
+    </a>
+  </div>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/dist/css/adminlte.min.css') }}">
-</head>
+  
 
-<body class="hold-transition sidebar-mini layout-fixed">
-  <div class="wrapper">
+</div>
 
-    <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-      <!-- Left navbar links -->
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" data-widget="pushmenu" href="#" role="button">
-            <i class="fas fa-bars"></i>
-          </a>
-        </li>
-        <li class="nav-item d-none d-sm-inline-block">
-          <a href="index.html" class="nav-link">Trang chủ</a>
-        </li>
-
-      </ul>
-
-      <!-- Right navbar links -->
-      <ul class="navbar-nav ml-auto">
-        <!-- Search -->
-        <li class="nav-item">
-          <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-            <i class="fas fa-search"></i>
-          </a>
-          <div class="navbar-search-block">
-            <form method="GET" action="{{ route('categories.index') }}" class="form-inline">
-              <div class="input-group input-group-sm">
-                <input
-                  class="form-control form-control-navbar"
-                  type="search"
-                  name="keyword"
-                  placeholder="Tìm theo ID hoặc tên..."
-                  aria-label="Tìm kiếm"
-                  value="{{ request('keyword') }}">
-                <div class="input-group-append">
-                  <button class="btn btn-navbar" type="submit">
-                    <i class="fas fa-search"></i>
-                  </button>
-                  <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </li>
-
-        <!-- Messages -->
-        <li class="nav-item dropdown">
-          <a class="nav-link" data-toggle="dropdown" href="#">
-            <i class="far fa-comments"></i>
-            <span class="badge badge-danger navbar-badge">3</span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <a href="#" class="dropdown-item">
-              <div class="media">
-                <img src="dist/img/user1-128x128.jpg" alt="Ảnh đại diện người dùng" class="img-size-50 mr-3 img-circle">
-                <div class="media-body">
-                  <h3 class="dropdown-item-title">
-                    Brad Diesel
-                    <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
-                  </h3>
-                  <p class="text-sm">Gọi cho tôi khi bạn có thể...</p>
-                  <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 giờ trước</p>
-                </div>
-              </div>
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item dropdown-footer">Xem tất cả tin nhắn</a>
-          </div>
-        </li>
-
-        <!-- Notifications -->
-        <li class="nav-item dropdown">
-          <a class="nav-link" data-toggle="dropdown" href="#">
-            <i class="far fa-bell"></i>
-            <span class="badge badge-warning navbar-badge">15</span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <span class="dropdown-item dropdown-header">15 thông báo</span>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-              <i class="fas fa-envelope mr-2"></i> 4 tin nhắn mới
-              <span class="float-right text-muted text-sm">3 phút</span>
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item">
-              <i class="fas fa-users mr-2"></i> 8 lời mời kết bạn
-              <span class="float-right text-muted text-sm">12 giờ</span>
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item dropdown-footer">Xem tất cả thông báo</a>
-          </div>
-        </li>
-
-        <!-- Fullscreen -->
-        <li class="nav-item">
-          <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-            <i class="fas fa-expand-arrows-alt"></i>
-          </a>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- Main Sidebar -->
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
-      <!-- Brand Logo -->
-      <a href="index.html" class="brand-link">
-        <img src="dist/img/AdminLTELogo.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">Nova Smart</span>
-      </a>
-
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <!-- User panel -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-          <div class="image">
-            <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="Ảnh người dùng">
-          </div>
-          <div class="info">
-            <a href="#" class="d-block">Nguyễn Đỗ Long</a>
-          </div>
-        </div>
-
-        <!-- Sidebar Menu -->
-        <nav class="mt-2">
-          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-            <li class="nav-item menu-open">
-              <a href="#" class="nav-link active">
-                <i class="nav-icon fas fa-tachometer-alt"></i>
-                <p>Bảng điều khiển</p>
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="" class="nav-link">
-                <i class="nav-icon fas fa-table"></i>
-                <p>
-                  Bảng
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="pages/tables/simple.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Bảng đơn giản</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </aside>
-
-    <div class="content-wrapper">
-      <section class="content">
-        <div class="container-fluid">
-
-
-
-
-
-          <div class="mb-3 d-flex justify-content-between" style="margin: 20px;">
-            <h4 class="mb-0">Danh sách danh mục</h4>
-
-            <a href="{{ route('categories.create') }}" class="btn btn-primary">+ Thêm mới</a>
-
-          </div>
-
-          @if (session('success'))
-          <div class="alert alert-success">{{ session('success') }}</div>
-          @endif
-
-          @if (session('error'))
-          <div class="alert alert-danger">{{ session('error') }}</div>
-          @endif
-
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped w-100">
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Tên danh mục</th>
-                  <th>Trạng thái</th>
-                  <th>Thời gian tạo</th>
-                  <th>Thao tác</th>
+        {{-- Bảng danh mục --}}
+        <div class="flex-auto px-0 pt-0 pb-2">
+          <div class="p-0 overflow-x-auto">
+            <table class="items-center w-full mb-0 align-top border-collapse dark:border-white/40 text-slate-500">
+              <table class="items-center w-full mb-0 align-top border-collapse dark:border-white/40 text-slate-500">
+              <thead class="bg-gray-50">
+                  <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">ID</th>
+                  <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">Tên danh mục</th>
+                  <th class="px-6 py-3 text-center uppercase text-xs font-bold text-slate-400">Trạng thái</th>
+                  <th class="px-6 py-3 text-center uppercase text-xs font-bold text-slate-400">Ngày tạo</th>
+                  <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
-                @forelse($categories as $index => $category)
-                <tr>
-                  <td>{{ $category->id }}</td>
-                  <td>{{ $category->name }}</td>
-                  <td>
-                    <form action="{{ route('admin.categories.toggleStatus', $category->id) }}" method="POST">
-                      @csrf
-                      @method('PUT')
-                      <button type="submit" class="btn btn-sm {{ $category->status ? 'btn-success' : 'btn-secondary' }}">
-                        {{ $category->status ? 'Hiển thị' : 'Ẩn' }}
-                      </button>
-                    </form>
-                  </td>
-                  <td>{{ $category->created_at->format('d/m/Y') }}</td>
-                  <td>
-                    <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-sm btn-warning">Sửa</a>
-                    <form action="{{ route('categories.destroy', $category->id) }}" method="POST" style="display:inline-block;">
-                      @csrf @method('DELETE')
-                      <button type="submit" onclick="return confirm('Xác nhận xoá?')" class="btn btn-sm btn-danger">Xoá</button>
-                    </form>
-                  </td>
-                </tr>
+                @forelse ($categories as $category)
+                  <tr class="border-b dark:border-white/40 hover:bg-gray-50 transition">
+                    <td class="px-6 py-3 text-sm">{{ $category->id }}</td>
+                    <td class="px-6 py-3 text-sm font-medium text-gray-800">{{ $category->name }}</td>
+                    <td class="px-6 py-3 text-sm text-center">
+                      <form action="{{ route('admin.categories.toggleStatus', $category->id) }}" method="POST">
+                        @csrf @method('PUT')
+                        <button type="submit"
+                          class="px-2.5 py-1.4 text-xs rounded-1.8 font-bold uppercase leading-none text-white
+                          {{ $category->status ? 'bg-gradient-to-tl from-emerald-500 to-teal-400' : 'bg-gradient-to-tl from-slate-600 to-slate-300' }}">
+                          {{ $category->status ? 'Hiển thị' : 'Ẩn' }}
+                        </button>
+                      </form>
+                    </td>
+                    <td class="px-6 py-3 text-center text-sm text-slate-500">{{ $category->created_at->format('d/m/Y') }}</td>
+                    <td class="px-6 py-3 text-sm">
+                      <a href="{{ route('admin.categories.edit', $category->id) }}" class="text-blue-600 hover:underline mr-2">Sửa</a>
+                      <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" style="display:inline-block;">
+                        @csrf @method('DELETE')
+                        <button type="submit" onclick="return confirm('Xác nhận xoá?')" class="text-red-500 hover:underline">Xoá</button>
+                      </form>
+                    </td>
+                  </tr>
                 @empty
-                <tr>
-                  <td colspan="5">Không có danh mục nào.</td>
-                </tr>
+                  <tr>
+                    <td colspan="5" class="text-center py-4 text-sm text-gray-500">Không có dữ liệu nào trùng hợp.</td>
+                  </tr>
                 @endforelse
               </tbody>
             </table>
 
-          </div>
-          <div class="mt-3 d-flex justify-content-center">
-            {{ $categories->links('pagination::bootstrap-4') }}
+            {{-- Phân trang --}}
+            <div class="mt-4 px-6 flex justify-center">
+              {{ $categories->links('pagination::bootstrap-4') }}
+            </div>
+
           </div>
         </div>
-
-      </section>
-    </div>
-
-    <!-- Footer -->
-    <footer class="main-footer">
-      <strong>Bản quyền &copy; 2024 <a href="#">Nova Smart</a>.</strong>
-      Đã đăng ký mọi quyền.
-      <div class="float-right d-none d-sm-inline-block">
-        <b>Phiên bản</b> 1.0.0
       </div>
-    </footer>
+    </div>
   </div>
+</div>
 
-  <!-- Scripts -->
-  <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
-  <script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('assets/dist/js/adminlte.js') }}"></script>
-</body>
 
-</html>
+@endsection
