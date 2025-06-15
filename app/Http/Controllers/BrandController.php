@@ -12,8 +12,8 @@ class BrandController extends Controller
      */
     public function index()
     {
-                 $data =Brand::latest()->get();
-            return view('brands.index',compact('data'));
+        $data = Brand::latest()->get();
+        return view('brands.index', compact('data'));
     }
 
     /**
@@ -29,10 +29,9 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
-         $data =$request->all();
-         Brand::query()->create($data);
-     return to_route('brands.index')->with('success',true);
-
+        $data = $request->all();
+        Brand::query()->create($data);
+        return to_route('brands.index')->with('success', true);
     }
 
     /**
@@ -40,8 +39,8 @@ class BrandController extends Controller
      */
     public function show(string $id)
     {
-        $brand=Brand::findOrFail($id);
-        return view('brands.show',compact('brand'));
+        $brand = Brand::findOrFail($id);
+        return view('brands.show', compact('brand'));
     }
 
     /**
@@ -49,8 +48,8 @@ class BrandController extends Controller
      */
     public function edit(string $id)
     {
-        $brand=Brand::findOrFail($id);
-        return view('brands.edit',compact('brand'));
+        $brand = Brand::findOrFail($id);
+        return view('brands.edit', compact('brand'));
     }
 
     /**
@@ -58,10 +57,10 @@ class BrandController extends Controller
      */
     public function update(Request $request, string $id)
     {
-         $brand=Brand::findOrFail($id);
-        $data =$request->all();
+        $brand = Brand::findOrFail($id);
+        $data = $request->all();
         $brand->update($data);
-        return back()->with('success',true);
+        return back()->with('success', true);
     }
 
     /**
@@ -69,8 +68,8 @@ class BrandController extends Controller
      */
     public function destroy(string $id)
     {
-        $brand=Brand::findOrFail($id);
+        $brand = Brand::findOrFail($id);
         $brand->delete();
-        return back()->with('success',true);
+        return back()->with('success', true);
     }
 }
