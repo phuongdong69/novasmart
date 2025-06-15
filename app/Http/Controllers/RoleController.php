@@ -10,7 +10,10 @@ class RoleController extends Controller
     // Hiển thị danh sách roles
     public function index()
     {
-        $roles = Role::orderBy('id', 'desc')->paginate(10);
+        $roles = Role::with('users') // Load luôn danh sách user thuộc role
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
         return view('admin.roles.index', compact('roles'));
     }
 
