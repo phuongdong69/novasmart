@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\BrandController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Admin\DashBoardController;
@@ -8,7 +7,7 @@ use App\Http\Controllers\Admin\OriginController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
-
+use App\Http\Controllers\VoucherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,23 +23,12 @@ use App\Http\Controllers\LoginController;
 Route::get('/', function () {
     return view('welcome');
 });
-<<<<<<< HEAD
-
-Route::resource('brands',BrandController::class);
-
-
-Route::prefix('admin')->name('admin.')->group(function () {
-    // Dashboard
-    Route::get('/', [DashBoardController::class, 'index'])->name('user.index');
-    
-=======
 //Admin
 Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashBoardController::class, 'index'])->name('dashboard');
 
      // Categories
->>>>>>> 946371e03f0b4f1b2a16009db7ce3140944fa336
 
     Route::put('categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus'])->name('categories.toggleStatus');
     Route::resource('categories', CategoryController::class)->names([
@@ -68,8 +56,6 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
 });
 
-<<<<<<< HEAD
-=======
 
 // User dashboard
 Route::get('/user/dashboard', function () {
@@ -93,4 +79,6 @@ Route::get('/dashboard', function () {
 // Route đăng xuất
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
->>>>>>> 946371e03f0b4f1b2a16009db7ce3140944fa336
+
+//Route VOUCHER
+Route::resource('vouchers', VoucherController::class);
