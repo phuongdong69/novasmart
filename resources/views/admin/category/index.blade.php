@@ -1,45 +1,42 @@
 @extends('layouts.body')
 @section('content')
+
 <div class="w-full px-6 py-6 mx-auto">
   <div class="flex flex-wrap -mx-3">
     <div class="flex-none w-full max-w-full px-3">
       <div class="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
 
-        <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent">
-{{--  tìm kiếm --}}
-  <div class="flex justify-end mb-2">
-    <form method="GET" action="{{ route('admin.categories.index') }}" class="flex items-center gap-2">
-      <input
-        type="search"
-        name="keyword"
-        class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300"
-        placeholder="Tìm theo ID hoặc tên..."
-        value="{{ request('keyword') }}"
-      >
-      <button type="submit" class="text-sm px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-        Tìm
-      </button>
-    </form>
-  </div>
-  {{-- Tiêu đề và nút thêm mới --}}
-  <div class="flex items-center justify-between mb-4">
-    <h6 class="dark:text-white text-lg font-semibold">Danh sách danh mục</h6>
-    <a href="{{ route('admin.categories.create') }}"
-       class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
-      + Thêm mới
-    </a>
-  </div>
+        {{-- Tiêu đề + Nút thêm mới --}}
+        <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex justify-between items-center">
+          <h6 class="dark:text-white text-lg font-semibold">Danh sách danh mục</h6>
+          <a href="{{ route('admin.categories.create') }}"
+            class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
+            + Thêm mới
+          </a>
+        </div>
 
-  
-
-</div>
+        {{-- Thanh tìm kiếm --}}
+        <div class="px-6 mt-4">
+          <form method="GET" action="{{ route('admin.categories.index') }}" class="flex justify-end items-center gap-2">
+            <input
+              type="search"
+              name="keyword"
+              class="border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300"
+              placeholder="Tìm theo ID hoặc tên..."
+              value="{{ request('keyword') }}"
+            >
+            <button type="submit" class="text-sm px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+              Tìm
+            </button>
+          </form>
+        </div>
 
         {{-- Bảng danh mục --}}
-        <div class="flex-auto px-0 pt-0 pb-2">
+        <div class="flex-auto px-0 pt-4 pb-2">
           <div class="p-0 overflow-x-auto">
             <table class="items-center w-full mb-0 align-top border-collapse dark:border-white/40 text-slate-500">
-              <table class="items-center w-full mb-0 align-top border-collapse dark:border-white/40 text-slate-500">
               <thead class="bg-gray-50">
+                <tr>
                   <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">ID</th>
                   <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">Tên danh mục</th>
                   <th class="px-6 py-3 text-center uppercase text-xs font-bold text-slate-400">Trạng thái</th>
@@ -90,6 +87,5 @@
     </div>
   </div>
 </div>
-
 
 @endsection

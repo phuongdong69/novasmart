@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -30,7 +31,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
      // Categories
 
     Route::put('categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus'])->name('categories.toggleStatus');
-    Route::resource('categories', OriginController::class)->names([
+    Route::resource('categories', CategoryController::class)->names([
         'index'   => 'categories.index',
         'create'  => 'categories.create',
         'store'   => 'categories.store',
