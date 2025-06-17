@@ -14,7 +14,7 @@
 
             @include('admin.layouts.navbar')
 
-                @include('admin.layouts.contentwrapper')
+                @yield('content')
             
             @include('admin.layouts.footer')
         </div>
