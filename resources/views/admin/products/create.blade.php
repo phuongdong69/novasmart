@@ -1,4 +1,4 @@
-@extends('layouts.body')
+@extends('admin.layouts.body')
 
 @section('content')
 <div class="w-full px-6 py-6 mx-auto">
@@ -75,40 +75,9 @@
             @enderror
           </div>
 
-          <!-- Tab Navigation -->
-          <ul class="nav nav-tabs" id="productTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-              <a class="nav-link active" id="info-tab" data-bs-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="true">Thông tin sản phẩm</a>
-            </li>
-            <li class="nav-item" role="presentation">
-              <a class="nav-link" id="variants-tab" data-bs-toggle="tab" href="#variants" role="tab" aria-controls="variants" aria-selected="false">Biến thể sản phẩm</a>
-            </li>
-            <li class="nav-item" role="presentation">
-              <a class="nav-link" id="attributes-tab" data-bs-toggle="tab" href="#attributes" role="tab" aria-controls="attributes" aria-selected="false">Thuộc tính biến thể</a>
-            </li>
-          </ul>
+          
 
-          <!-- Tab Content -->
-          <div class="tab-content mt-3" id="productTabsContent">
-            <!-- Tab: Thông tin sản phẩm -->
-            <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
-              <h5 class="mb-3">Thông tin sản phẩm</h5>
-            </div>
-
-            <!-- Tab: Biến thể sản phẩm -->
-            <div class="tab-pane fade" id="variants" role="tabpanel" aria-labelledby="variants-tab">
-              <h5 class="mb-3">Biến thể sản phẩm</h5>
-              <div id="variants">
-                @include('admin.products.variant_form', ['i' => 0, 'variant' => null])
-              </div>
-              <button type="button" id="add-variant-btn" class="btn btn-outline-primary btn-sm">+ Thêm biến thể</button>
-            </div>
-
-            <!-- Tab: Thuộc tính biến thể -->
-            <div class="tab-pane fade" id="attributes" role="tabpanel" aria-labelledby="attributes-tab">
-              <h5 class="mb-3">Thuộc tính biến thể</h5>
-            </div>
-          </div>
+       
 
           <!-- Nút lưu và quay lại -->
           <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded mt-3">Lưu sản phẩm</button>

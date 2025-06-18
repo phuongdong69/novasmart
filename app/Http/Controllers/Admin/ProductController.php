@@ -38,16 +38,16 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         Product::create($request->validated());
-        return redirect()->route('products.index')->with('success', 'Thêm sản phẩm thành công.');
+        return redirect()->route('admin.products.index')->with('success', 'Thêm sản phẩm thành công.');
     }
 
     /**
      * Display the specified resource.
      */
     public function show(Product $product)
-    {
-        //
-    }
+{
+    return view('admin.products.show', compact('product'));
+}
 
     /**
      * Show the form for editing the specified resource.
@@ -66,7 +66,7 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->validated());
-        return redirect()->route('products.index')->with('success', 'Cập nhật sản phẩm thành công.');
+        return redirect()->route('admin.products.index')->with('success', 'Cập nhật sản phẩm thành công.');
     }
 
     /**
@@ -75,6 +75,6 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('products.index')->with('success', 'Xóa sản phẩm thành công.');
+        return redirect()->route('admin.products.index')->with('success', 'Xóa sản phẩm thành công.');
     }
 }

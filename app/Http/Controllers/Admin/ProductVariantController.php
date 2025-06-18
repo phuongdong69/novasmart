@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Http\Requests\StoreProductVariantRequest;
 use App\Http\Requests\UpdateProductVariantRequest;
@@ -10,21 +11,24 @@ use App\Http\Requests\UpdateProductVariantRequest;
 class ProductVariantController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource for a product.
      */
-    public function index()
+    public function index(Product $product)
     {
-        $variants = ProductVariant::with('product')->latest()->paginate(10);
-        return view('admin.variants.index', compact('variants'));
+        // Lấy danh sách biến thể của sản phẩm
+        $variants = $product->variants()->latest()->paginate(10);
+        
+        // Truyền $variants và $product vào view
+        return view('admin.variants.index', compact('variants', 'product'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Product $product)
     {
-        $products = Product::all();
-        return view('admin.variants.create', compact('products'));
+        // Truyền sản phẩm vào view
+        return view('admin.variants.create', compact('product'));
     }
 
     /**
@@ -32,16 +36,16 @@ class ProductVariantController extends Controller
      */
     public function store(StoreProductVariantRequest $request)
     {
-        ProductVariant::create($request->validated());
-        return redirect()->route('product-variants.index')->with('success', 'Thêm biến thể thành công.');
-    }
+        // Lấy product_id từ form
+        $productId = $request->input('product_id');
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(ProductVariant $productVariant)
-    {
-        //
+        // Tạo mới một biến thể sản phẩm với thông tin được gửi lên
+        $variant = new ProductVariant($request->validated());
+        $variant->product_id = $productId; // Gán product_id vào biến thể
+        $variant->save();
+
+        return redirect()->route('admin.product-variants.index', ['product' => $productId])
+                         ->with('success', 'Thêm biến thể thành công.');
     }
 
     /**
@@ -49,7 +53,7 @@ class ProductVariantController extends Controller
      */
     public function edit(ProductVariant $productVariant)
     {
-        $products = Product::all();
+        $products = Product::all();  // Lấy tất cả sản phẩm
         return view('admin.variants.edit', compact('productVariant', 'products'));
     }
 
@@ -58,8 +62,10 @@ class ProductVariantController extends Controller
      */
     public function update(UpdateProductVariantRequest $request, ProductVariant $productVariant)
     {
+        // Cập nhật biến thể sản phẩm
         $productVariant->update($request->validated());
-        return redirect()->route('product-variants.index')->with('success', 'Cập nhật biến thể thành công.');
+        return redirect()->route('admin.product-variants.index', ['product' => $productVariant->product_id])
+                         ->with('success', 'Cập nhật biến thể thành công.');
     }
 
     /**
@@ -67,7 +73,13 @@ class ProductVariantController extends Controller
      */
     public function destroy(ProductVariant $productVariant)
     {
+        // Lấy product_id để điều hướng sau khi xóa
+        $productId = $productVariant->product_id;
+
+        // Xóa biến thể sản phẩm
         $productVariant->delete();
-        return redirect()->route('product-variants.index')->with('success', 'Xóa biến thể thành công.');
+        return redirect()->route('admin.product-variants.index', ['product' => $productId])
+                         ->with('success', 'Xóa biến thể thành công.');
     }
 }
+

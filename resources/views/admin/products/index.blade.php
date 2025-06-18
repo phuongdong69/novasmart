@@ -1,4 +1,4 @@
-@extends('layouts.body')
+@extends('admin.layouts.body')
 
 @section('content')
 <div class="w-full px-6 py-6 mx-auto">
@@ -9,21 +9,16 @@
         <!-- Header -->
         <div class="p-6 pb-0 mb-0 border-b border-b-solid rounded-t-2xl border-b-slate-200 flex items-center justify-between">
           <h6 class="dark:text-white text-lg font-semibold">Danh sách sản phẩm</h6>
-          <a href="{{ route('admin.products.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
-            + Thêm mới
-          </a>
+          <a href="{{ route('admin.products.create') }}"
+       class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
+      + Thêm mới
+    </a>
         </div>
 
         <!-- Tìm kiếm -->
         <div class="flex justify-end mb-2 p-6">
           <form method="GET" action="{{ route('admin.products.index') }}" class="flex items-center gap-2">
-            <input
-              type="search"
-              name="keyword"
-              class="form-control form-control-sm rounded border px-3 py-2 text-sm"
-              placeholder="Tìm theo tên sản phẩm..."
-              value="{{ request('keyword') }}"
-            >
+            <input type="search" name="keyword" class="form-control form-control-sm rounded border px-3 py-2 text-sm" placeholder="Tìm theo tên sản phẩm..." value="{{ request('keyword') }}"/>
             <button type="submit" class="text-sm px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
               Tìm
             </button>
@@ -47,6 +42,7 @@
                   <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">ID</th>
                   <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">Tên sản phẩm</th>
                   <th class="px-6 py-3 text-center uppercase text-xs font-bold text-slate-400">Ngày tạo</th>
+                  <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">Biến thể</th>
                   <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">Thao tác</th>
                 </tr>
               </thead>
@@ -57,8 +53,13 @@
                     <td class="px-6 py-3 text-sm font-medium text-gray-800">{{ $product->name }}</td>
                     <td class="px-6 py-3 text-sm text-center text-slate-500">{{ $product->created_at->format('d/m/Y') }}</td>
                     <td class="px-6 py-3 text-sm">
-                      <!-- Sửa -->
+                      <!-- Thêm mới biến thể cho sản phẩm -->
+<a href="{{ route('admin.product-variants.create', ['product' => $product->id]) }}" class="text-green-600 hover:underline mr-2">+ Thêm biến thể</a>
+                    </td>
+                    <td>
+                        <!-- Sửa -->
                       <a href="{{ route('admin.products.edit', $product->id) }}" class="text-blue-600 hover:underline mr-2">Sửa</a>
+                      <a href="{{ route('admin.products.show', $product->id) }}" class="text-blue-600 hover:underline mr-2">Xem</a>
 
                       <!-- Xóa -->
                       <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="inline-block">
@@ -69,7 +70,7 @@
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="4" class="text-center py-4 text-sm text-gray-500">Không có dữ liệu nào trùng hợp.</td>
+                    <td colspan="5" class="text-center py-4 text-sm text-gray-500">Không có dữ liệu nào trùng hợp.</td>
                   </tr>
                 @endforelse
               </tbody>

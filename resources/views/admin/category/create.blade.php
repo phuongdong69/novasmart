@@ -1,4 +1,4 @@
-@extends('layouts.body')
+@extends('admin.layouts.body')
 @section('content')
 <div class="w-full px-6 py-6 mx-auto">
     <div class="flex flex-wrap -mx-3">

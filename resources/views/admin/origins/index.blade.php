@@ -1,4 +1,4 @@
-@extends('layouts.body')
+@extends('admin.layouts.body')
 @section('content')
 <div class="w-full px-6 py-6 mx-auto">
   <div class="flex flex-wrap -mx-3">
@@ -24,7 +24,7 @@
   {{-- Tiêu đề và nút thêm mới --}}
   <div class="flex items-center justify-between mb-4">
     <h6 class="dark:text-white text-lg font-semibold">Danh sách xuất xứ</h6>
-    <a href="{{ route('admin.categories.create') }}"
+    <a href="{{ route('admin.origins.create') }}"
        class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
       + Thêm mới
     </a>
