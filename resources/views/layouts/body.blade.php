@@ -5,15 +5,15 @@
     <title>@yield('title', 'Admin')</title>
 </head>
 <body>
-    @include('admin.layouts.sidebar')
+    @include('layouts.sidebar')
     <div class="main-content">
-        @include('admin.layouts.header')
+        @include('layouts.head')
 
         <div class="content p-4">
             @yield('content')
         </div>
 
-        @include('admin.layouts.footer')
+        @include('layouts.footer')
     </div>
 </body>
 </html>

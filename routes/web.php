@@ -5,9 +5,12 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Admin\DashBoardController;
 use App\Http\Controllers\Admin\OriginController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\VoucherController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -53,7 +56,24 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Roles
     Route::resource('roles', RoleController::class);
+     // CRUD cho Sản phẩm
+   Route::resource('products', ProductController::class)->names([
+    'index'   => 'products.index',
+    'create'  => 'products.create',
+    'store'   => 'products.store',
+    'edit'    => 'products.edit',
+    'update'  => 'products.update',
+    'destroy' => 'products.destroy',
+]);
 
+     Route::resource('brands', BrandController::class)->names([
+    'index'   => 'brands.index',
+    'create'  => 'brands.create',
+    'store'   => 'brands.store',
+    'edit'    => 'brands.edit',
+    'update'  => 'brands.update',
+    'destroy' => 'brands.destroy',
+]);
 });
 
 

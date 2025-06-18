@@ -5,5 +5,5 @@
 <title>@yield('title', 'Admin')</title>
 
 
-@include('admin.layouts.assets')
+@include('layouts.assets')
 
