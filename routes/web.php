@@ -9,27 +9,29 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\VoucherController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
+// ✅ Trang chủ
 Route::get('/', function () {
     return view('welcome');
 });
-//Admin
-Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
+
+// ✅ Auth - Đăng nhập / Đăng ký 
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
+
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register']);
+});
+
+// ✅ Đăng xuất 
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
+
+// ✅ Admin routes 
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashBoardController::class, 'index'])->name('dashboard');
 
-     // Categories
-
+    // Categories
     Route::put('categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus'])->name('categories.toggleStatus');
     Route::resource('categories', CategoryController::class)->names([
         'index'   => 'categories.index',
@@ -39,9 +41,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         'update'  => 'categories.update',
         'destroy' => 'categories.destroy',
     ]);
-    
+
     // Origins
-    
     Route::resource('origins', OriginController::class)->names([
         'index'   => 'origins.index',
         'create'  => 'origins.create',
@@ -53,32 +54,14 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Roles
     Route::resource('roles', RoleController::class);
-
 });
 
+// ✅ Dashboard người dùng thường)
+Route::middleware('auth')->group(function () {
+    Route::get('/user/homepage', function () {
+        return view('user.homepage');
+    })->name('user.homepage');
 
-// User dashboard
-Route::get('/user/dashboard', function () {
-    return view('user.dashboard');
-})->name('user.dashboard')->middleware('auth');
-
-
-// Register
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register']);
-
-// Route đăng nhập
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
-
-Route::get('/dashboard', function () {
-    return 'Bạn đã đăng nhập!';
-})->middleware('auth');
-
-
-// Route đăng xuất
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-
-//Route VOUCHER
-Route::resource('vouchers', VoucherController::class);
+    // Vouchers (giả định người dùng thường có quyền sử dụng)
+    Route::resource('vouchers', VoucherController::class);
+});

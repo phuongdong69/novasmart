@@ -57,12 +57,5 @@ class RoleController extends Controller
         return redirect()->route('admin.roles.index')->with('success', 'Cập nhật chức vụ thành công.');
     }
 
-    // Xoá
-    public function destroy($id)
-    {
-        $role = Role::findOrFail($id);
-        $role->delete();
-
-        return redirect()->route('admin.roles.index')->with('success', 'Xoá chức vụ thành công.');
-    }
+   
 }
