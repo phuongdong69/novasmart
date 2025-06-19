@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    @include('admin.layouts.head')
+    @include('admin.pages.head')
 </head>
 <body>
-    @include('admin.layouts.body')
+    @include('admin.pages.body')
 </body>
 </html>

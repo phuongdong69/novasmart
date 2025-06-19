@@ -6,6 +6,6 @@
 <title>@yield('title', 'Admin')</title>
 
 
-@include('admin.layouts.assets')
+@include('admin.pages.assets')
 
 </head>

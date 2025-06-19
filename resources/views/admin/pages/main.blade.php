@@ -2,11 +2,11 @@
 
         <div class="w-full px-6 py-6 mx-auto">
 
-            @include('admin.layouts.navbar')
+            @include('admin.pages.navbar')
 
             @yield('content')
             
-            @include('admin.layouts.footer')
+            @include('admin.pages.footer')
         </div>
         
     </main>
