@@ -54,6 +54,28 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Roles
     Route::resource('roles', RoleController::class);
+
+    // Product Thumbnails
+    Route::resource('product-thumbnails', App\Http\Controllers\Admin\ProductThumbnailController::class)
+        ->only(['index', 'create', 'store', 'edit', 'update'])
+        ->names([
+            'index' => 'product_thumbnail.index',
+            'create' => 'product_thumbnail.create',
+            'store' => 'product_thumbnail.store',
+            'edit' => 'product_thumbnail.edit',
+            'update' => 'product_thumbnail.update',
+        ]);
+
+    // Vouchers
+    Route::resource('vouchers', VoucherController::class)->names([
+        'index' => 'vouchers.index',
+        'create' => 'vouchers.create',
+        'store' => 'vouchers.store',
+        'show' => 'vouchers.show',
+        'edit' => 'vouchers.edit',
+        'update' => 'vouchers.update',
+        'destroy' => 'vouchers.destroy',
+    ]);
 });
 
 // ✅ Dashboard người dùng thường)
@@ -61,7 +83,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/homepage', function () {
         return view('user.homepage');
     })->name('user.homepage');
-
-    // Vouchers (giả định người dùng thường có quyền sử dụng)
-    Route::resource('vouchers', VoucherController::class);
 });
