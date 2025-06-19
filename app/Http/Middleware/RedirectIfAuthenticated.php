@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,8 +11,6 @@ class RedirectIfAuthenticated
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
@@ -21,7 +18,22 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                // Nếu có URL trước đó (referer) và không phải là trang login/register, quay về đó
+                $previous = url()->previous();
+
+                // Nếu là trang login hoặc register thì mới chuyển hướng riêng theo role
+                if (str_contains($previous, '/login') || str_contains($previous, '/register')) {
+                    $user = Auth::user();
+
+                    if ($user->role_id == 1) {
+                        return redirect()->route('admin.dashboard');
+                    }
+
+                    return redirect()->route('user.homepage');
+                }
+
+                // ✅ Nếu không thì quay lại trang trước đó
+                return redirect($previous);
             }
         }
 
