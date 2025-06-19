@@ -29,7 +29,7 @@ class VoucherController extends Controller
         ]);
 
         Voucher::create($request->all());
-        return redirect()->route('vouchers.index')->with('success', 'Voucher created successfully.');
+        return redirect()->route('admin.vouchers.index')->with('success', 'Voucher created successfully.');
     }
 
     public function show(Voucher $voucher)
@@ -53,13 +53,13 @@ class VoucherController extends Controller
         ]);
 
         $voucher->update($request->all());
-        return redirect()->route('vouchers.index')->with('success', 'Voucher updated successfully.');
+        return redirect()->route('admin.vouchers.index')->with('success', 'Voucher updated successfully.');
     }
 
     public function destroy(Voucher $voucher)
     {
         $voucher->delete();
-        return redirect()->route('vouchers.index')->with('success', 'Voucher deleted successfully.');
+        return redirect()->route('admin.vouchers.index')->with('success', 'Voucher deleted successfully.');
     }
 }
 
