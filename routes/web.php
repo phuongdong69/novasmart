@@ -21,7 +21,7 @@ use App\Http\Controllers\VoucherController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('user.pages.home');
 });
 //Admin
 Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
@@ -82,3 +82,4 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 //Route VOUCHER
 Route::resource('vouchers', VoucherController::class);
+

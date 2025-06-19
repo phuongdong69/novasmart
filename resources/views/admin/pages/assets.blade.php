@@ -5,11 +5,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 
-<link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
+<link href="{{ asset('assets/admin/css/nucleo-icons.css') }}" rel="stylesheet" />
 
 
 
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 
 
-<link href="{{ asset('assets/css/argon-dashboard-tailwind.css') }}?v=1.0.1" rel="stylesheet" />
+<link href="{{ asset('assets/admin/css/argon-dashboard-tailwind.css') }}?v=1.0.1" rel="stylesheet" />
