@@ -22,6 +22,6 @@ class AdminMiddleware
             return $next($request);
         }
 
-        return redirect()->route('user.dashboard')->with('error', 'Bạn không có quyền truy cập!');
+        return redirect()->route('user.homepage')->with('error', 'Bạn không có quyền truy cập!');
     }
 }

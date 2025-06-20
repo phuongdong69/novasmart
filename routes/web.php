@@ -15,6 +15,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\VoucherController;
 
 // ✅ Trang chủ
+// ✅ Trang chủ
 Route::get('/', function () {
     return view('welcome');
 });
@@ -46,6 +47,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         'update'  => 'categories.update',
         'destroy' => 'categories.destroy',
     ]);
+
 
     // Origins
     Route::resource('origins', OriginController::class)->names([
