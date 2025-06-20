@@ -83,17 +83,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         'update' => 'vouchers.update',
         'destroy' => 'vouchers.destroy',
     ]);
-
-        //product
-    Route::resource('products', ProductController::class);
-    //attribute
-    Route::resource('attributes', AttributeController::class);
-    //attribute_values
-    Route::resource('attribute_values', AttributeValueController::class);
-    //product_variant
-    Route::resource('product_variants', ProductVariantController::class);
-    //Variant_attribute_value
-    Route::resource('variant_attribute_values', VariantAttributeValueController::class);
 });
 
 // ✅ Dashboard người dùng thường)
@@ -102,3 +91,30 @@ Route::middleware('auth')->group(function () {
         return view('user.homepage');
     })->name('user.homepage');
 });
+
+
+// User dashboard
+Route::get('/user/dashboard', function () {
+    return view('user.dashboard');
+})->name('user.dashboard')->middleware('auth');
+
+
+// Register
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
+
+// Route đăng nhập
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+
+Route::get('/dashboard', function () {
+    return 'Bạn đã đăng nhập!';
+})->middleware('auth');
+
+
+// Route đăng xuất
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+
+//Route VOUCHER
+Route::resource('vouchers', VoucherController::class)
