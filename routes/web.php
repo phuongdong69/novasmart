@@ -1,20 +1,14 @@
 <?php
 
-use App\Http\Controllers\Admin\AttributeValueController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Admin\DashBoardController;
 use App\Http\Controllers\Admin\OriginController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ProductVariantController;
-use App\Http\Controllers\Admin\VariantAttributeValueController;
-use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\VoucherController;
 
-// ✅ Trang chủ
 // ✅ Trang chủ
 Route::get('/', function () {
     return view('user.pages.home');
@@ -47,7 +41,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         'update'  => 'categories.update',
         'destroy' => 'categories.destroy',
     ]);
-
 
     // Origins
     Route::resource('origins', OriginController::class)->names([
@@ -87,34 +80,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
 // ✅ Dashboard người dùng thường)
 Route::middleware('auth')->group(function () {
-    Route::get('/user/homepage', function () {
+Route::get('/user/homepage', function () {
         return view('user.homepage');
     })->name('user.homepage');
 });
-
-
-// User dashboard
-Route::get('/user/dashboard', function () {
-    return view('user.dashboard');
-})->name('user.dashboard')->middleware('auth');
-
-
-// Register
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register']);
-
-// Route đăng nhập
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
-
-Route::get('/dashboard', function () {
-    return 'Bạn đã đăng nhập!';
-})->middleware('auth');
-
-
-// Route đăng xuất
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-
-//Route VOUCHER
-Route::resource('vouchers', VoucherController::class)
