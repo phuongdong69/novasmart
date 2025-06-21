@@ -126,7 +126,11 @@
                             <input type="checkbox" name="remember" id="remember" class="mr-2" />
                             <span class="text-md text-slate-600">Nhớ đăng nhập</span>
                         </div>
-                        <a href="#" class="font-bold text-md text-blue-600 hover:text-blue-800">Quên mật khẩu?</a>
+                        <a href="{{ route('password.request') }}"
+                            class="font-bold text-md text-blue-600 hover:text-blue-800">
+                            Quên mật khẩu?
+                        </a>
+
                     </div>
 
                     <button type="submit"

@@ -5,28 +5,58 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Admin\DashBoardController;
 use App\Http\Controllers\Admin\OriginController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductThumbnailController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
 
-// ✅ Trang chủ
+/*
+|--------------------------------------------------------------------------
+| Trang chủ
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
     return view('user.pages.home');
-});
+})->name('home');
 
-// ✅ Auth - Đăng nhập / Đăng ký 
+/*
+|--------------------------------------------------------------------------
+| Auth: Đăng nhập, Đăng ký, Quên mật khẩu (dành cho khách chưa đăng nhập)
+|--------------------------------------------------------------------------
+*/
 Route::middleware('guest')->group(function () {
+    // ✅ Đăng nhập
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
 
+    // ✅ Đăng ký
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
+
+    // ✅ Quên mật khẩu - Gửi link
+    Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+
+    // ✅ Đặt lại mật khẩu
+    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 });
 
-// ✅ Đăng xuất 
+/*
+|--------------------------------------------------------------------------
+| Đăng xuất (chỉ người đã đăng nhập mới logout được)
+|--------------------------------------------------------------------------
+*/
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
-// ✅ Admin routes 
+/*
+|--------------------------------------------------------------------------
+| Admin: Quản trị hệ thống
+|--------------------------------------------------------------------------
+*/
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashBoardController::class, 'index'])->name('dashboard');
@@ -56,15 +86,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('roles', RoleController::class);
 
     // Product Thumbnails
-    Route::resource('product-thumbnails', App\Http\Controllers\Admin\ProductThumbnailController::class)
-        ->only(['index', 'create', 'store', 'edit', 'update'])
-        ->names([
-            'index' => 'product_thumbnail.index',
-            'create' => 'product_thumbnail.create',
-            'store' => 'product_thumbnail.store',
-            'edit' => 'product_thumbnail.edit',
-            'update' => 'product_thumbnail.update',
-        ]);
+    Route::resource('product-thumbnails', ProductThumbnailController::class)->only(['index', 'create', 'store', 'edit', 'update'])->names([
+        'index' => 'product_thumbnail.index',
+        'create' => 'product_thumbnail.create',
+        'store' => 'product_thumbnail.store',
+        'edit' => 'product_thumbnail.edit',
+        'update' => 'product_thumbnail.update',
+    ]);
 
     // Vouchers
     Route::resource('vouchers', VoucherController::class)->names([
@@ -78,9 +106,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     ]);
 });
 
-// ✅ Dashboard người dùng thường)
+/*
+|--------------------------------------------------------------------------
+| Người dùng thường (đã đăng nhập)
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
-Route::get('/user/homepage', function () {
+    Route::get('/user/homepage', function () {
         return view('user.homepage');
     })->name('user.homepage');
 });
