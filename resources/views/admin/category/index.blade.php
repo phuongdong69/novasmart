@@ -1,4 +1,4 @@
-@extends('layouts.body')
+@extends('pages.main')
 @section('content')
 
 <div class="w-full px-6 py-6 mx-auto">
@@ -51,7 +51,8 @@
                     <td class="px-6 py-3 text-sm font-medium text-gray-800">{{ $category->name }}</td>
                     <td class="px-6 py-3 text-sm text-center">
                       <form action="{{ route('admin.categories.toggleStatus', $category->id) }}" method="POST">
-                        @csrf @method('PUT')
+                        @csrf 
+                        @method('PUT')
                         <button type="submit"
                           class="px-2.5 py-1.4 text-xs rounded-1.8 font-bold uppercase leading-none text-white
                           {{ $category->status ? 'bg-gradient-to-tl from-emerald-500 to-teal-400' : 'bg-gradient-to-tl from-slate-600 to-slate-300' }}">
@@ -63,14 +64,15 @@
                     <td class="px-6 py-3 text-sm">
                       <a href="{{ route('admin.categories.edit', $category->id) }}" class="text-blue-600 hover:underline mr-2">Sửa</a>
                       <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" style="display:inline-block;">
-                        @csrf @method('DELETE')
+                        @csrf 
+                        @method('DELETE')
                         <button type="submit" onclick="return confirm('Xác nhận xoá?')" class="text-red-500 hover:underline">Xoá</button>
                       </form>
                     </td>
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="5" class="text-center py-4 text-sm text-gray-500">Không có dữ liệu nào trùng hợp.</td>
+                    <td colspan="5" class="text-center py-4 text-sm text-gray-500">Không có dữ liệu nào trùng khớp.</td>
                   </tr>
                 @endforelse
               </tbody>
@@ -87,5 +89,4 @@
     </div>
   </div>
 </div>
-
 @endsection
