@@ -16,7 +16,7 @@ class AttributeValueController extends Controller
     public function index()
     {
         $values = AttributeValue::with('attribute')->latest()->paginate(10);
-        return view('admin.attribute_values.index', compact('values'));/
+        return view('admin.attribute_values.index', compact('values'));
     }
 
     /**
