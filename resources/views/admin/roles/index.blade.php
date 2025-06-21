@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <<<<<<<<< Temporary merge branch 1
+=======
+
+>>>>>>> a930add1176f60e52892f2308533c7ad70c634ad
 @extends('admin.layouts.app')
 
 @section('title', 'Danh sách chức vụ')
