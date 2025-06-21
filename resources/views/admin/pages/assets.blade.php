@@ -11,6 +11,10 @@
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 
 
+<<<<<<< HEAD
+<script src="https://cdn.tailwindcss.com"></script>
+=======
+>>>>>>> a930add1176f60e52892f2308533c7ad70c634ad
 
 <link href="{{ asset('assets/admin/css/argon-dashboard-tailwind.css') }}?v=1.0.1" rel="stylesheet" />
 
