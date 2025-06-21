@@ -78,7 +78,9 @@
 
             <!-- Pagination -->
             <div class="mt-4 px-6 flex justify-center">
-              {{ $products->links('pagination::bootstrap-4') }}
+              @if (method_exists($products, 'links'))
+    {{ $products->links('pagination::bootstrap-4') }}
+@endif
             </div>
           </div>
         </div>

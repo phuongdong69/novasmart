@@ -16,6 +16,13 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             OriginSeeder::class,
             CategorySeeder::class,
+            CartSeeder::class,
+            ProductsTableSeeder::class,
+            AttributesTableSeeder::class,
+            AttributeValuesTableSeeder::class,
+            ProductVariantsTableSeeder::class,
+            VariantAttributeValuesTableSeeder::class,
+            ThumbnailsTableSeeder::class,
         ]);
     }
 }

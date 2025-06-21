@@ -19,4 +19,9 @@ class AttributeValue extends Model
     {
         return $this->hasMany(VariantAttributeValue::class);
     }
+     // Quan hệ với ProductVariant thông qua pivot table
+    public function productVariants()
+    {
+        return $this->belongsToMany(ProductVariant::class);
+    }
 }

@@ -11,7 +11,7 @@ class StoreProductVariantRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -19,10 +19,13 @@ class StoreProductVariantRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
-    {
-        return [
-            //
-        ];
-    }
+    public function rules()
+{
+    return [
+        'sku' => 'required|string|unique:product_variants,sku',
+        'price' => 'required|numeric|min:0',
+        'quantity' => 'required|integer|min:0',
+        'status' => 'required|boolean',
+    ];
+}
 }

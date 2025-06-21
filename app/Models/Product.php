@@ -36,4 +36,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductVariant::class);
     }
+    // Quan hệ 1:N với ProductVariant (mỗi sản phẩm có nhiều biến thể)
+    public function productVariants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
 }

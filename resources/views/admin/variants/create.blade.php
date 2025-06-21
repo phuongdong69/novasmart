@@ -13,8 +13,8 @@
         </div>
 
         <!-- Form -->
-        <form action="{{ route('admin.product-variants.store') }}" method="POST" class="p-6">
-          @csrf
+      <form action="{{ route('admin.product-variants.store', $product->id) }}" method="POST" class="p-6">
+    @csrf
 
           <!-- Truyền productId vào form -->
           <input type="hidden" name="product_id" value="{{ $product->id }}">

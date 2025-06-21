@@ -14,40 +14,37 @@ class ProductVariantController extends Controller
      * Display a listing of the resource for a product.
      */
     public function index(Product $product)
-    {
-        // Lấy danh sách biến thể của sản phẩm
-        $variants = $product->variants()->latest()->paginate(10);
-        
-        // Truyền $variants và $product vào view
-        return view('admin.variants.index', compact('variants', 'product'));
-    }
+{
+    // Lấy danh sách biến thể của sản phẩm
+    $variants = $product->variants()->latest()->paginate(10);
+
+    // Truyền cả $products nếu view cần danh sách toàn bộ sản phẩm
+    $products = Product::paginate(10);
+
+    return view('admin.variants.index', compact('variants', 'product', 'products'));
+}
 
     /**
      * Show the form for creating a new resource.
      */
     public function create(Product $product)
-    {
-        // Truyền sản phẩm vào view
-        return view('admin.variants.create', compact('product'));
-    }
+{
+    return view('admin.variants.create', compact('product'));
+}
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductVariantRequest $request)
-    {
-        // Lấy product_id từ form
-        $productId = $request->input('product_id');
+    
+public function store(Product $product, StoreProductVariantRequest $request)
+{
+    $variant = new ProductVariant($request->validated());
+    $variant->product_id = $product->id;
+    $variant->save();
 
-        // Tạo mới một biến thể sản phẩm với thông tin được gửi lên
-        $variant = new ProductVariant($request->validated());
-        $variant->product_id = $productId; // Gán product_id vào biến thể
-        $variant->save();
-
-        return redirect()->route('admin.product-variants.index', ['product' => $productId])
-                         ->with('success', 'Thêm biến thể thành công.');
-    }
-
+    return redirect()->route('admin.product-variants.index')
+                     ->with('success', 'Thêm biến thể thành công.');
+}
     /**
      * Show the form for editing the specified resource.
      */
