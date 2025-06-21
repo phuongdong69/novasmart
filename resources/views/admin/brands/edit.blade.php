@@ -1,5 +1,5 @@
 
-@extends('admin.layouts.main')
+@extends('admin.layouts.app')
 
 @section('title')
 Chỉnh sửa thương hiệu

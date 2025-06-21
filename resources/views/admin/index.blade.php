@@ -1,3 +1,9 @@
-@include ('admin.layouts.header')
-@include('admin.layouts.assets')
-@include ('admin.layouts.body')
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    @include('admin.layouts.head')
+</head>
+<body>
+    @include('admin.layouts.body')
+</body>
+</html>

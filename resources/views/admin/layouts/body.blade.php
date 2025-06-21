@@ -1,15 +1,19 @@
-@include('admin.layouts.header')
-<body class="m-0 font-sans text-base antialiased font-normal dark:bg-slate-900 leading-default bg-gray-50 text-slate-500">
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>@yield('title', 'Admin')</title>
+</head>
+<body>
     @include('admin.layouts.sidebar')
+    <div class="main-content">
+        @include('admin.layouts.header')
 
-    <main class="relative h-full max-h-screen transition-all duration-200 ease-in-out xl:ml-68 rounded-xl">
-        @include('admin.layouts.navbar')
-
-            @yield('content')   
+        <div class="content p-4">
+            @yield('content')
+        </div>
 
         @include('admin.layouts.footer')
-    </main>
-
-    @include('admin.layouts.scripts')
-    @include('admin.layouts.assets')
+    </div>
 </body>
+</html>

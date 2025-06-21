@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\ProductVariant;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -13,11 +14,27 @@ class CartController extends Controller
     // Hiển thị giỏ hàng
     public function show()
     {
-        $user = Auth::user();
-        $cart = $user->cart;
+        if (Auth::check()) {
+            $cart = Auth::user()->cart()->with('items.productVariant.product')->first();
+        } else {
+            $cartItems = Session::get('cart', []);
+            $variants = ProductVariant::with('product')->whereIn('id', array_keys($cartItems))->get();
 
-        if ($cart) {
-            $cart->load('items.productVariant');
+            $items = [];
+            foreach ($variants as $variant) {
+                $items[] = [
+                    'variant' => $variant,
+                    'product' => $variant->product,
+                    'quantity' => $cartItems[$variant->id]['quantity'],
+                    'price' => $cartItems[$variant->id]['price'],
+                    'total' => $cartItems[$variant->id]['quantity'] * $cartItems[$variant->id]['price']
+                ];
+            }
+
+            $cart = [
+                'items' => $items,
+                'total_price' => array_sum(array_map(fn($i) => $i['total'], $items))
+            ];
         }
 
         return view('user.cart', compact('cart'));
@@ -26,38 +43,42 @@ class CartController extends Controller
     // Thêm sản phẩm vào giỏ
     public function add(Request $request)
     {
-        $request->validate([
-            'product_variant_id' => 'required|exists:product_variants,id',
-            'quantity' => 'required|integer|min:1',
-        ]);
+        $productVariantId = $request->input('product_variant_id');
+        $quantity = $request->input('quantity', 1);
 
-        $user = Auth::user();
+        $product = ProductVariant::findOrFail($productVariantId);
 
-        $cart = $user->cart;
-        if (!$cart) {
-            $cart = Cart::create([
-                'user_id' => $user->id,
-                'total_price' => 0
-            ]);
-        }
+        if (Auth::check()) {
+            $user = Auth::user();
+            $cart = $user->cart()->firstOrCreate(['user_id' => $user->id]);
 
-        $item = $cart->items()->where('product_variant_id', $request->product_variant_id)->first();
+            $item = $cart->items()->where('product_variant_id', $productVariantId)->first();
+            if ($item) {
+                $item->increment('quantity', $quantity);
+            } else {
+                $cart->items()->create([
+                    'product_variant_id' => $product->id,
+                    'quantity' => $quantity,
+                    'price' => $product->price
+                ]);
+            }
 
-        $product = ProductVariant::findOrFail($request->product_variant_id);
-
-        if ($item) {
-            $item->increment('quantity', $request->quantity);
+            $this->updateTotalPrice($cart);
         } else {
-            $cart->items()->create([
-                'product_variant_id' => $product->id,
-                'quantity' => $request->quantity,
-                'price' => $product->price,
-            ]);
+            $cart = Session::get('cart', []);
+            if (isset($cart[$productVariantId])) {
+                $cart[$productVariantId]['quantity'] += $quantity;
+            } else {
+                $cart[$productVariantId] = [
+                    'product_variant_id' => $product->id,
+                    'quantity' => $quantity,
+                    'price' => $product->price
+                ];
+            }
+            Session::put('cart', $cart);
         }
 
-        $this->updateTotalPrice($cart);
-
-        return redirect()->route('cart.show')->with('success', 'Đã thêm sản phẩm vào giỏ hàng');
+        return redirect()->route('cart.show')->with('success', 'Đã thêm sản phẩm vào giỏ hàng.');
     }
 
     // Cập nhật số lượng
@@ -67,27 +88,41 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1'
         ]);
 
-        $item = CartItem::findOrFail($itemId);
-        $item->update(['quantity' => $request->quantity]);
+        if (Auth::check()) {
+            $item = CartItem::findOrFail($itemId);
+            $item->update(['quantity' => $request->quantity]);
+            $this->updateTotalPrice($item->cart);
+        } else {
+            $cart = Session::get('cart', []);
+            if (isset($cart[$itemId])) {
+                $cart[$itemId]['quantity'] = $request->quantity;
+                Session::put('cart', $cart);
+            }
+        }
 
-        $this->updateTotalPrice($item->cart);
-
-        return back()->with('success', 'Cập nhật số lượng thành công');
+        return redirect()->route('cart.show')->with('success', 'Cập nhật số lượng thành công');
     }
 
     // Xoá sản phẩm
     public function remove($itemId)
     {
-        $item = CartItem::findOrFail($itemId);
-        $cart = $item->cart;
-        $item->delete();
+        if (Auth::check()) {
+            $item = CartItem::findOrFail($itemId);
+            $cart = $item->cart;
+            $item->delete();
+            $this->updateTotalPrice($cart);
+        } else {
+            $cart = Session::get('cart', []);
+            if (isset($cart[$itemId])) {
+                unset($cart[$itemId]);
+                Session::put('cart', $cart);
+            }
+        }
 
-        $this->updateTotalPrice($cart);
-
-        return back()->with('success', 'Xoá sản phẩm thành công');
+        return redirect()->route('cart.show')->with('success', 'Xoá sản phẩm thành công');
     }
 
-    // Tính lại tổng giá giỏ hàng
+    // Cập nhật tổng giá trị giỏ hàng trong DB
     protected function updateTotalPrice(Cart $cart)
     {
         $total = $cart->items->sum(function ($item) {
