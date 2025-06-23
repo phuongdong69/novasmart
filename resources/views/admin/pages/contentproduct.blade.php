@@ -25,29 +25,79 @@
 
         <!-- Product List -->
         <div class="bg-white rounded-lg shadow-sm" id="productList">
-            <!-- Products will be inserted here -->
-        </div>
-
-        <!-- Pagination -->
-        <div class="bg-white rounded-lg shadow-sm mt-6 p-4">
-            <div class="flex items-center justify-between">
-                <div class="text-sm text-gray-700">
-                    Hiển thị <span class="font-medium" id="showingFrom">1</span> đến <span class="font-medium" id="showingTo">5</span> 
-                    trong tổng số <span class="font-medium" id="totalItems">15</span> sản phẩm
-                </div>
-                <div class="flex items-center space-x-2">
-                    <button id="prevBtn" class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Trước
-                    </button>
-                    <div class="flex space-x-1" id="pageNumbers">
-                        <!-- Page numbers will be inserted here -->
-                    </div>
-                    <button id="nextBtn" class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Sau
-                    </button>
+    @foreach($products as $product)
+        <div class="grid grid-cols-12 gap-4 p-4 border-b hover:bg-gray-50 group">
+            <div class="col-span-1">
+                <input type="checkbox" class="rounded border-gray-300">
+            </div>
+            <div class="col-span-4 font-semibold text-gray-900 cursor-pointer" onclick="toggleVariants({{ $product->id }})">
+                {{ $product->name }}
+                <div class="text-xs text-gray-500">
+                    Nhãn hiệu: {{ $product->brand->name ?? '' }} | Xuất xứ: {{ $product->origin->name ?? '' }}
                 </div>
             </div>
+            <div class="col-span-1">{{ $product->category->name ?? '' }}</div>
+            <div class="col-span-1">
+                {{ number_format($product->variants->first()->price ?? 0) }}₫
+            </div>
+            <div class="col-span-1">
+                {{ $product->variants->count() }}
+            </div>
+            <div class="col-span-1">
+                {{ $product->variants->sum('quantity') }}
+            </div>
+            <div class="col-span-1">
+                {{ $product->variants->first()->status ?? 'N/A' }}
+            </div>
+            <div class="col-span-2">
+                <a href="#" class="text-blue-600 hover:underline">Sửa</a> |
+                <a href="#" class="text-red-600 hover:underline">Xóa</a>
+            </div>
         </div>
+        <!-- Biến thể (ẩn/hiện khi click) -->
+        <div id="variants-{{ $product->id }}" class="hidden bg-gray-50 px-8 py-2">
+            <table class="w-full text-sm mb-2">
+                <thead>
+                    <tr class="text-gray-700">
+                        <th class="text-left">SKU</th>
+                        <th class="text-left">Giá</th>
+                        <th class="text-left">Số lượng</th>
+                        <th class="text-left">Trạng thái</th>
+                        <th class="text-left">Thuộc tính</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($product->variants as $variant)
+                        <tr>
+                            <td>{{ $variant->sku }}</td>
+                            <td>{{ number_format($variant->price) }}₫</td>
+                            <td>{{ $variant->quantity }}</td>
+                            <td>{{ $variant->status }}</td>
+                            <td>
+                                @foreach($variant->variantAttributeValues as $attrValue)
+                                    <span class="inline-block bg-gray-200 rounded px-2 py-1 mr-1 mb-1">
+                                        {{ $attrValue->attribute->name ?? '' }}: {{ $attrValue->value ?? '' }}
+                                    </span>
+                                @endforeach
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endforeach
+</div>
+
+<script>
+function toggleVariants(productId) {
+    const el = document.getElementById('variants-' + productId);
+    if (el.classList.contains('hidden')) {
+        el.classList.remove('hidden');
+    } else {
+        el.classList.add('hidden');
+    }
+}
+</script>
     </div>
 </div>
 
