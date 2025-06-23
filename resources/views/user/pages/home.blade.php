@@ -162,5 +162,4 @@
                 </div>
             </div><!--end container-->
         </section><!--end section-->
-        <!-- End -->
 @endsection
