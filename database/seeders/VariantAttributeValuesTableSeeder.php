@@ -2,30 +2,30 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\ProductVariant;
+use App\Models\Attribute;
+use App\Models\AttributeValue;
 use App\Models\VariantAttributeValue;
-use Illuminate\Support\Facades\DB;
 
 class VariantAttributeValuesTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run()
+    public function run(): void
     {
-        DB::table('variant_attribute_values')->delete();
+        $attributes = Attribute::with('values')->get();
+        $variants = ProductVariant::all();
 
-        VariantAttributeValue::create([
-            'product_variant_id' => 1,
-            'attribute_id' => 1,
-            'attribute_value_id' => 1 // Red
-        ]);
+        foreach ($variants as $variant) {
+            foreach ($attributes as $attribute) {
+                // Lấy giá trị ngẫu nhiên trong attribute đó
+                $value = $attribute->values->random();
 
-        VariantAttributeValue::create([
-            'product_variant_id' => 1,
-            'attribute_id' => 2,
-            'attribute_value_id' => 2 // Large
-        ]);
+                VariantAttributeValue::create([
+                    'product_variant_id' => $variant->id,
+                    'attribute_id' => $attribute->id,
+                    'attribute_value_id' => $value->id,
+                ]);
+            }
+        }
     }
 }

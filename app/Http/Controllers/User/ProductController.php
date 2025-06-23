@@ -11,10 +11,10 @@ class ProductController extends Controller
     public function index()
     {
         // Lấy tất cả sản phẩm và bao gồm cả các biến thể của mỗi sản phẩm
-        $products = Product::with('productVariants')->latest()->paginate(24);
+        $products = Product::with('variants', 'thumbnails')->paginate(12);
         
         // Trả về view với các sản phẩm
-        return view('user.products.index', compact('products'));
+        return view('user.pages.product-list', compact('products'));
     }
 
     // Hiển thị chi tiết sản phẩm

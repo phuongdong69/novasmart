@@ -12,12 +12,12 @@ class BrandsTableSeeder extends Seeder
         // Insert sample brands if not already present
         Brand::firstOrCreate([
             'id' => 1,
-            'name' => 'Sample Brand 1',           
+            'name' => 'dell',           
         ]);
 
         Brand::firstOrCreate([
             'id' => 2,
-            'name' => 'Sample Brand 2',
+            'name' => 'asus',
         ]);
     }
 }

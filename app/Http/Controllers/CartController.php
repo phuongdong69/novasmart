@@ -3,132 +3,110 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Cart;
-use App\Models\CartItem;
-use App\Models\ProductVariant;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Auth;
+use App\Models\{Cart, CartItem, ProductVariant};
+use Illuminate\Support\Facades\{Session, Auth};
 
 class CartController extends Controller
 {
-    // Hiển thị giỏ hàng
     public function show()
     {
         if (Auth::check()) {
-            $cart = Auth::user()->cart()->with('items.productVariant.product')->first();
+            $cart = Auth::user()->cart()->with('items.productVariant.product.thumbnails')->first();
         } else {
             $cartItems = Session::get('cart', []);
-            $variants = ProductVariant::with('product')->whereIn('id', array_keys($cartItems))->get();
+            $variants = ProductVariant::with('product.thumbnails')->whereIn('id', array_keys($cartItems))->get();
 
-            $items = [];
-            foreach ($variants as $variant) {
-                $items[] = [
+            $items = collect($variants)->map(function ($variant) use ($cartItems) {
+                $qty = $cartItems[$variant->id]['quantity'];
+                $price = $cartItems[$variant->id]['price'];
+                return [
                     'variant' => $variant,
                     'product' => $variant->product,
-                    'quantity' => $cartItems[$variant->id]['quantity'],
-                    'price' => $cartItems[$variant->id]['price'],
-                    'total' => $cartItems[$variant->id]['quantity'] * $cartItems[$variant->id]['price']
+                    'quantity' => $qty,
+                    'price' => $price,
+                    'total' => $qty * $price
                 ];
-            }
+            });
 
             $cart = [
                 'items' => $items,
-                'total_price' => array_sum(array_map(fn($i) => $i['total'], $items))
+                'total_price' => $items->sum('total')
             ];
         }
 
-        return view('user.cart', compact('cart'));
+        return view('user.pages.shop-card', compact('cart'));
     }
 
-    // Thêm sản phẩm vào giỏ
     public function add(Request $request)
     {
-        $productVariantId = $request->input('product_variant_id');
-        $quantity = $request->input('quantity', 1);
-
-        $product = ProductVariant::findOrFail($productVariantId);
+        $variantId = $request->input('product_variant_id');
+        $quantity = (int) $request->input('quantity', 1);
+        $product = ProductVariant::findOrFail($variantId);
 
         if (Auth::check()) {
             $user = Auth::user();
             $cart = $user->cart()->firstOrCreate(['user_id' => $user->id]);
+            $item = $cart->items()->firstOrNew(['product_variant_id' => $variantId]);
 
-            $item = $cart->items()->where('product_variant_id', $productVariantId)->first();
-            if ($item) {
-                $item->increment('quantity', $quantity);
-            } else {
-                $cart->items()->create([
-                    'product_variant_id' => $product->id,
-                    'quantity' => $quantity,
-                    'price' => $product->price
-                ]);
-            }
+            $item->quantity += $quantity;
+            $item->price = $product->price;
+            $item->save();
 
             $this->updateTotalPrice($cart);
         } else {
             $cart = Session::get('cart', []);
-            if (isset($cart[$productVariantId])) {
-                $cart[$productVariantId]['quantity'] += $quantity;
-            } else {
-                $cart[$productVariantId] = [
-                    'product_variant_id' => $product->id,
-                    'quantity' => $quantity,
-                    'price' => $product->price
-                ];
-            }
+            $cart[$variantId]['product_variant_id'] = $product->id;
+            $cart[$variantId]['price'] = $product->price;
+            $cart[$variantId]['quantity'] = ($cart[$variantId]['quantity'] ?? 0) + $quantity;
             Session::put('cart', $cart);
         }
 
         return redirect()->route('cart.show')->with('success', 'Đã thêm sản phẩm vào giỏ hàng.');
     }
 
-    // Cập nhật số lượng
     public function updateQuantity(Request $request, $itemId)
     {
-        $request->validate([
-            'quantity' => 'required|integer|min:1'
-        ]);
+        $request->validate(['quantity' => 'required|integer|min:1']);
+        $qty = (int) $request->quantity;
 
         if (Auth::check()) {
             $item = CartItem::findOrFail($itemId);
-            $item->update(['quantity' => $request->quantity]);
+            $item->update(['quantity' => $qty]);
             $this->updateTotalPrice($item->cart);
+            $total = number_format($item->quantity * $item->price, 2);
         } else {
             $cart = Session::get('cart', []);
             if (isset($cart[$itemId])) {
-                $cart[$itemId]['quantity'] = $request->quantity;
+                $cart[$itemId]['quantity'] = $qty;
                 Session::put('cart', $cart);
+                $total = number_format($qty * $cart[$itemId]['price'], 2);
+            } else {
+                $total = 0;
             }
         }
 
-        return redirect()->route('cart.show')->with('success', 'Cập nhật số lượng thành công');
+        return response()->json(['success' => true, 'item_total' => $total]);
     }
 
-    // Xoá sản phẩm
     public function remove($itemId)
     {
         if (Auth::check()) {
             $item = CartItem::findOrFail($itemId);
-            $cart = $item->cart;
             $item->delete();
-            $this->updateTotalPrice($cart);
+            $this->updateTotalPrice($item->cart);
         } else {
             $cart = Session::get('cart', []);
-            if (isset($cart[$itemId])) {
-                unset($cart[$itemId]);
-                Session::put('cart', $cart);
-            }
+            unset($cart[$itemId]);
+            Session::put('cart', $cart);
         }
 
-        return redirect()->route('cart.show')->with('success', 'Xoá sản phẩm thành công');
+        return redirect()->route('cart.show')->with('success', 'Xóa sản phẩm thành công');
     }
 
-    // Cập nhật tổng giá trị giỏ hàng trong DB
     protected function updateTotalPrice(Cart $cart)
     {
-        $total = $cart->items->sum(function ($item) {
-            return $item->quantity * $item->price;
-        });
-
-        $cart->update(['total_price' => $total]);
+        $cart->update([
+            'total_price' => $cart->items->sum(fn($i) => $i->quantity * $i->price)
+        ]);
     }
 }

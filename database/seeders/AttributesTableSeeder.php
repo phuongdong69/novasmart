@@ -14,15 +14,15 @@ class AttributesTableSeeder extends Seeder
      */
      public function run()
     {
-        // Thêm một số thuộc tính mẫu vào bảng 'attributes'
-        Attribute::firstOrCreate([
-            'id' => 1,
-            'name' => 'Color',
-        ]);
+        $attributes = [
+            ['name' => 'Màu sắc', 'description' => 'Màu sắc sản phẩm'],
+            ['name' => 'RAM', 'description' => 'Dung lượng bộ nhớ RAM'],
+            ['name' => 'Bộ nhớ', 'description' => 'Dung lượng bộ nhớ trong'],
+            ['name' => 'Kích thước màn hình', 'description' => 'Kích thước của màn hình thiết bị']
+        ];
 
-        Attribute::firstOrCreate([
-            'id' => 2,
-            'name' => 'Size',
-        ]);
+        foreach ($attributes as $attr) {
+            Attribute::create($attr);
+        }
     }
 }

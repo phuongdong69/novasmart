@@ -1,4 +1,6 @@
+
 @extends('admin.layouts.app')
+
 @section('title')
 Trang Thương Hiệu
 @endsection

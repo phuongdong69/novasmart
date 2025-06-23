@@ -1,4 +1,3 @@
-<<<<<<<<< Temporary merge branch 1
 @extends('admin.layouts.app')
 
 @section('title', 'Danh sách chức vụ')

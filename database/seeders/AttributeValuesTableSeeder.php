@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\AttributeValue;
+use App\Models\Attribute;
 use Illuminate\Support\Facades\DB;
 
 class AttributeValuesTableSeeder extends Seeder
@@ -14,23 +15,21 @@ class AttributeValuesTableSeeder extends Seeder
      */
     public function run()
     {
-        // Thêm một số giá trị thuộc tính mẫu vào bảng 'attribute_values'
-        AttributeValue::firstOrCreate([
-            'id' => 1,
-            'attribute_id' => 1,  // Liên kết với 'attribute_id' hợp lệ
-            'value' => 'Red',      // Giá trị thuộc tính
-        ]);
+        $values = [
+            'Màu sắc' => ['Đen', 'Trắng', 'Xám'],
+            'RAM' => ['4GB', '8GB', '16GB'],
+            'Bộ nhớ' => ['64GB', '128GB', '256GB'],
+            'Kích thước màn hình' => ['6.1"', '6.5"', '6.7"']
+        ];
 
-        AttributeValue::firstOrCreate([
-            'id' => 2,
-            'attribute_id' => 1,
-            'value' => 'Blue',
-        ]);
-
-        AttributeValue::firstOrCreate([
-            'id' => 3,
-            'attribute_id' => 2,  // Liên kết với một thuộc tính khác
-            'value' => 'Small',
-        ]);
+        foreach ($values as $attrName => $attrValues) {
+            $attribute = Attribute::where('name', $attrName)->first();
+            foreach ($attrValues as $val) {
+                AttributeValue::create([
+                    'attribute_id' => $attribute->id,
+                    'value' => $val
+                ]);
+            }
+        }
     }
 }

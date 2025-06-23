@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use App\Models\Cart;
 class User extends Authenticatable
 {
     use Notifiable;
@@ -53,7 +53,7 @@ class User extends Authenticatable
     }
     
     public function cart()
-{
-    return $this->hasOne(Cart::class);
-}
+    {
+        return $this->hasOne(Cart::class);
+    }
 }

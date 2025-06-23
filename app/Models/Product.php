@@ -31,10 +31,13 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
-
+    public function thumbnails()
+{
+    return $this->hasMany(ProductThumbnail::class);
+}
     public function variants()
     {
-        return $this->hasMany(ProductVariant::class);
+         return $this->hasMany(ProductVariant::class);
     }
     // Quan hệ 1:N với ProductVariant (mỗi sản phẩm có nhiều biến thể)
     public function productVariants()

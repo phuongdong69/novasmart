@@ -30,6 +30,7 @@ Route::middleware('guest')->group(function () {
 // ✅ Đăng xuất 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
+
 // ✅ Admin routes
 Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/dashboard', [DashBoardController::class, 'index'])->name('dashboard');
@@ -39,6 +40,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::resource('categories', CategoryController::class);
 
     Route::resource('origins', OriginController::class);
+
+
 
     // Roles dùng tạm làm brands nếu chưa có BrandController
     Route::resource('roles', RoleController::class);
@@ -54,6 +57,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
             'edit' => 'product_thumbnail.edit',
             'update' => 'product_thumbnail.update',
         ]);
+
 
     Route::resource('vouchers', VoucherController::class);
 
@@ -79,7 +83,9 @@ Route::get('/user/products', [UserProductController::class, 'index'])->name('use
 Route::get('/user/products/{product}', [UserProductController::class, 'show'])->name('products.show');
 
 // ✅ Giỏ hàng (dùng được cả khi chưa đăng nhập)
-Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
+Route::get('/shop-cart', [CartController::class, 'show'])->name('cart.show');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::put('/cart/update/{itemId}', [CartController::class, 'updateQuantity'])->name('cart.update');
+Route::post('/cart/update/{itemId}', [CartController::class, 'updateQuantity'])->name('cart.update');
 Route::delete('/cart/remove/{itemId}', [CartController::class, 'remove'])->name('cart.remove');
+
+

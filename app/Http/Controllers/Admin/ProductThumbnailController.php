@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\product_thumbnail;
+
+use App\Models\ProductThumbnail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -11,7 +12,8 @@ class ProductThumbnailController extends Controller
 {
     public function index()
     {
-        $thumbnails = product_thumbnail::all();
+
+        $thumbnails = ProductThumbnail::all();
         return view('admin.product_thumbnail.index', compact('thumbnails'));
     }
 
@@ -32,13 +34,17 @@ class ProductThumbnailController extends Controller
         if ($request->hasFile('url')) {
             $data['url'] = $request->file('url')->store('uploads/products/thumbnails', 'public');
         }
-        product_thumbnail::create($data);
+
+        ProductThumbnail::create($data);
+
         return redirect()->route('admin.product_thumbnail.index')->with('success', 'Thêm ảnh thành công!');
     }
 
     public function edit($id)
     {
-        $thumbnail = product_thumbnail::findOrFail($id);
+
+        $thumbnail = ProductThumbnail::findOrFail($id);
+
         return view('admin.product_thumbnail.edit', compact('thumbnail'));
     }
 
@@ -51,7 +57,8 @@ class ProductThumbnailController extends Controller
             'is_primary' => 'required|boolean',
             'sort_order' => 'nullable|integer',
         ]);
-        $thumbnail = product_thumbnail::findOrFail($id);
+        $thumbnail = ProductThumbnail::findOrFail($id);
+
         if ($request->hasFile('url')) {
             // Xóa ảnh cũ nếu có
             if ($thumbnail->url && Storage::disk('public')->exists($thumbnail->url)) {

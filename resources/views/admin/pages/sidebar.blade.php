@@ -1,4 +1,5 @@
 <div class="absolute w-full bg-blue-500 dark:hidden min-h-75"></div>
+
 <aside
     class="fixed inset-y-0 flex-wrap items-center justify-between block w-full p-0 my-4 overflow-y-auto antialiased transition-transform duration-200 -translate-x-full bg-white border-0 shadow-xl dark:shadow-none dark:bg-slate-850 max-w-64 ease-nav-brand z-990 xl:ml-6 rounded-2xl xl:left-0 xl:translate-x-0"
     aria-expanded="false">
@@ -14,6 +15,7 @@
                 class="hidden h-full max-w-full transition-all duration-200 dark:inline ease-nav-brand max-h-8"
                 alt="main_logo" />
             <span class="ml-1 font-semibold transition-all duration-200 ease-nav-brand">Nova Smart</span>
+
         </a>
     </div>
 

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ProductThumbnailSeeder extends Seeder
 {
@@ -12,7 +13,7 @@ class ProductThumbnailSeeder extends Seeder
      */
     public function run(): void
     {
-        \DB::table('product_thumbnails')->insert([
+        DB::table('product_thumbnails')->insert([
             [
                 'product_id' => 1,
                 'product_variant_id' => 1,
