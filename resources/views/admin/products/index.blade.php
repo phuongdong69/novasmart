@@ -1,13 +1,16 @@
-<script src="https://cdn.tailwindcss.com"></script>
-<div class="bg-gray-50">
-<div class="container mx-auto p-6">
-        <!-- Header -->
-        <div class="bg-white rounded-lg shadow-sm mb-6">
-            <div class="p-6 border-b">
-                <h1 class="text-2xl font-semibold text-gray-900">Danh Mục Sản Phẩm</h1>
-                <p class="text-gray-600 mt-1">Quản lý và theo dõi tất cả sản phẩm điện tử</p>
-            </div>
-            
+@extends('admin.pages.body')
+@section('content')
+<div class="w-full px-6 py-6 mx-auto">
+    <div class="flex flex-wrap -mx-3">
+        <div class="flex-none w-full max-w-full px-3">
+            <div class="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+
+                {{-- Header --}}
+                <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex items-center justify-between">
+                    <h6 class="dark:text-white text-lg font-semibold">Danh Mục Sản Phẩm</h6>
+                    <p class="text-gray-600">Quản lý và theo dõi tất cả sản phẩm điện tử</p>
+                </div>
+                
             <!-- Table Header -->
             <div class="grid grid-cols-12 gap-4 p-4 bg-gray-50 text-sm font-medium text-gray-700">
                 <div class="col-span-1">
@@ -33,25 +36,33 @@
             <div class="col-span-4 font-semibold text-gray-900 cursor-pointer" onclick="toggleVariants({{ $product->id }})">
                 {{ $product->name }}
                 <div class="text-xs text-gray-500">
-                    Nhãn hiệu: {{ $product->brand->name ?? '' }} | Xuất xứ: {{ $product->origin->name ?? '' }}
+                    Nhãn hiệu: {{ $product->brand->name ?? '' }} | Xuất xứ: {{ $product->origin->name ?? '' }} | Danh mục: {{ $product->category->name ?? '' }}
                 </div>
             </div>
-            <div class="col-span-1">{{ $product->category->name ?? '' }}</div>
             <div class="col-span-1">
-                {{ number_format($product->variants->first()->price ?? 0) }}₫
+                {{ $product->category->name ?? '' }}
+            </div>
+            <div class="col-span-1">
+                {{ number_format($product->base_price, 0, ',', '.') }} ₫
             </div>
             <div class="col-span-1">
                 {{ $product->variants->count() }}
             </div>
             <div class="col-span-1">
-                {{ $product->variants->sum('quantity') }}
+                {{ $product->stock_quantity ?? 0 }}
             </div>
             <div class="col-span-1">
-                {{ $product->variants->first()->status ?? 'N/A' }}
+                {{ $product->status == 1 ? 'Đang bán' : 'Ngừng bán' }}
             </div>
             <div class="col-span-2">
-                <a href="#" class="text-blue-600 hover:underline">Sửa</a> |
-                <a href="#" class="text-red-600 hover:underline">Xóa</a>
+                <div class="flex space-x-2">
+                    <a href="{{ route('products.edit', $product->id) }}" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Sửa</a>
+                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">Xóa</button>
+                    </form>
+                </div>
             </div>
         </div>
         <!-- Biến thể (ẩn/hiện khi click) -->
@@ -70,9 +81,9 @@
                     @foreach($product->variants as $variant)
                         <tr>
                             <td>{{ $variant->sku }}</td>
-                            <td>{{ number_format($variant->price) }}₫</td>
+                            <td>{{ number_format($variant->price, 0, ',', '.') }} ₫</td>
                             <td>{{ $variant->quantity }}</td>
-                            <td>{{ $variant->status }}</td>
+                            <td>{{ $variant->status == 1 ? 'Đang bán' : 'Ngừng bán' }}</td>
                             <td>
                                 @foreach($variant->variantAttributeValues as $attrValue)
                                     <span class="inline-block bg-gray-200 rounded px-2 py-1 mr-1 mb-1">

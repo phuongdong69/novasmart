@@ -11,7 +11,7 @@ class StoreAttributeValueRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class StoreAttributeValueRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'attribute_id' => 'required|exists:attributes,id',
+        'value' => 'required|string|max:255',
         ];
     }
 }

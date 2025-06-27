@@ -22,12 +22,12 @@ class CategoryController extends Controller
         // Phân trang danh sách danh mục
         $categories = $query->orderBy('id')->paginate(10)->withQueryString();
 
-        return view('admin.category.index', compact('categories'));
+        return view('admin.categories.index', compact('categories'));
     }
     // Hiển thị form thêm mới danh mục
     public function create()
     {
-        return view('admin.category.create');
+        return view('admin.categories.create');
     }
     // Lưu danh mục mới vào cơ sở dữ liệu
     public function store(CategoryRequest $request)
@@ -54,7 +54,7 @@ class CategoryController extends Controller
     public function edit($id)
     {
         $category = Category::findOrFail($id);
-        return view('admin.category.edit', compact('category'));
+        return view('admin.categories.edit', compact('categories'));
     }
     // Cập nhật thông tin danh mục
     public function update(CategoryRequest $request, $id)

@@ -1,10 +1,15 @@
 <?php
 
+use App\Http\Controllers\Admin\AttributeValueController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Admin\DashBoardController;
 use App\Http\Controllers\Admin\OriginController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\VariantAttributeValueController;
+use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\Admin\ProductThumbnailController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
@@ -104,6 +109,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         'update' => 'vouchers.update',
         'destroy' => 'vouchers.destroy',
     ]);
+        //productAdd commentMore actions
+    Route::resource('products', ProductController::class);
+    //attribute
+    Route::resource('attributes', AttributeController::class);
+    //attribute_values
+    Route::resource('attribute_values', AttributeValueController::class);
+    //product_variant
+    Route::resource('product_variants', ProductVariantController::class);
+    //Variant_attribute_value
+    Route::resource('variant_attribute_values', VariantAttributeValueController::class);
 });
 
 /*
