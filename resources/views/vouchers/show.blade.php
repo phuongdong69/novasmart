@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('admin.pages.body')
 
 @section('content')
 <h2>Chi tiết Voucher</h2>

@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('admin.pages.body')
 @section('title')
 Trang Thêm Mới
 

@@ -1,4 +1,4 @@
-@extends('admin.layouts.main')
+@extends('admin.pages.body')
 @section('title')
 Trang Thương Hiệu
 @endsection

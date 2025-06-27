@@ -24,7 +24,7 @@ class ProductController extends Controller
             'variants.variantAttributeValues.attribute'
         ])->latest()->paginate(5);
 
-        return view('admin.products.list_with_relations', compact('products'));
+        return view('admin.products.index', compact('products'));
     }
 
     /**

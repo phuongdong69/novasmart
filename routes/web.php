@@ -42,6 +42,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         'destroy' => 'categories.destroy',
     ]);
 
+    // Products
+    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)->names([
+        'index'   => 'products.index',
+        'create'  => 'products.create',
+        'store'   => 'products.store',
+        'show'    => 'products.show',
+        'edit'    => 'products.edit',
+        'update'  => 'products.update',
+        'destroy' => 'products.destroy',
+    ]);
+
+    // Variants
+    Route::prefix('products')->name('products.')->group(function () {
+        Route::post('{product}/variants', [\App\Http\Controllers\Admin\ProductController::class, 'storeVariant'])->name('variants.store');
+        Route::put('{product}/variants/{variant}', [\App\Http\Controllers\Admin\ProductController::class, 'updateVariant'])->name('variants.update');
+        Route::delete('{product}/variants/{variant}', [\App\Http\Controllers\Admin\ProductController::class, 'destroyVariant'])->name('variants.destroy');
+    });
+
     // Origins
     Route::resource('origins', OriginController::class)->names([
         'index'   => 'origins.index',
@@ -76,9 +94,20 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         'update' => 'vouchers.update',
         'destroy' => 'vouchers.destroy',
     ]);
+
+    // Brands
+    Route::resource('brands', \App\Http\Controllers\Admin\BrandController::class)->names([
+        'index'   => 'brands.index',
+        'create'  => 'brands.create',
+        'store'   => 'brands.store',
+        'edit'    => 'brands.edit',
+        'update'  => 'brands.update',
+        'destroy' => 'brands.destroy',
+    ]);
+
 });
 
-// ✅ Dashboard người dùng thường)
+// Dashboard người dùng thường)
 Route::middleware('auth')->group(function () {
 Route::get('/user/homepage', function () {
         return view('user.homepage');
