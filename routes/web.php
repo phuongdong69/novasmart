@@ -16,7 +16,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
-
+use App\Http\Controllers\User\CartController;
 /*
 |--------------------------------------------------------------------------
 | Trang chủ
@@ -131,3 +131,20 @@ Route::middleware('auth')->group(function () {
         return view('user.homepage');
     })->name('user.homepage');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Giỏ hàng (dùng được cả khi chưa đăng nhập)
+|--------------------------------------------------------------------------
+*/
+
+
+// Giỏ hàng
+Route::get('/shop-cart', [CartController::class, 'show'])->name('cart.show');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update/{itemId}', [CartController::class, 'updateQuantity'])->name('cart.update');
+Route::delete('/cart/remove/{itemId}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/apply-voucher', [CartController::class, 'applyVoucher'])->name('cart.apply-voucher');
+Route::delete('/cart/remove-voucher', [CartController::class, 'removeVoucher'])->name('cart.remove-voucher');
+
+

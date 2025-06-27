@@ -17,13 +17,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with([
-            'brand',
-            'origin',
-            'category',
-            'variants.variantAttributeValues.attribute'
-        ])->latest()->paginate(5);
-
+        $products = Product::with(['brand', 'origin', 'category'])->latest()->paginate(10);
         return view('admin.products.index', compact('products'));
     }
 
@@ -42,39 +36,10 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreProductRequest $request)
-{
-    $data = $request->validated();
-
-    // Tìm hoặc tạo Brand
-    if (!empty($data['brand_name'])) {
-        $brand = Brand::firstOrCreate(['name' => $data['brand_name']]);
-        $data['brand_id'] = $brand->id;
+    {
+        Product::create($request->validated());
+        return redirect()->route('products.index')->with('success', 'Thêm sản phẩm thành công.');
     }
-
-    // Tìm hoặc tạo Category
-    if (!empty($data['category_name'])) {
-        $category = Category::firstOrCreate(['name' => $data['category_name']]);
-        $data['category_id'] = $category->id;
-    }
-
-    // Tìm hoặc tạo Origin
-    if (!empty($data['origin_name'])) {
-        $origin = Origin::firstOrCreate(['name' => $data['origin_name']]);
-        $data['origin_id'] = $origin->id;
-    }
-
-    // Tạo sản phẩm
-    $product = Product::create($data);
-
-    // Thêm biến thể nếu có
-    if ($request->has('variants')) {
-        foreach ($request->input('variants') as $variant) {
-            $product->variants()->create($variant);
-        }
-    }
-
-    return redirect()->route('products.index')->with('success', 'Thêm sản phẩm và biến thể thành công.');
-}
 
     /**
      * Display the specified resource.
