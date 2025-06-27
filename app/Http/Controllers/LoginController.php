@@ -40,7 +40,7 @@ class LoginController extends Controller
             if ($user->role_id == 1) {
                 return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập thành công! Chào mừng Admin!');
             } else {
-                return redirect()->route('user.dashboard')->with('success', 'Đăng nhập thành công! Chào mừng bạn!');
+                return redirect()->route('user.homepage')->with('success', 'Đăng nhập thành công! Chào mừng bạn!');
             }
         }
 
