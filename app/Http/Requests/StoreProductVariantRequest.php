@@ -23,10 +23,10 @@ class StoreProductVariantRequest extends FormRequest
     {
         return [
             'product_id' => 'required|exists:products,id',
-        'sku' => 'required|string|max:255',
-        'price' => 'required|numeric|min:0',
-        'quantity' => 'required|integer|min:0',
-        'status' => 'nullable|string|max:50',
+            'sku' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:0',
+            'status' => 'nullable|string|max:50',
         ];
     }
 }

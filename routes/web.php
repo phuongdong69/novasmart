@@ -1,10 +1,15 @@
 <?php
 
+use App\Http\Controllers\Admin\AttributeValueController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Admin\DashBoardController;
 use App\Http\Controllers\Admin\OriginController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\VariantAttributeValueController;
+use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\VoucherController;
@@ -42,24 +47,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         'destroy' => 'categories.destroy',
     ]);
 
-    // Products
-    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)->names([
-        'index'   => 'products.index',
-        'create'  => 'products.create',
-        'store'   => 'products.store',
-        'show'    => 'products.show',
-        'edit'    => 'products.edit',
-        'update'  => 'products.update',
-        'destroy' => 'products.destroy',
-    ]);
-
-    // Variants
-    Route::prefix('products')->name('products.')->group(function () {
-        Route::post('{product}/variants', [\App\Http\Controllers\Admin\ProductController::class, 'storeVariant'])->name('variants.store');
-        Route::put('{product}/variants/{variant}', [\App\Http\Controllers\Admin\ProductController::class, 'updateVariant'])->name('variants.update');
-        Route::delete('{product}/variants/{variant}', [\App\Http\Controllers\Admin\ProductController::class, 'destroyVariant'])->name('variants.destroy');
-    });
-
     // Origins
     Route::resource('origins', OriginController::class)->names([
         'index'   => 'origins.index',
@@ -94,20 +81,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         'update' => 'vouchers.update',
         'destroy' => 'vouchers.destroy',
     ]);
-
-    // Brands
-    Route::resource('brands', \App\Http\Controllers\Admin\BrandController::class)->names([
-        'index'   => 'brands.index',
-        'create'  => 'brands.create',
-        'store'   => 'brands.store',
-        'edit'    => 'brands.edit',
-        'update'  => 'brands.update',
-        'destroy' => 'brands.destroy',
-    ]);
-
+        //productAdd commentMore actions
+    Route::resource('products', ProductController::class);
+    //attribute
+    Route::resource('attributes', AttributeController::class);
+    //attribute_values
+    Route::resource('attribute_values', AttributeValueController::class);
+    //product_variant
+    Route::resource('product_variants', ProductVariantController::class);
+    //Variant_attribute_value
+    Route::resource('variant_attribute_values', VariantAttributeValueController::class);
 });
 
-// Dashboard người dùng thường)
+// ✅ Dashboard người dùng thường)
 Route::middleware('auth')->group(function () {
 Route::get('/user/homepage', function () {
         return view('user.homepage');

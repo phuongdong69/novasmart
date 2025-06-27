@@ -22,11 +22,33 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'brand_id' => 'required|exists:brands,id',
-            'origin_id' => 'required|exists:origins,id',
-            'category_id' => 'required|exists:categories,id',
+            // Cho phép nhập mới hoặc chọn sẵn brand, origin, category
+            'brand_id' => 'nullable|exists:brands,id',
+            'brand_name' => 'nullable|string|max:255',
+            'origin_id' => 'nullable|exists:origins,id',
+            'origin_name' => 'nullable|string|max:255',
+            'category_id' => 'nullable|exists:categories,id',
+            'category_name' => 'nullable|string|max:255',
+
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+
+            // Validate mảng biến thể
+            'variants' => 'nullable|array',
+            'variants.*.sku' => 'required_with:variants|string|max:255',
+            'variants.*.price' => 'required_with:variants|numeric|min:0',
+            'variants.*.quantity' => 'required_with:variants|integer|min:0',
+            'variants.*.status' => 'nullable|string|max:50',
+
+            // Validate thuộc tính cho từng biến thể (nếu có)
+            'variants.*.attributes' => 'nullable|array',
+            'variants.*.attributes.*.attribute_id' => 'required_with:variants.*.attributes|exists:attributes,id',
+            'variants.*.attributes.*.value' => 'required_with:variants.*.attributes|string|max:255',
+
+            // Nếu muốn thêm thuộc tính cho sản phẩm (không phải cho biến thể)
+            'attributes' => 'nullable|array',
+            'attributes.*.attribute_id' => 'required_with:attributes|exists:attributes,id',
+            'attributes.*.value' => 'required_with:attributes|string|max:255',
         ];
     }
 }
