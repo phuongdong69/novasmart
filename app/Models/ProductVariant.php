@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class ProductVariant extends Model
 {
     use HasFactory;
-    protected $fillable = ['sku', 'price', 'quantity', 'status', 'product_id'];
+    protected $fillable = [
+        'product_id',
+        'sku',
+        'price',
+        'status',
+        'quantity',
+    ];
 
     public function product()
     {
@@ -24,9 +30,5 @@ class ProductVariant extends Model
     {
         return $this->belongsToMany(Attribute::class, 'variant_attribute_values')
                     ->withPivot('attribute_value_id');
-    }
-    public function attributeValues()
-    {
-        return $this->belongsToMany(AttributeValue::class);
     }
 }

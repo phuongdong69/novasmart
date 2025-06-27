@@ -13,7 +13,7 @@ class CartController extends Controller
     public function show()
     {
         $cart = $this->getCartWithItems();
-        return view('user.pages.shop-cart', compact('cart'));
+        return view('user.pages.shop-card', compact('cart'));
     }
 
     // Thêm sản phẩm vào giỏ hàng

@@ -97,10 +97,10 @@
 
         @if (!empty($cart['items']))
         <div class="mt-8 text-end">
-            <a href="{{ route('user.products.index') }}" class="inline-block px-6 py-3 bg-orange-500 text-white font-semibold text-base rounded-md shadow hover:bg-orange-600 transition duration-300">
+            <a href="" class="inline-block px-6 py-3 bg-orange-500 text-white font-semibold text-base rounded-md shadow hover:bg-orange-600 transition duration-300">
                 ← Tiếp tục xem sản phẩm
             </a>
-            <a href="{{ route('checkout.show') }}" class="inline-block px-6 py-3 bg-orange-500 text-white font-semibold text-base rounded-md shadow hover:bg-orange-600 transition duration-300">
+            <a href="" class="inline-block px-6 py-3 bg-orange-500 text-white font-semibold text-base rounded-md shadow hover:bg-orange-600 transition duration-300">
                 Tiến hành thanh toán
             </a>
         </div>
