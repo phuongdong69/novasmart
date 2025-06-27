@@ -16,11 +16,6 @@ class Voucher extends Model
         'expiry_date',
         'quantity',
     ];
-    public function getIsExpiredAttribute()
-    {
-        return now()->gt($this->expiry_date);
-    }
-
 }
 
 
