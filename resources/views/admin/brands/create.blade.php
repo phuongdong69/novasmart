@@ -1,4 +1,4 @@
-@extends('admin.pages.body')
+@extends('admin.layouts.app')
 @section('title', 'Thêm Mới Nhãn Hiệu')
 @section('content')
 <div class="flex flex-wrap -mx-3">

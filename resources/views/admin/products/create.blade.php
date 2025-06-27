@@ -1,4 +1,4 @@
-@extends('admin.pages.body')
+@extends('admin.layouts.app')
 @section('content')
 <div class="w-full px-6 py-6 mx-auto">
     <div class="flex flex-wrap -mx-3">

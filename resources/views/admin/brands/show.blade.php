@@ -1,4 +1,4 @@
-@extends('admin.pages.body')
+@extends('admin.layouts.app')
 
 @section('title', 'Chi Tiết Nhãn Hiệu')
 

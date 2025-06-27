@@ -1,4 +1,4 @@
-@extends('admin.pages.body')
+@extends('admin.layouts.app')
 
 @section('content')
 <div class="max-w-7xl mx-auto py-8">
