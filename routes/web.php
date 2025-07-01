@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Admin\AttributeValueController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RoleController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\DashBoardController;
 use App\Http\Controllers\Admin\OriginController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -11,8 +11,8 @@ use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\VariantAttributeValueController;
 use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\Admin\ProductThumbnailController;
-use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -109,7 +109,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         'update' => 'vouchers.update',
         'destroy' => 'vouchers.destroy',
     ]);
-        //productAdd commentMore actions
+    //productAdd commentMore actions
     Route::resource('products', ProductController::class);
     //attribute
     Route::resource('attributes', AttributeController::class);
