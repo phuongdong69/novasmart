@@ -52,63 +52,63 @@
                             <i data-feather="shopping-cart" class="h-4 w-4"></i>
                         </button>
                         <!-- Dropdown menu -->
-                        <div class="dropdown-menu absolute end-0 m-0 mt-4 z-10 w-64 rounded-md bg-white dark:bg-slate-900 shadow-sm dark:shadow-gray-800 hidden" onclick="event.stopPropagation();">
+                        <div class="dropdown-menu absolute end-0 mt-4 z-10 w-72 rounded-md bg-white dark:bg-slate-900 shadow-sm dark:shadow-gray-800 hidden" onclick="event.stopPropagation();">
                             <ul class="py-3 text-start" aria-labelledby="dropdownDefault">
-                                <li>
-                                    <a href="#" class="flex items-center justify-between py-1.5 px-4">
-                                        <span class="flex items-center">
-                                            <img src="{{ asset('assets/user/images/shop/trendy-shirt.jpg')}}" class="rounded shadow-sm dark:shadow-gray-800 w-9" alt="">
-                                            <span class="ms-3">
-                                                <span class="block font-semibold">T-shirt (M)</span>
-                                                <span class="block text-sm text-slate-400">$320 X 2</span>
-                                            </span>
-                                        </span>
+                                @php
+                                $cartItems = $cart['items'] ?? [];
+                                $cartTotal = 0;
+                                @endphp
 
-                                        <span class="font-semibold">$640</span>
+                                @forelse ($cartItems as $item)
+                                @php
+                                $isObject = is_object($item);
+                                $variant = $isObject ? $item->productVariant : $item['variant'] ?? null;
+                                $product = $isObject ? $item->productVariant->product : $item['product'] ?? null;
+                                $quantity = $isObject ? $item->quantity : ($item['quantity'] ?? 1);
+                                $price = $variant->price ?? $item['price'] ?? 0;
+                                $subtotal = $price * $quantity;
+                                $cartTotal += $subtotal;
+
+                                $thumbnail = $product->thumbnails->where('is_primary', true)->first();
+                                $imageUrl = $thumbnail
+                                    ? asset('storage/' . $thumbnail->url)
+                                    : asset('images/default-product.jpg');
+                                @endphp
+                               
+                               <li>
+                                    <a href="#" class="flex items-center justify-between py-1.5 px-4">
+                                             <div class="flex items-center gap-3 overflow-hidden w-full">
+                                                <img src="{{ $imageUrl }}"
+                                                    alt="{{ $product->name }}"
+                                                        class="w-12 h-12 object-center object-cover aspect-square rounded shadow-sm border border-gray-200 dark:border-gray-700 bg-white" />
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="font-semibold text-sm truncate">{{ $product->name }}</p>
+                                                        <p class="text-sm text-slate-400">{{ $quantity }} × {{ number_format($price, 0, ',', '.') }}₫  </p>
+                                                    </div>
+                                            </div>
+                                        <div class="ms-2 text-right font-semibold text-sm whitespace-nowrap">
+                                                {{ number_format($subtotal, 0, ',', '.') }}₫
+                                        </div>
                                     </a>
                                 </li>
-
-                                <li>
-                                    <a href="#" class="flex items-center justify-between py-1.5 px-4">
-                                        <span class="flex items-center">
-                                            <img src="{{ asset('assets/user/images/shop/luxurious-bag2.jpg')}}" class="rounded shadow-sm dark:shadow-gray-800 w-9" alt="">
-                                            <span class="ms-3">
-                                                <span class="block font-semibold">Bag</span>
-                                                <span class="block text-sm text-slate-400">$50 X 5</span>
-                                            </span>
-                                        </span>
-
-                                        <span class="font-semibold">$250</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#" class="flex items-center justify-between py-1.5 px-4">
-                                        <span class="flex items-center">
-                                            <img src="{{ asset('assets/user/images/shop/apple-smart-watch.jpg')}}" class="rounded shadow-sm dark:shadow-gray-800 w-9" alt="">
-                                            <span class="ms-3">
-                                                <span class="block font-semibold">Watch (Men)</span>
-                                                <span class="block text-sm text-slate-400">$800 X 1</span>
-                                            </span>
-                                        </span>
-
-                                        <span class="font-semibold">$800</span>
-                                    </a>
-                                </li>
+                                 @empty
+                                        <li class="px-4 py-2 text-center text-sm text-gray-500">Giỏ hàng đang trống.</li>
+                                @endforelse
+    
 
                                 <li class="border-t border-gray-100 dark:border-gray-800 my-2"></li>
 
                                 <li class="flex items-center justify-between py-1.5 px-4">
-                                    <h6 class="font-semibold mb-0">Total($):</h6>
-                                    <h6 class="font-semibold mb-0">$1690</h6>
+                                    <h6 class="font-semibold mb-0">Tổng:</h6>
+                                    <h6 class="font-semibold mb-0 text-sm">{{ number_format($cartTotal, 0, ',', '.') }}₫</h6>
                                 </li>
 
                                 <li class="py-1.5 px-4">
-                                    <span class="text-center block">
-                                        <a href="javascript:void(0)" class="py-[5px] px-4 inline-block font-semibold tracking-wide align-middle duration-500 text-sm text-center rounded-md bg-orange-500 border border-orange-500 text-white">View Cart</a>
-                                        <a href="javascript:void(0)" class="py-[5px] px-4 inline-block font-semibold tracking-wide align-middle duration-500 text-sm text-center rounded-md bg-orange-500 border border-orange-500 text-white">Checkout</a>
-                                    </span>
-                                    <p class="text-sm text-slate-400 mt-1">*T&C Apply</p>
+                                    <div class="text-center space-x-2">
+                                        <a href="{{ route('cart.show') }}" class="py-[5px] px-4 inline-block font-semibold text-sm rounded-md bg-orange-500 text-white">Xem giỏ hàng</a>
+                                        <a href="{{ route('checkout.show') }}" class="py-[5px] px-4 inline-block font-semibold text-sm rounded-md bg-orange-500 text-white">Thanh toán</a>
+                                    </div>
+                                     <p class="text-xs text-slate-400 mt-1 text-center">*T&C Apply</p>
                                 </li>
                             </ul>
                         </div>
