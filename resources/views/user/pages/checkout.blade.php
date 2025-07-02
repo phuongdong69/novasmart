@@ -1,6 +1,6 @@
 @extends('user.layouts.client')
-
 @section('title', 'Thanh toán')
+@section('meta_description', 'Đây là trang thanh toán nova smart.')
 
 @section('content')
 <section class="relative table w-full py-20 lg:py-24 bg-gray-50 dark:bg-slate-800">
@@ -150,7 +150,7 @@
                                 <p class="text-red-600 font-semibold">
                                     -{{ number_format($voucherDiscount, 0, ',', '.') }}₫
                                 </p>
-                                <form action="{{ route('cart.remove-voucher') }}" method="POST">
+                                <form action="{{ route('checkout.remove-voucher') }}" method="POST">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:text-red-800 font-bold text-lg">✕</button>
                                 </form>
