@@ -1,5 +1,6 @@
 @extends('user.layouts.client')
 @section('title', 'Thanh toan')
+@section('meta_description', 'Đây là trang thanh toán nova smart.')
 
 @section('content')
         <section class="relative table w-full py-20 lg:py-24 bg-gray-50 dark:bg-slate-800">

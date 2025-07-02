@@ -1,4 +1,4 @@
-<!-- Start Navbar -->
+
         <div class="tagline bg-slate-900">
         <div class="container relative">
             <div class="grid grid-cols-1">
@@ -120,43 +120,58 @@
                         </a>
                     </li>
             
-                    <li class="dropdown inline-block relative ps-0.5">
-                        <button data-dropdown-toggle="dropdown" class="dropdown-toggle items-center" type="button">
-                            <span class="size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full border border-orange-500 bg-orange-500 text-white"><img src="{{ asset('assets/user/images/client/16.jpg')}}" class="rounded-full" alt=""></span>
-                        </button>
-                        <!-- Dropdown menu -->
-                        <div class="dropdown-menu absolute end-0 m-0 mt-4 z-10 w-48 rounded-md overflow-hidden bg-white dark:bg-slate-900 shadow-sm dark:shadow-gray-700 hidden" onclick="event.stopPropagation();">
-                            <ul class="py-2 text-start">
-                                <li>
-                                    <p class="text-slate-400 pt-2 px-4">Welcome Jesus!</p>
-                                </li>
-                                <li>
-                                    <p class="flex items-center font-medium py-2 px-4"><i data-feather="dollar-sign" class="h-4 w-4 me-2"></i> Balance: <span class="text-orange-500 ms-2">$ 245.10</span></p>
-                                </li>
-                                <li>
-                                    <a href="user-account.html" class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white"><i data-feather="user" class="h-4 w-4 me-2"></i>Account</a>
-                                </li>
-                                <li>
-                                    <a href="helpcenter.html" class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white"><i data-feather="help-circle" class="h-4 w-4 me-2"></i>Helpcenter</a>
-                                </li>
-                                <li>
-                                    <a href="user-setting.html" class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white"><i data-feather="settings" class="h-4 w-4 me-2"></i>Settings</a>
-                                </li>
-                                <li class="border-t border-gray-100 dark:border-gray-800 my-2"></li>
-                                <li>
-                                    <a href="login.html" class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white"><i data-feather="log-out" class="h-4 w-4 me-2"></i>Logout</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li><!--end dropdown-->
-                    <button class="px-4 py-2 inline-flex items-center justify-center gap-2 tracking-wide align-middle duration-500 text-sm text-center rounded-full bg-orange-500 hover:bg-orange-600 border border-orange-500 text-white hover:scale-105 transition-all">
-                    <i data-feather="log-in" class="h-4 w-4"></i>
-                    Sign in
-                </button>
-                <button class="px-4 py-2 inline-flex items-center justify-center gap-2 tracking-wide align-middle duration-500 text-sm text-center rounded-full bg-orange-500 hover:bg-orange-600 border border-orange-500 text-white hover:scale-105 transition-all">
-                    <i data-feather="user-plus" class="h-4 w-4"></i>
-                    Sign up
-                </button>
+              <!-- Nếu đã đăng nhập thì hiển thị avatar -->
+@auth
+<li class="dropdown inline-block relative ps-0.5">
+    <button data-dropdown-toggle="dropdown" class="dropdown-toggle items-center" type="button">
+        <span class="size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full border border-orange-500 bg-orange-500 text-white">
+            <img src="{{ Auth::user()->avatar ?? asset('assets/user/images/client/16.jpg')}}" class="rounded-full" alt="avatar">
+        </span>
+    </button>
+    <!-- Dropdown menu -->
+    <div class="dropdown-menu absolute end-0 m-0 mt-4 z-10 w-48 rounded-md overflow-hidden bg-white dark:bg-slate-900 shadow-sm dark:shadow-gray-700 hidden" onclick="event.stopPropagation();">
+        <ul class="py-2 text-start">
+            <li>
+                <p class="text-slate-400 pt-2 px-4">Welcome {{ Auth::user()->name }}!</p>
+            </li>
+            <li>
+                <a href="{{ url('profile') }}" class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white">
+                    <i data-feather="user" class="h-4 w-4 me-2"></i>Account
+                </a>
+            </li>
+            <li>
+                <a href="{{ url('settings') }}" class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white">
+                    <i data-feather="settings" class="h-4 w-4 me-2"></i>Settings
+                </a>
+            </li>
+            <li class="border-t border-gray-100 dark:border-gray-800 my-2"></li>
+            <li>
+                <a href="{{ url('logout') }}"
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white">
+                    <i data-feather="log-out" class="h-4 w-4 me-2"></i>Logout
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                    @csrf
+                </form>
+            </li>
+        </ul>
+    </div>
+</li>
+@endauth
+
+<!-- Nếu chưa đăng nhập thì hiển thị Sign in / Sign up -->
+@guest
+    <button onclick="window.location.href='{{ route('login') }}'" class="px-4 py-2 inline-flex items-center justify-center gap-2 tracking-wide align-middle duration-500 text-sm text-center rounded-full bg-orange-500 hover:bg-orange-600 border border-orange-500 text-white hover:scale-105 transition-all">
+        <i data-feather="log-in" class="h-4 w-4"></i>
+        Sign in
+    </button>
+    <button onclick="window.location.href='{{ route('register') }}'" class="px-4 py-2 inline-flex items-center justify-center gap-2 tracking-wide align-middle duration-500 text-sm text-center rounded-full bg-orange-500 hover:bg-orange-600 border border-orange-500 text-white hover:scale-105 transition-all">
+        <i data-feather="user-plus" class="h-4 w-4"></i>
+        Sign up
+    </button>
+@endguest
+
                 </ul>
                 <!--Login button End-->
 
@@ -363,8 +378,7 @@
                         <li><a href="sale.html" class="sub-menu-item">Sale</a></li>
 
                         <li><a href="contact.html" class="sub-menu-item">Contact</a></li>
-                    </ul><!--end navigation menu-->
-                </div><!--end navigation-->
-            </div><!--end container-->
-        </nav><!--end header-->
-        <!-- End Navbar -->
+                    </ul>
+                </div>
+            </div>
+        </nav>

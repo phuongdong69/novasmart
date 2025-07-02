@@ -1,6 +1,8 @@
 @extends('user.layouts.client')
 
 @section('title', 'trang chủ')
+
+@section('meta_description', 'Đây là trang chủ của nova smart.')
     
 @section('content')
     <!-- Start -->
