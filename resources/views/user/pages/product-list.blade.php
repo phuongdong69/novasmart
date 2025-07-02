@@ -1,5 +1,6 @@
 @extends('user.layouts.client')
 @section('title', 'Chi tiết sản phẩm')
+@section('meta_description', 'Đây là chi tiết sản phẩm của nova smart.')
 
 @section('content')
     <!-- Start Hero -->

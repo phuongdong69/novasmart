@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>@yield('title')</title>
+    <meta name="description" content="@yield('meta_description')">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Shreethemes">
     @include('user.partials.assests')
