@@ -29,7 +29,7 @@ class RedirectIfAuthenticated
                         return redirect()->route('admin.dashboard');
                     }
 
-                    return redirect()->route('user.homepage');
+                    return redirect()->route('user.pages.home');
                 }
 
                 // ✅ Nếu không thì quay lại trang trước đó
