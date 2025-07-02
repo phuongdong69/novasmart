@@ -127,7 +127,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    Route::get('/user/homepage', function () {
-        return view('user.homepage');
-    })->name('user.homepage');
+    Route::get('/user/pages/home', function () {
+        return view('user.pages.home');
+    })->name('user.pages.home');
 });
