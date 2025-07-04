@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\VariantAttributeValueController;
-use App\Http\Controllers\AttributeController;
+use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\ProductThumbnailController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;

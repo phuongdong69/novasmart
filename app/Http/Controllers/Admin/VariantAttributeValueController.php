@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\VariantAttributeValue;
 use App\Http\Requests\StoreVariantAttributeValueRequest;
 use App\Http\Requests\UpdateVariantAttributeValueRequest;
+use Illuminate\Http\Request;
 
 class VariantAttributeValueController extends Controller
 {
@@ -14,7 +15,11 @@ class VariantAttributeValueController extends Controller
      */
     public function index()
     {
-        //
+        $variantAttributeValues = VariantAttributeValue::with(['productVariant', 'attributeValue'])
+            ->latest()
+            ->paginate(10);
+        
+        return view('admin.variant_attribute_values.index', compact('variantAttributeValues'));
     }
 
     /**
@@ -22,7 +27,7 @@ class VariantAttributeValueController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.variant_attribute_values.create');
     }
 
     /**
@@ -30,38 +35,47 @@ class VariantAttributeValueController extends Controller
      */
     public function store(StoreVariantAttributeValueRequest $request)
     {
-        //
+        $variantAttributeValue = VariantAttributeValue::create($request->validated());
+
+        return redirect()->route('variant_attribute_values.index')
+            ->with('success', 'Giá trị thuộc tính biến thể đã được tạo thành công!');
     }
 
     /**
-     * Display the specified resource.
+     * Hiển thị chi tiết giá trị thuộc tính biến thể
      */
     public function show(VariantAttributeValue $variantAttributeValue)
     {
-        //
+        return view('admin.variant_attribute_values.show', compact('variantAttributeValue'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Hiển thị form chỉnh sửa giá trị thuộc tính biến thể
      */
     public function edit(VariantAttributeValue $variantAttributeValue)
     {
-        //
+        return view('admin.variant_attribute_values.edit', compact('variantAttributeValue'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Cập nhật giá trị thuộc tính biến thể
      */
     public function update(UpdateVariantAttributeValueRequest $request, VariantAttributeValue $variantAttributeValue)
     {
-        //
+        $variantAttributeValue->update($request->validated());
+
+        return redirect()->route('variant_attribute_values.index')
+            ->with('success', 'Giá trị thuộc tính biến thể đã được cập nhật thành công!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Xóa giá trị thuộc tính biến thể
      */
     public function destroy(VariantAttributeValue $variantAttributeValue)
     {
-        //
+        $variantAttributeValue->delete();
+
+        return redirect()->route('variant_attribute_values.index')
+            ->with('success', 'Giá trị thuộc tính biến thể đã được xóa thành công!');
     }
 }
