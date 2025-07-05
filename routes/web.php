@@ -139,8 +139,6 @@ Route::middleware('auth')->group(function () {
 | Giỏ hàng (dùng được cả khi chưa đăng nhập)
 |--------------------------------------------------------------------------
 */
-Route::get('/user/products', [UserProductController::class, 'index'])->name('user.products.index');
-Route::get('/user/products/{product}', [UserProductController::class, 'show'])->name('products.show');
 
 // Giỏ hàng
 Route::get('/shop-cart', [CartController::class, 'show'])->name('cart.show');
