@@ -22,6 +22,7 @@
                 <div class="col-span-1">BIẾN THỂ</div>
                 <div class="col-span-1">TỒN KHO</div>
                 <div class="col-span-1">TRẠNG THÁI</div>
+                <div class="col-span-1">Lịch sử trạng thái</div>
                 <div class="col-span-2">THAO TÁC</div>
             </div>
         </div>
@@ -52,7 +53,17 @@
                 {{ $product->stock_quantity ?? 0 }}
             </div>
             <div class="col-span-1">
-                {{ $product->status == 1 ? 'Đang bán' : 'Ngừng bán' }}
+                <form action="{{ route('admin.products.update_status', $product->id) }}" method="POST" class="inline">
+                    @csrf
+                    <select name="status_id" onchange="this.form.submit()" class="border rounded px-2 py-1">
+                        @foreach(\App\Models\Status::where('type', 'product')->where('is_active', 1)->orderBy('priority')->get() as $status)
+                            <option value="{{ $status->id }}" @if($product->status_id == $status->id) selected @endif>{{ $status->name }}</option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+            <div class="col-span-1">
+                <a href="{{ route('admin.products.status_logs', $product) }}" class="text-blue-500">Xem lịch sử</a>
             </div>
             <div class="col-span-2">
                 <div class="flex space-x-2">

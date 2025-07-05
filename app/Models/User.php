@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -54,5 +56,29 @@ class User extends Authenticatable
     public function cart()
     {
         return $this->hasOne(Cart::class);
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'status_id');
+    }
+
+    public function statusLogs()
+    {
+        return $this->morphMany(StatusLog::class, 'loggable');
+    }
+
+    /**
+     * Cập nhật trạng thái cho User và ghi log
+     */
+    public function updateStatus($status_id, $user_id = null, $note = null)
+    {
+        $this->status_id = $status_id;
+        $this->save();
+        $this->statusLogs()->create([
+            'status_id' => $status_id,
+            'user_id' => $user_id,
+            'note' => $note,
+        ]);
     }
 }
