@@ -18,7 +18,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CheckoutController;
-use App\Http\Controllers\User\ProductController as UserProductController;
+
 /*
 |--------------------------------------------------------------------------
 | Trang chủ
