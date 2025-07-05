@@ -1,115 +1,212 @@
 @extends('admin.layouts.app')
+
 @section('content')
 <div class="w-full px-6 py-6 mx-auto">
     <div class="flex flex-wrap -mx-3">
         <div class="flex-none w-full max-w-full px-3">
             <div class="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
-
                 {{-- Header --}}
-                <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex items-center justify-between">
-                    <h6 class="dark:text-white text-lg font-semibold">Danh Mục Sản Phẩm</h6>
-                    <p class="text-gray-600">Quản lý và theo dõi tất cả sản phẩm điện tử</p>
+                <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex justify-between items-center">
+                    <h6 class="dark:text-white text-lg font-semibold">Danh sách sản phẩm</h6>
+                    <a href="{{ route('admin.products.create') }}"
+                       class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
+                        + Thêm mới
+                    </a>
                 </div>
                 
-            <!-- Table Header -->
-            <div class="grid grid-cols-12 gap-4 p-4 bg-gray-50 text-sm font-medium text-gray-700">
-                <div class="col-span-1">
-                    <input type="checkbox" class="rounded border-gray-300">
-                </div>
-                <div class="col-span-4">SẢN PHẨM</div>
-                <div class="col-span-1">DANH MỤC</div>
-                <div class="col-span-1">GIÁ CƠ BẢN</div>
-                <div class="col-span-1">BIẾN THỂ</div>
-                <div class="col-span-1">TỒN KHO</div>
-                <div class="col-span-1">TRẠNG THÁI</div>
-                <div class="col-span-2">THAO TÁC</div>
+                <!-- Product List -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <input type="checkbox" class="rounded border-gray-300">
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SẢN PHẨM</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">THƯƠNG HIỆU</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">XUẤT XỨ</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DANH MỤC</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TRẠNG THÁI</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">THAO TÁC</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($products as $product)
+@php $thumbnail = $product->thumbnails->first(); @endphp
+<tr class="hover:bg-gray-50 cursor-pointer" onclick="toggleVariants({{ $product->id }})" style="transition: background 0.2s;">
+    <td class="px-6 py-4 whitespace-nowrap">
+        <input type="checkbox" class="rounded border-gray-300">
+    </td>
+    <td class="px-6 py-4">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 h-10 w-10">
+                @if($thumbnail)
+                    <img class="h-10 w-10 rounded-full" src="{{ asset($thumbnail->url) }}" alt="{{ $product->name }}">
+                @else
+                    <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                        <svg class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.67 0 8.99 2.222 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </div>
+                @endif
+            </div>
+            <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
             </div>
         </div>
-
-        <!-- Product List -->
-        <div class="bg-white rounded-lg shadow-sm" id="productList">
-    @foreach($products as $product)
-        <div class="grid grid-cols-12 gap-4 p-4 border-b hover:bg-gray-50 group">
-            <div class="col-span-1">
-                <input type="checkbox" class="rounded border-gray-300">
-            </div>
-            <div class="col-span-4 font-semibold text-gray-900 cursor-pointer" onclick="toggleVariants({{ $product->id }})">
-                {{ $product->name }}
-                <div class="text-xs text-gray-500">
-                    Nhãn hiệu: {{ $product->brand->name ?? '' }} | Xuất xứ: {{ $product->origin->name ?? '' }} | Danh mục: {{ $product->category->name ?? '' }}
-                </div>
-            </div>
-            <div class="col-span-1">
-                {{ $product->category->name ?? '' }}
-            </div>
-            <div class="col-span-1">
-                {{ number_format($product->base_price, 0, ',', '.') }} ₫
-            </div>
-            <div class="col-span-1">
-                {{ $product->variants->count() }}
-            </div>
-            <div class="col-span-1">
-                {{ $product->stock_quantity ?? 0 }}
-            </div>
-            <div class="col-span-1">
-                {{ $product->status == 1 ? 'Đang bán' : 'Ngừng bán' }}
-            </div>
-            <div class="col-span-2">
-                <div class="flex space-x-2">
-                    <a href="{{ route('products.edit', $product->id) }}" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Sửa</a>
-                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">Xóa</button>
-                    </form>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+        {{ $product->brand->name ?? 'Chưa có thương hiệu' }}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+        {{ $product->origin->country ?? 'Chưa có xuất xứ' }}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+        {{ $product->category->name ?? 'Chưa phân loại' }}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap">
+        @php
+            $isActive = $product->status == 1;
+        @endphp
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+            {{ $isActive ? 'Đang bán' : 'Ngừng bán' }}
+        </span>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+        <div class="flex justify-end space-x-2">
+            <a href="{{ route('products.edit', $product->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+            </a>
+            <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="text-red-600 hover:text-red-900">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </td>
+</tr>
+                                <!-- Biến thể (ẩn/hiện khi click) -->
+                                <tr id="variants-{{ $product->id }}" class="hidden">
+                                    <td colspan="7" class="px-6 py-4 bg-gray-50">
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                                                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá</th>
+                                                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng</th>
+                                                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                                                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thuộc tính</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    @forelse($product->variants as $variant)
+                                                        <tr class="hover:bg-gray-50">
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $variant->sku }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{{ number_format($variant->price, 0, ',', '.') }} ₫</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $variant->quantity }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                                @if($variant->status == 1)
+                                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                                        Đang bán
+                                                                    </span>
+                                                                @else
+                                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                                        Ngừng bán
+                                                                    </span>
+                                                                @endif
+                                                            </td>
+                                                            <td class="px-6 py-4 text-sm text-gray-500">
+                                                                @forelse($variant->variantAttributeValues as $attrValue)
+                                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1 mb-1">
+                                                                        {{ $attrValue->attribute->name ?? '' }}: {{ $attrValue->value ?? '' }}
+                                                                    </span>
+                                                                @empty
+                                                                    <span class="text-gray-400">Không có thuộc tính</span>
+                                                                @endforelse
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                                                                Sản phẩm chưa có biến thể nào
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Biến thể (ẩn/hiện khi click) -->
+                                <tr id="variants-{{ $product->id }}" class="hidden">
+                                    <td colspan="7" class="px-6 py-4 bg-gray-50">
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full divide-y divide-gray-200 mb-2">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thuộc tính/giá trị</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    @forelse($product->variants as $variant)
+                                                        <tr>
+                                                            <td class="px-4 py-2 text-sm text-gray-900">{{ $variant->sku }}</td>
+                                                            <td class="px-4 py-2 text-sm">
+                                                                @if($variant->status == 1)
+                                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Đang bán</span>
+                                                                @else
+                                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Ngừng bán</span>
+                                                                @endif
+                                                            </td>
+                                                            <td class="px-4 py-2 text-sm">
+                                                                @forelse($variant->variantAttributeValues as $attrValue)
+                                                                    <span class="inline-block bg-blue-100 text-blue-800 rounded px-2 py-1 mr-1 mb-1 text-xs">
+                                                                        {{ $attrValue->attribute->name ?? '' }}: {{ $attrValue->value ?? '' }}
+                                                                    </span>
+                                                                @empty
+                                                                    <span class="text-gray-400">Không có thuộc tính</span>
+                                                                @endforelse
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="3" class="px-4 py-2 text-center text-gray-400">Sản phẩm chưa có biến thể nào</td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        <!-- Biến thể (ẩn/hiện khi click) -->
-        <div id="variants-{{ $product->id }}" class="hidden bg-gray-50 px-8 py-2">
-            <table class="w-full text-sm mb-2">
-                <thead>
-                    <tr class="text-gray-700">
-                        <th class="text-left">SKU</th>
-                        <th class="text-left">Giá</th>
-                        <th class="text-left">Số lượng</th>
-                        <th class="text-left">Trạng thái</th>
-                        <th class="text-left">Thuộc tính</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($product->variants as $variant)
-                        <tr>
-                            <td>{{ $variant->sku }}</td>
-                            <td>{{ number_format($variant->price, 0, ',', '.') }} ₫</td>
-                            <td>{{ $variant->quantity }}</td>
-                            <td>{{ $variant->status == 1 ? 'Đang bán' : 'Ngừng bán' }}</td>
-                            <td>
-                                @foreach($variant->variantAttributeValues as $attrValue)
-                                    <span class="inline-block bg-gray-200 rounded px-2 py-1 mr-1 mb-1">
-                                        {{ $attrValue->attribute->name ?? '' }}: {{ $attrValue->value ?? '' }}
-                                    </span>
-                                @endforeach
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endforeach
-</div>
-
-<script>
-function toggleVariants(productId) {
-    const el = document.getElementById('variants-' + productId);
-    if (el.classList.contains('hidden')) {
-        el.classList.remove('hidden');
-    } else {
-        el.classList.add('hidden');
-    }
-}
-</script>
     </div>
 </div>
 
-<link href="{{ asset('assets/admin/js/adminproduct.js') }}" rel="stylesheet" />
+@push('scripts')
+<script>
+function toggleVariants(productId) {
+    const el = document.getElementById('variants-' + productId);
+    if (el) {
+        el.classList.toggle('hidden');
+    }
+}
+</script>
+@endpush
+
+{{-- Styling is handled by Tailwind CSS --}}
+
+@endsection

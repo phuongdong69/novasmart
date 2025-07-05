@@ -117,44 +117,47 @@
                         <label class="block text-sm font-medium text-slate-600 mb-2">Biến thể</label>
                         <div id="variants-container">
                             <div class="variant-item mb-4">
-                                <div class="flex space-x-4">
-                                    <div class="flex-1">
-                                        <label for="variant_name_0" class="block text-sm font-medium text-slate-600 mb-2">Tên biến thể</label>
-                                        <input
-                                            type="text"
-                                            name="variants[0][name]"
-                                            id="variant_name_0"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('variants.0.name') border-red-500 @enderror"
-                                        >
-                                    </div>
-                                    <div class="flex-1">
+                                <div class="flex flex-row flex-wrap gap-4 items-end mb-2">
+                                    <div class="flex-1 min-w-[120px]">
                                         <label for="variant_sku_0" class="block text-sm font-medium text-slate-600 mb-2">SKU</label>
-                                        <input
-                                            type="text"
-                                            name="variants[0][sku]"
-                                            id="variant_sku_0"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('variants.0.sku') border-red-500 @enderror"
-                                        >
+                                        <input type="text" name="variants[0][sku]" id="variant_sku_0" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('variants.0.sku') border-red-500 @enderror">
                                     </div>
-                                    <div class="flex-1">
+                                    <div class="flex-1 min-w-[100px]">
                                         <label for="variant_price_0" class="block text-sm font-medium text-slate-600 mb-2">Giá</label>
-                                        <input
-                                            type="number"
-                                            name="variants[0][price]"
-                                            id="variant_price_0"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('variants.0.price') border-red-500 @enderror"
-                                        >
+                                        <input type="number" name="variants[0][price]" id="variant_price_0" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('variants.0.price') border-red-500 @enderror">
                                     </div>
-                                    <div class="flex-1">
+                                    <div class="flex-1 min-w-[100px]">
                                         <label for="variant_quantity_0" class="block text-sm font-medium text-slate-600 mb-2">Số lượng</label>
-                                        <input
-                                            type="number"
-                                            name="variants[0][quantity]"
-                                            id="variant_quantity_0"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('variants.0.quantity') border-red-500 @enderror"
-                                        >
+                                        <input type="number" name="variants[0][quantity]" id="variant_quantity_0" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('variants.0.quantity') border-red-500 @enderror">
                                     </div>
                                 </div>
+                                <div class="attribute-container">
+                                    <div class="attribute-item">
+                                        <div class="flex flex-row flex-wrap gap-4 items-end mb-2">
+                                            <div class="flex-1 min-w-[130px]">
+                                                <label class="block text-sm font-medium text-slate-600 mb-2">Tên thuộc tính</label>
+                                                <select name="variants[0][attributes][0][name]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, 0, 0)">
+                                                    <option value="">-- Chọn thuộc tính --</option>
+                                                    @foreach($attributes as $attribute)
+                                                        <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
+                                                    @endforeach
+                                                    <option value="__new__">+ Thêm mới thuộc tính</option>
+                                                </select>
+                                                <input type="text" name="variants[0][attributes][0][new_name]" class="w-full px-4 py-2 border border-blue-400 rounded-md mt-2 hidden" placeholder="Nhập tên thuộc tính mới...">
+                                            </div>
+                                            <div class="flex-1 min-w-[130px]">
+                                                <label class="block text-sm font-medium text-slate-600 mb-2">Giá trị</label>
+                                                <select name="variants[0][attributes][0][value]" class="w-full px-4 py-2 border border-gray-300 rounded-md value-select" data-attribute-index="0" onchange="handleValueSelect(this, 0, 0)">
+                                                    <option value="">-- Chọn giá trị --</option>
+                                                    <option value="__new__">+ Thêm mới giá trị</option>
+                                                </select>
+                                                <input type="text" name="variants[0][attributes][0][new_value]" class="w-full px-4 py-2 border border-blue-400 rounded-md mt-2 hidden value-new-input" placeholder="Nhập giá trị mới...">
+                                            </div>
+                                            <button type="button" class="px-2 py-1 bg-red-500 text-white rounded remove-attribute-btn" onclick="removeAttributeRow(this)">Xóa</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 add-attribute-btn" onclick="addAttribute(0)">Thêm thuộc tính</button>
                             </div>
                         </div>
                         <button type="button" onclick="addVariant()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Thêm biến thể</button>
@@ -179,59 +182,175 @@
                     <div class="mt-6">
                         <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                             Lưu sản phẩm
-                        </button>
-                    </div>
-                </form>
-            </div>
         </div>
-    </div>
-</div>
+        <div class="flex-1 min-w-[130px]">
+    <label class="block text-sm font-medium text-slate-600 mb-2">Giá trị</label>
+    <select name="variants[${variantCount}][attributes][0][value]" class="w-full px-4 py-2 border border-gray-300 rounded-md value-select" data-attribute-index="${variantCount}" onchange="handleValueSelect(this, ${variantCount})">
+        <option value="">-- Chọn giá trị --</option>
+        <option value="__new__">+ Thêm mới giá trị</option>
+    </select>
 
+@push('scripts')
 <script>
-let variantCount = 1;
+window.attributeValues = {};
+@foreach($attributes as $attribute)
+    window.attributeValues['{{ $attribute->id }}'] = [
+        @foreach($attribute->values as $value)
+            { id: {{ $value->id }}, value: @json($value->value) },
+        @endforeach
+    ];
+@endforeach
+
+function addAttribute(variantIndex) {
+    const variant = document.querySelectorAll('.variant-item')[variantIndex];
+    const attributeContainer = variant.querySelector('.attribute-container');
+    const attributeItems = attributeContainer.querySelectorAll('.attribute-item');
+    const newIndex = attributeItems.length;
+    const html = `
+    <div class="attribute-item">
+      <div class="flex flex-row flex-wrap gap-4 items-end mb-2">
+        <div class="flex-1 min-w-[130px]">
+          <select name="variants[${variantIndex}][attributes][${newIndex}][name]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, ${variantIndex}, ${newIndex})">
+            <option value="">-- Chọn thuộc tính --</option>
+            @foreach($attributes as $attribute)
+                            <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
+                            @endforeach
+            <option value="__new__">+ Thêm mới thuộc tính</option>
+          </select>
+          <input type="text" name="variants[${variantIndex}][attributes][${newIndex}][new_name]" class="w-full px-4 py-2 border border-blue-400 rounded-md mt-2 hidden" placeholder="Nhập tên thuộc tính mới...">
+        </div>
+        <div class="flex-1 min-w-[130px]">
+          <select name="variants[${variantIndex}][attributes][${newIndex}][value]" class="w-full px-4 py-2 border border-gray-300 rounded-md value-select" data-attribute-index="${newIndex}" onchange="handleValueSelect(this, ${variantIndex}, ${newIndex})">
+            <option value="">-- Chọn giá trị --</option>
+            <option value="__new__">+ Thêm mới giá trị</option>
+          </select>
+          <input type="text" name="variants[${variantIndex}][attributes][${newIndex}][new_value]" class="w-full px-4 py-2 border border-blue-400 rounded-md mt-2 hidden value-new-input" placeholder="Nhập giá trị mới...">
+        </div>
+        <button type="button" class="px-2 py-1 bg-red-500 text-white rounded remove-attribute-btn" onclick="removeAttributeRow(this)">Xóa</button>
+      </div>
+    </div>`;
+    attributeContainer.insertAdjacentHTML('beforeend', html);
+}
 
 function addVariant() {
     const container = document.getElementById('variants-container');
-    const newVariant = document.createElement('div');
-    newVariant.className = 'variant-item mb-4';
-    newVariant.innerHTML = `
-        <div class="flex space-x-4">
-            <div class="flex-1">
-                <label class="block text-sm font-medium text-slate-600 mb-2">Tên biến thể</label>
-                <input
-                    type="text"
-                    name="variants[${variantCount}][name]"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-            </div>
-            <div class="flex-1">
+    const variantCount = container.querySelectorAll('.variant-item').length;
+    const html = `
+    <div class="variant-item mb-4">
+        <div class="flex flex-row flex-wrap gap-4 items-end mb-2">
+            <div class="flex-1 min-w-[120px]">
                 <label class="block text-sm font-medium text-slate-600 mb-2">SKU</label>
-                <input
-                    type="text"
-                    name="variants[${variantCount}][sku]"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
+                <input type="text" name="variants[${variantCount}][sku]" class="w-full px-4 py-2 border border-gray-300 rounded-md">
             </div>
-            <div class="flex-1">
+            <div class="flex-1 min-w-[100px]">
                 <label class="block text-sm font-medium text-slate-600 mb-2">Giá</label>
-                <input
-                    type="number"
-                    name="variants[${variantCount}][price]"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
+                <input type="number" name="variants[${variantCount}][price]" class="w-full px-4 py-2 border border-gray-300 rounded-md">
             </div>
-            <div class="flex-1">
+            <div class="flex-1 min-w-[100px]">
                 <label class="block text-sm font-medium text-slate-600 mb-2">Số lượng</label>
-                <input
-                    type="number"
-                    name="variants[${variantCount}][quantity]"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
+                <input type="number" name="variants[${variantCount}][quantity]" class="w-full px-4 py-2 border border-gray-300 rounded-md">
             </div>
         </div>
+        <div class="attribute-container">
+            <div class="attribute-item">
+                <div class="flex flex-row flex-wrap gap-4 items-end mb-2">
+                    <div class="flex-1 min-w-[130px]">
+                        <label class="block text-sm font-medium text-slate-600 mb-2">Tên thuộc tính</label>
+                        <select name="variants[${variantCount}][attributes][0][name]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, ${variantCount}, 0)">
+                            <option value="">-- Chọn thuộc tính --</option>
+                            @foreach($attributes as $attribute)
+                                <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
+                            @endforeach
+                            <option value="__new__">+ Thêm mới thuộc tính</option>
+                        </select>
+                        <input type="text" name="variants[${variantCount}][attributes][0][new_name]" class="w-full px-4 py-2 border border-blue-400 rounded-md mt-2 hidden" placeholder="Nhập tên thuộc tính mới...">
+                    </div>
+                    <div class="flex-1 min-w-[130px]">
+                        <label class="block text-sm font-medium text-slate-600 mb-2">Giá trị</label>
+                        <select name="variants[${variantCount}][attributes][0][value]" class="w-full px-4 py-2 border border-gray-300 rounded-md value-select" data-attribute-index="0" onchange="handleValueSelect(this, ${variantCount}, 0)">
+                            <option value="">-- Chọn giá trị --</option>
+                            <option value="__new__">+ Thêm mới giá trị</option>
+                        </select>
+                        <input type="text" name="variants[${variantCount}][attributes][0][new_value]" class="w-full px-4 py-2 border border-blue-400 rounded-md mt-2 hidden value-new-input" placeholder="Nhập giá trị mới...">
+                    </div>
+                    <button type="button" class="px-2 py-1 bg-red-500 text-white rounded remove-attribute-btn" onclick="removeAttributeRow(this)">Xóa</button>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 add-attribute-btn" onclick="addAttribute(${variantCount})">Thêm thuộc tính</button>
+    </div>
     `;
-    container.appendChild(newVariant);
-    variantCount++;
+    container.insertAdjacentHTML('beforeend', html);
 }
+
+function removeAttributeRow(btn) {
+    const row = btn.closest('.attribute-item');
+    row.remove();
+}
+
+function handleAttributeSelect(select, variantIndex, attributeIndex) {
+    var attributeId = select.value + '';
+    // Xác định đúng attribute-item hiện tại
+    var attributeItem = select.closest('.attribute-item');
+    var valueSelect = attributeItem.querySelector('.value-select');
+    var valueInput = attributeItem.querySelector('.value-new-input');
+
+    if (attributeId === "__new__") {
+        valueSelect.classList.add('hidden');
+        valueInput.classList.remove('hidden');
+        valueInput.name = select.name.replace('[name]', '[new_value]');
+        return;
+    } else {
+        valueSelect.classList.remove('hidden');
+        valueInput.classList.add('hidden');
+    }
+
+    // Lưu lại giá trị đang chọn trước khi reset option
+    var previousValue = valueSelect.value;
+
+    valueSelect.innerHTML = '<option value="">-- Chọn giá trị --</option>';
+    if (window.attributeValues[attributeId]) {
+        window.attributeValues[attributeId].forEach(function(val) {
+            valueSelect.innerHTML += '<option value="' + val.id + '">' + val.value + '</option>';
+        });
+    }
+    valueSelect.innerHTML += '<option value="__new__">+ Thêm mới giá trị</option>';
+
+    // Set lại giá trị đã chọn nếu còn tồn tại trong option mới
+    if ([...valueSelect.options].some(opt => opt.value === previousValue)) {
+        valueSelect.value = previousValue;
+    } else {
+        valueSelect.value = '';
+    }
+}
+
+function handleValueSelect(select, variantIndex) {
+    var variantItem = select.closest('.variant-item');
+    var valueInput = variantItem.querySelector('.value-new-input');
+    if (select.value === '__new__') {
+        valueInput.classList.remove('hidden');
+    } else {
+        valueInput.classList.add('hidden');
+    }
+}
+
+function initAttributeValueDropdowns() {
+    document.querySelectorAll('.attribute-select').forEach(function(select, idx) {
+        if (select.value && select.value !== "__new__") {
+            handleAttributeSelect(select, idx);
+        }
+    });
+}
+document.addEventListener('DOMContentLoaded', initAttributeValueDropdowns);
+
+// Đảm bảo các hàm luôn có trên window để gọi từ HTML
+window.addAttribute = addAttribute;
+window.addVariant = addVariant;
+window.handleAttributeSelect = handleAttributeSelect;
+window.handleValueSelect = handleValueSelect;
+window.removeAttributeRow = removeAttributeRow;
 </script>
+@endpush
+
 @endsection
+
