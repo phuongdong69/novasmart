@@ -32,7 +32,7 @@
             <div class="lg:col-span-8">
                 <div class="p-6 rounded-md shadow-sm dark:shadow-gray-800">
                     <h3 class="text-xl font-semibold">Thông tin thanh toán</h3>
-                    <form method="POST" action="{{ route('checkout.store') }}">
+                    <form  id="checkout-form" method="POST" action="{{ route('checkout.store') }}">
                         @csrf
 
                         @php
