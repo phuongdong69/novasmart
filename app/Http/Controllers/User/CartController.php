@@ -140,12 +140,7 @@ class CartController extends Controller
         return array_reduce($sessionCart, fn($sum, $item) => $sum + $item['price'] * $item['quantity'], 0);
     }
 
-    // Xoá mã giảm giá voucher trong session
-    public function removeVoucher()
-    {
-        Session::forget('voucher');
-        return back()->with('success', 'Đã xoá mã giảm giá.');
-    }
+    
 
     // Lấy dữ liệu giỏ hàng kèm thông tin sản phẩm
     public function getCartWithItems()
