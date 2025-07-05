@@ -18,6 +18,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\User\ProductController as UserProductController;
 /*
 |--------------------------------------------------------------------------
 | Trang chủ
@@ -138,7 +139,8 @@ Route::middleware('auth')->group(function () {
 | Giỏ hàng (dùng được cả khi chưa đăng nhập)
 |--------------------------------------------------------------------------
 */
-
+Route::get('/user/products', [UserProductController::class, 'index'])->name('user.products.index');
+Route::get('/user/products/{product}', [UserProductController::class, 'show'])->name('products.show');
 
 // Giỏ hàng
 Route::get('/shop-cart', [CartController::class, 'show'])->name('cart.show');
@@ -150,7 +152,7 @@ Route::delete('/cart/remove/{itemId}', [CartController::class, 'remove'])->name(
 | Thanh toán
 |--------------------------------------------------------------------------
 */
-Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
+Route::delete('/checkout/remove-voucher', [CheckoutController::class, 'removeVoucher'])->name('checkout.remove-voucher');
 Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.show');
 Route::post('/checkout/store', [CheckoutController::class, 'store'])->name('checkout.store');
