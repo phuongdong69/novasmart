@@ -35,7 +35,8 @@ class ProductController extends Controller
         $brands = Brand::all();
         $categories = Category::all();
         $origins = Origin::all();
-        return view('admin.products.create', compact('brands', 'categories', 'origins'));
+        $attributes = \App\Models\Attribute::with('values')->get();
+        return view('admin.products.create', compact('brands', 'categories', 'origins', 'attributes'));
     }
 
     /**

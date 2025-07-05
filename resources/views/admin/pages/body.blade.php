@@ -4,5 +4,6 @@
     @include('admin.pages.main')
     
     @include('admin.pages.scripts')
+    @stack('scripts')
     </div> 
 </body>
