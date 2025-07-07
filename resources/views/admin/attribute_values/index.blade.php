@@ -69,10 +69,31 @@ Danh sách giá trị thuộc tính
                     </div>
                 </div>
 
-                {{-- Phân trang --}}
-                <div class="mt-4 px-6 flex justify-center">
-                    {{ $values->links('pagination::bootstrap-4') }}
-                </div>
+                 <div class="mt-4 px-6">
+    @if ($values->hasPages())
+        <div style="display: flex; justify-content: center; gap: 8px; margin: 20px 0;">
+            @if ($values->onFirstPage())
+                <span style="padding: 8px 16px; background: #f3f4f6; color: #9ca3af; border-radius: 8px; cursor: not-allowed;">Trước</span>
+            @else
+                <a href="{{ $values->previousPageUrl() }}" style="padding: 8px 16px; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; text-decoration: none; transition: all 0.2s;">Trước</a>
+            @endif
+
+            @for ($i = 1; $i <= $values->lastPage(); $i++)
+                @if ($i == $values->currentPage())
+                    <span style="padding: 8px 16px; background: #3b82f6; color: white; border-radius: 8px; font-weight: bold;">{{ $i }}</span>
+                @else
+                    <a href="{{ $values->url($i) }}" style="padding: 8px 16px; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; text-decoration: none; transition: all 0.2s;">{{ $i }}</a>
+                @endif
+            @endfor
+
+            @if ($values->hasMorePages())
+                <a href="{{ $values->nextPageUrl() }}" style="padding: 8px 16px; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; text-decoration: none; transition: all 0.2s;">Tiếp</a>
+            @else
+                <span style="padding: 8px 16px; background: #f3f4f6; color: #9ca3af; border-radius: 8px; cursor: not-allowed;">Tiếp</span>
+            @endif
+        </div>
+    @endif
+</div>
             </div>
         </div>
     </div>
