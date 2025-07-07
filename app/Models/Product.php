@@ -9,6 +9,9 @@ class Product extends Model
 {
     use HasFactory;
 
+    /**
+     * Các trường có thể gán hàng loạt cho Product
+     */
     protected $fillable = [
         'brand_id',
         'origin_id',
