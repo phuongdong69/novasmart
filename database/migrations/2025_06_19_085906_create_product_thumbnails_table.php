@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('product_thumbnails', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('product_id');
-            $table->unsignedBigInteger('product_variant_id');
             $table->string('url');
             $table->boolean('is_primary');
             $table->integer('sort_order')->nullable();

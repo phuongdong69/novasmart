@@ -99,7 +99,28 @@
                         @enderror
                     </div>
 
+                    {{-- Ảnh chính (is_primary) --}}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-slate-600 mb-2">Ảnh chính (hiển thị đại diện)</label>
+                        <input type="file" name="thumbnail_primary" id="thumbnail_primary" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-md">
+                        @error('thumbnail_primary')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <div id="preview-thumbnail-primary" class="flex gap-2 mt-2"></div>
+                    </div>
+
+                    {{-- Ảnh phụ (gallery) --}}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-slate-600 mb-2">Ảnh phụ</label>
+                        <input type="file" name="thumbnails[]" id="thumbnails" multiple accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-md">
+                        @error('thumbnails')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <div id="preview-thumbnails" class="flex flex-wrap gap-2 mt-2"></div>
+                    </div>
+
                     {{-- Biến thể --}}
+
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-slate-600 mb-2">Biến thể</label>
                         <div id="variants-container">
@@ -171,7 +192,50 @@
                             Lưu sản phẩm
                         </button>
                     </div>
-                </form>
+                <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Preview cho ảnh phụ
+        const input = document.getElementById('thumbnails');
+        const preview = document.getElementById('preview-thumbnails');
+        if(input) {
+            input.addEventListener('change', function (e) {
+                preview.innerHTML = '';
+                Array.from(e.target.files).forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function (ev) {
+                            const img = document.createElement('img');
+                            img.src = ev.target.result;
+                            img.className = 'w-20 h-20 object-cover rounded border border-gray-300';
+                            preview.appendChild(img);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            });
+        }
+        // Preview cho ảnh chính
+        const inputPrimary = document.getElementById('thumbnail_primary');
+        const previewPrimary = document.getElementById('preview-thumbnail-primary');
+        if(inputPrimary) {
+            inputPrimary.addEventListener('change', function (e) {
+                previewPrimary.innerHTML = '';
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (ev) {
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        img.className = 'w-24 h-24 object-cover rounded border border-blue-500 shadow';
+                        previewPrimary.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+</script>
+</form>
             </div>
         </div>
 

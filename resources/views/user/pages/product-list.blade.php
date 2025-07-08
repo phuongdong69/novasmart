@@ -49,38 +49,51 @@
                         </div>
                     </div>
                     <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
-                        <!-- Sản phẩm 1 -->
-                        <div class="group">
-                            <div class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
-                                <img src="assets/images/shop/black-print-t-shirt.jpg" class="group-hover:scale-110 duration-500" alt="">
-                                <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
-                                    <a href="shop-cart.html" class="py-2 px-5 inline-block font-semibold tracking-wide text-base text-center bg-slate-900 text-white w-full rounded-md">Thêm vào giỏ</a>
-                                </div>
-                                <ul class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
-                                    <li><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="heart" class="size-4"></i></a></li>
-                                    <li class="mt-1"><a href="shop-item-detail.html" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="eye" class="size-4"></i></a></li>
-                                    <li class="mt-1"><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="bookmark" class="size-4"></i></a></li>
-                                </ul>
-                                <ul class="list-none absolute top-[10px] start-4">
-                                    <li><a href="javascript:void(0)" class="bg-orange-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded h-5">-40% giảm</a></li>
-                                </ul>
-                            </div>
-                            <div class="mt-4">
-                                <a href="product-detail-one.html" class="hover:text-orange-500 text-lg font-medium">Áo thun đen in họa tiết</a>
-                                <div class="flex justify-between items-center mt-1">
-                                    <p>$16.00 <del class="text-slate-400">$21.00</del></p>
-                                    <ul class="font-medium text-amber-400 list-none">
-                                        <li class="inline"><i class="mdi mdi-star"></i></li>
-                                        <li class="inline"><i class="mdi mdi-star"></i></li>
-                                        <li class="inline"><i class="mdi mdi-star"></i></li>
-                                        <li class="inline"><i class="mdi mdi-star"></i></li>
-                                        <li class="inline"><i class="mdi mdi-star"></i></li>
+    @forelse($products as $product)
+        @php
+            $variant = $product->variants->first();
+        @endphp
+        <div class="group">
+            <div class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
+                <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}" class="group-hover:scale-110 duration-500 w-full h-64 object-cover" alt="{{ $product->name }}">
+                <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
+                    @if($variant)
+                        <a href="{{ route('cart.add', ['product_variant_id' => $variant->id]) }}" class="py-2 px-5 inline-block font-semibold tracking-wide text-base text-center bg-slate-900 text-white w-full rounded-md">Thêm vào giỏ</a>
+                    @else
+                        <span class="py-2 px-5 inline-block font-semibold tracking-wide text-base text-center bg-gray-300 text-gray-700 w-full rounded-md cursor-not-allowed">Liên hệ</span>
+                    @endif
+                </div>
+                <ul class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
+                                        <li><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="heart" class="size-4"></i></a></li>
+                                        <li class="mt-1"><a href="#" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="eye" class="size-4"></i></a></li>
+                                        <li class="mt-1"><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="bookmark" class="size-4"></i></a></li>
                                     </ul>
+                                    @if($product->sale_percent)
+                                    <ul class="list-none absolute top-[10px] start-4">
+                                        <li><a href="javascript:void(0)" class="bg-orange-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded h-5">-{{ $product->sale_percent }}% giảm</a></li>
+                                    </ul>
+                                    @endif
+                                </div>
+                                <div class="mt-4">
+                                    <a href="#" class="hover:text-orange-500 text-lg font-medium">{{ $product->name }}</a>
+                                    <div class="flex justify-between items-center mt-1">
+                                        <p>
+                                            {{ number_format($product->price, 0, ',', '.') }}₫
+                                            @if($product->compare_price)
+                                                <del class="text-slate-400">{{ number_format($product->compare_price, 0, ',', '.') }}₫</del>
+                                            @endif
+                                        </p>
+                                        <ul class="font-medium text-amber-400 list-none">
+                                            @for($i = 0; $i < 5; $i++)
+                                                <li class="inline"><i class="mdi mdi-star"></i></li>
+                                            @endfor
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Lặp lại cấu trúc trên cho các sản phẩm tiếp theo -->
-
+                        @empty
+                            <div class="col-span-12 text-center">Không có sản phẩm nào.</div>
+                        @endforelse
                     </div><!--end grid-->
 
                     <!-- Phân trang -->
