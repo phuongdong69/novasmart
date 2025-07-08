@@ -24,7 +24,7 @@ return new class extends Migration
 
             $table->decimal('total_price', 12, 2)->default(0);
             $table->string('order_code')->unique();
-            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'unpaid', 'paid', 'cancelled'])->default('pending')->change();
 
             $table->timestamps();
         });
