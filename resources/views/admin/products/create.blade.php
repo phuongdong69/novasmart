@@ -124,13 +124,13 @@
                                             <div class="flex-1 min-w-[130px]">
                                                 <label class="block text-sm font-medium text-slate-600 mb-2">Tên thuộc tính</label>
                                                 <select name="variants[0][attributes][0][attribute_id]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, 0, 0)">
-    <option value="">-- Chọn thuộc tính --</option>
-    @foreach($attributes as $attribute)
-        <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
-    @endforeach
-    <option value="__new__">+ Thêm mới thuộc tính</option>
-</select>
-<input type="text" name="variants[0][attributes][0][new_name]" class="w-full px-4 py-2 border border-blue-400 rounded-md mt-2 hidden" placeholder="Nhập tên thuộc tính mới...">
+                                                <option value="">-- Chọn thuộc tính --</option>
+                                                @foreach($attributes as $attribute)
+                                                    <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
+                                                @endforeach
+                                                <option value="__new__">+ Thêm mới thuộc tính</option>
+                                            </select>
+                                            <input type="text" name="variants[0][attributes][0][new_name]" class="w-full px-4 py-2 border border-blue-400 rounded-md mt-2 hidden" placeholder="Nhập tên thuộc tính mới...">
                                             </div>
                                             <div class="flex-1 min-w-[130px]">
                                                 <label class="block text-sm font-medium text-slate-600 mb-2">Giá trị</label>
@@ -241,7 +241,7 @@ function addVariant() {
                 <div class="flex flex-row flex-wrap gap-4 items-end mb-2">
                     <div class="flex-1 min-w-[130px]">
                         <label class="block text-sm font-medium text-slate-600 mb-2">Tên thuộc tính</label>
-                        <select name="variants[${variantCount}][attributes][0][name]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, ${variantCount}, 0)">
+                        <select name="variants[${variantCount}][attributes][0][attribute_id]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, ${variantCount}, 0)">
                             <option value="">-- Chọn thuộc tính --</option>
                             @foreach($attributes as $attribute)
                                 <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
