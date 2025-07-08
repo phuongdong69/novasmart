@@ -27,12 +27,15 @@
     </div>
     @endif
 
+
     <div class="container relative">
         <div class="grid lg:grid-cols-12 md:grid-cols-2 grid-cols-1 gap-6">
             <div class="lg:col-span-8">
                 <div class="p-6 rounded-md shadow-sm dark:shadow-gray-800">
                     <h3 class="text-xl font-semibold">Thông tin thanh toán</h3>
-                    <form  id="checkout-form" method="POST" action="{{ route('checkout.store') }}">
+                    <form id="checkout-form" method="POST" action="{{ route('checkout.store') }}" data-vnpay-route="{{ route('payment.vnpay.checkout') }}">
+
+
                         @csrf
 
                         @php
@@ -43,7 +46,9 @@
                         @endphp
 
                         <input type="hidden" name="voucher_id" value="{{ $voucherId }}">
-                        <input type="hidden" name="final_total" value="{{ $finalTotal }}">
+                        <input type="hidden" name="final_total" value="{{ (int) $finalTotal }}">
+                        <input type="hidden" name="amount" id="amount" value="{{ (int) $finalTotal }}">
+
 
                         <div class="grid lg:grid-cols-12 grid-cols-1 mt-6 gap-5">
                             <div class="lg:col-span-12">
@@ -91,7 +96,7 @@
                                     class="form-input w-full py-2 px-3 h-10 border border-gray-300 rounded">
                                     <option value="">-- Chọn phương thức --</option>
                                     <option value="cod" {{ old('payment_method') == 'cod' ? 'selected' : '' }}>COD</option>
-                                    <option value="banking" {{ old('payment_method') == 'banking' ? 'selected' : '' }}>Chuyển khoản</option>
+                                    <option value="vnpay" {{ old('payment_method') == 'vnpay' ? 'selected' : '' }}>VNPay</option>
                                 </select>
                                 <span id="payment_method-error" class="text-red-600 text-sm mt-1 hidden"></span>
                             </div>

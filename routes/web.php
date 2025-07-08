@@ -19,6 +19,8 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\User\PaymentController;
+
 /*
 |--------------------------------------------------------------------------
 | Trang chủ
@@ -157,3 +159,5 @@ Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.show');
 Route::post('/checkout/store', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/success', fn() => view('user.pages.checkout-success'))->name('checkout.success');
+Route::post('/vnpay-checkout', [PaymentController::class, 'vnpayCheckout'])->name('payment.vnpay.checkout');
+Route::get('/vnpay-return', [PaymentController::class, 'vnpayReturn'])->name('payment.vnpay.return');

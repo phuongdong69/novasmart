@@ -22,8 +22,6 @@ class CheckoutController extends Controller
             : collect(session('cart'))->map(function ($item) {
                 $variantId = $item['variant_id'] ?? $item['product_variant_id'] ?? $item['id'] ?? null;
                 $variant = $variantId ? ProductVariant::with('product')->find($variantId) : null;
-
-                // Chỉ lấy những sản phẩm còn tồn kho
                 return $variant && $variant->quantity > 0 ? [
                     'variant' => $variant,
                     'quantity' => min($item['quantity'] ?? 1, $variant->quantity),
@@ -48,15 +46,17 @@ class CheckoutController extends Controller
 
         $finalTotal = $total - $discount;
 
-        return view('user.pages.checkout', compact('cartItems', 'total', 'voucher', 'finalTotal'));
+        if ($cartItems->isEmpty()) {
+    return redirect()->route('cart.show')->with('error', 'Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi thanh toán.');
+}
+
+return view('user.pages.checkout', compact('cartItems', 'total', 'voucher', 'finalTotal'));
     }
 
     // Xử lý đặt hàng
     public function store(StoreCheckoutRequest $request)
     {
         $userId = Auth::id();
-
-        // Lấy danh sách sản phẩm trong giỏ
         $cartItems = Auth::check()
             ? optional(Cart::with('items.productVariant.product')->where('user_id', $userId)->first())->items ?? collect()
             : collect(session('cart'))->map(function ($item) {
@@ -71,15 +71,14 @@ class CheckoutController extends Controller
         }
 
         DB::beginTransaction();
-
         try {
-            // Lấy thông tin voucher nếu có
             $voucherId = $request->input('voucher_id') ?? (session('voucher')['id'] ?? null);
             $total = $request->input('final_total');
+            $orderCode = strtoupper(Str::random(10));
 
             // Tạo bản ghi thanh toán
             $payment = Payment::create([
-                'status' => 'pending',
+                'status' => $request->payment_method === 'vnpay' ? 'unpaid' : 'pending',
                 'payment_method' => $request->payment_method,
                 'amount' => $total,
                 'note' => $request->note,
@@ -95,8 +94,8 @@ class CheckoutController extends Controller
                 'email' => $request->email,
                 'address' => $request->address,
                 'total_price' => $total,
-                'order_code' => strtoupper(Str::random(10)),
-                'status' => 'pending',
+                'order_code' => $orderCode,
+                'status' => $request->payment_method === 'vnpay' ? 'unpaid' : 'pending',
             ]);
 
             // Duyệt qua từng sản phẩm để tạo chi tiết đơn hàng
@@ -126,7 +125,11 @@ class CheckoutController extends Controller
                 Voucher::where('id', $voucherId)->decrement('quantity');
             }
 
-            // Xoá giỏ hàng và voucher sau khi đặt hàng thành công
+            if ($request->payment_method === 'vnpay') {
+                DB::commit();
+                return app(PaymentController::class)->vnpayCheckout($request->merge(['order_code' => $orderCode]));
+            }
+
             Auth::check() ? Cart::where('user_id', $userId)->delete() : session()->forget('cart');
             session()->forget('voucher');
 
@@ -172,7 +175,7 @@ class CheckoutController extends Controller
 
         return redirect()->route('checkout.show')->with('success', 'Voucher áp dụng thành công!');
     }
-    // Xoá mã giảm giá voucher trong session
+
     public function removeVoucher()
     {
         Session::forget('voucher');
