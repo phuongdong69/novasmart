@@ -29,7 +29,16 @@
                 </div>
 
                 {{-- Form body --}}
-                <form action="{{ route('admin.products.store') }}" method="POST" class="px-6 pt-4 pb-6">
+                @if ($errors->any())
+    <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
+        <ul class="list-disc pl-5">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+<form action="{{ route('admin.products.store') }}" method="POST" class="px-6 pt-4 pb-6">
                     @csrf
 
                     {{-- Tên sản phẩm --}}
@@ -50,64 +59,42 @@
 
                     {{-- Nhãn hiệu --}}
                     <div class="mb-4">
-                        <label for="brand_name" class="block text-sm font-medium text-slate-600 mb-2">Nhãn hiệu</label>
-                        <input
-                            type="text"
-                            name="brand_name"
-                            id="brand_name"
-                            value="{{ old('brand_name') }}"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('brand_name') border-red-500 @enderror"
-                            required
-                        >
-                        @error('brand_name')
+                        <label for="brand_id" class="block text-sm font-medium text-slate-600 mb-2">Nhãn hiệu</label>
+                        <select name="brand_id" id="brand_id" class="w-full px-4 py-2 border border-gray-300 rounded-md mb-2" required>
+                            <option value="">-- Chọn nhãn hiệu --</option>
+                            @foreach($brands as $brand)
+                                <option value="{{ $brand->id }}" @if(old('brand_id') == $brand->id) selected @endif>{{ $brand->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('brand_id')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     {{-- Danh mục --}}
                     <div class="mb-4">
-                        <label for="category_name" class="block text-sm font-medium text-slate-600 mb-2">Danh mục</label>
-                        <input
-                            type="text"
-                            name="category_name"
-                            id="category_name"
-                            value="{{ old('category_name') }}"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('category_name') border-red-500 @enderror"
-                            required
-                        >
-                        @error('category_name')
+                        <label for="category_id" class="block text-sm font-medium text-slate-600 mb-2">Danh mục</label>
+                        <select name="category_id" id="category_id" class="w-full px-4 py-2 border border-gray-300 rounded-md mb-2" required>
+                            <option value="">-- Chọn danh mục --</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" @if(old('category_id') == $cat->id) selected @endif>{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('category_id')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     {{-- Xuất xứ --}}
                     <div class="mb-4">
-                        <label for="origin_name" class="block text-sm font-medium text-slate-600 mb-2">Xuất xứ</label>
-                        <input
-                            type="text"
-                            name="origin_name"
-                            id="origin_name"
-                            value="{{ old('origin_name') }}"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('origin_name') border-red-500 @enderror"
-                            required
-                        >
-                        @error('origin_name')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Giá cơ bản --}}
-                    <div class="mb-4">
-                        <label for="base_price" class="block text-sm font-medium text-slate-600 mb-2">Giá cơ bản</label>
-                        <input
-                            type="number"
-                            name="base_price"
-                            id="base_price"
-                            value="{{ old('base_price') }}"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('base_price') border-red-500 @enderror"
-                            required
-                        >
-                        @error('base_price')
+                        <label for="origin_id" class="block text-sm font-medium text-slate-600 mb-2">Xuất xứ</label>
+                        <select name="origin_id" id="origin_id" class="w-full px-4 py-2 border border-gray-300 rounded-md mb-2" required>
+                            <option value="">-- Chọn xuất xứ --</option>
+                            @foreach($origins as $origin)
+                                <option value="{{ $origin->id }}" @if(old('origin_id') == $origin->id) selected @endif>{{ $origin->country }}</option>
+                            @endforeach
+                        </select>
+                        @error('origin_id')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
@@ -119,16 +106,16 @@
                             <div class="variant-item mb-4">
                                 <div class="flex flex-row flex-wrap gap-4 items-end mb-2">
                                     <div class="flex-1 min-w-[120px]">
-                                        <label for="variant_sku_0" class="block text-sm font-medium text-slate-600 mb-2">SKU</label>
-                                        <input type="text" name="variants[0][sku]" id="variant_sku_0" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('variants.0.sku') border-red-500 @enderror">
+                                        <label class="block text-sm font-medium text-slate-600 mb-2">SKU</label>
+                                        <input type="text" name="variants[0][sku]" class="w-full px-4 py-2 border border-gray-300 rounded-md">
                                     </div>
                                     <div class="flex-1 min-w-[100px]">
-                                        <label for="variant_price_0" class="block text-sm font-medium text-slate-600 mb-2">Giá</label>
-                                        <input type="number" name="variants[0][price]" id="variant_price_0" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('variants.0.price') border-red-500 @enderror">
+                                        <label class="block text-sm font-medium text-slate-600 mb-2">Giá</label>
+                                        <input type="number" name="variants[0][price]" class="w-full px-4 py-2 border border-gray-300 rounded-md">
                                     </div>
                                     <div class="flex-1 min-w-[100px]">
-                                        <label for="variant_quantity_0" class="block text-sm font-medium text-slate-600 mb-2">Số lượng</label>
-                                        <input type="number" name="variants[0][quantity]" id="variant_quantity_0" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('variants.0.quantity') border-red-500 @enderror">
+                                        <label class="block text-sm font-medium text-slate-600 mb-2">Số lượng</label>
+                                        <input type="number" name="variants[0][quantity]" class="w-full px-4 py-2 border border-gray-300 rounded-md">
                                     </div>
                                 </div>
                                 <div class="attribute-container">
@@ -136,14 +123,14 @@
                                         <div class="flex flex-row flex-wrap gap-4 items-end mb-2">
                                             <div class="flex-1 min-w-[130px]">
                                                 <label class="block text-sm font-medium text-slate-600 mb-2">Tên thuộc tính</label>
-                                                <select name="variants[0][attributes][0][name]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, 0, 0)">
-                                                    <option value="">-- Chọn thuộc tính --</option>
-                                                    @foreach($attributes as $attribute)
-                                                        <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
-                                                    @endforeach
-                                                    <option value="__new__">+ Thêm mới thuộc tính</option>
-                                                </select>
-                                                <input type="text" name="variants[0][attributes][0][new_name]" class="w-full px-4 py-2 border border-blue-400 rounded-md mt-2 hidden" placeholder="Nhập tên thuộc tính mới...">
+                                                <select name="variants[0][attributes][0][attribute_id]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, 0, 0)">
+                                                <option value="">-- Chọn thuộc tính --</option>
+                                                @foreach($attributes as $attribute)
+                                                    <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
+                                                @endforeach
+                                                <option value="__new__">+ Thêm mới thuộc tính</option>
+                                            </select>
+                                            <input type="text" name="variants[0][attributes][0][new_name]" class="w-full px-4 py-2 border border-blue-400 rounded-md mt-2 hidden" placeholder="Nhập tên thuộc tính mới...">
                                             </div>
                                             <div class="flex-1 min-w-[130px]">
                                                 <label class="block text-sm font-medium text-slate-600 mb-2">Giá trị</label>
@@ -182,13 +169,11 @@
                     <div class="mt-6">
                         <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                             Lưu sản phẩm
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="flex-1 min-w-[130px]">
-    <label class="block text-sm font-medium text-slate-600 mb-2">Giá trị</label>
-    <select name="variants[${variantCount}][attributes][0][value]" class="w-full px-4 py-2 border border-gray-300 rounded-md value-select" data-attribute-index="${variantCount}" onchange="handleValueSelect(this, ${variantCount})">
-        <option value="">-- Chọn giá trị --</option>
-        <option value="__new__">+ Thêm mới giá trị</option>
-    </select>
 
 @push('scripts')
 <script>
@@ -210,7 +195,7 @@ function addAttribute(variantIndex) {
     <div class="attribute-item">
       <div class="flex flex-row flex-wrap gap-4 items-end mb-2">
         <div class="flex-1 min-w-[130px]">
-          <select name="variants[${variantIndex}][attributes][${newIndex}][name]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, ${variantIndex}, ${newIndex})">
+          <select name="variants[${variantIndex}][attributes][${newIndex}][attribute_id]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, ${variantIndex}, ${newIndex})">
             <option value="">-- Chọn thuộc tính --</option>
             @foreach($attributes as $attribute)
                             <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
@@ -256,7 +241,7 @@ function addVariant() {
                 <div class="flex flex-row flex-wrap gap-4 items-end mb-2">
                     <div class="flex-1 min-w-[130px]">
                         <label class="block text-sm font-medium text-slate-600 mb-2">Tên thuộc tính</label>
-                        <select name="variants[${variantCount}][attributes][0][name]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, ${variantCount}, 0)">
+                        <select name="variants[${variantCount}][attributes][0][attribute_id]" class="w-full px-4 py-2 border border-gray-300 rounded-md attribute-select" onchange="handleAttributeSelect(this, ${variantCount}, 0)">
                             <option value="">-- Chọn thuộc tính --</option>
                             @foreach($attributes as $attribute)
                                 <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
@@ -342,6 +327,44 @@ function initAttributeValueDropdowns() {
     });
 }
 document.addEventListener('DOMContentLoaded', initAttributeValueDropdowns);
+
+// Hiện input nhập mới khi chọn 'Thêm mới...' cho brand, category, origin
+function toggleNewInput(selectId, inputId) {
+    const select = document.getElementById(selectId);
+    const input = document.getElementById(inputId);
+    if (!select || !input) return;
+    if (select.value === "__new__") {
+        input.classList.remove('hidden');
+        input.required = true;
+    } else {
+        input.classList.add('hidden');
+        input.required = false;
+        input.value = '';
+    }
+}
+
+// Gán event listener an toàn
+['brand', 'category', 'origin'].forEach(function(type) {
+    const select = document.getElementById(type + '_select');
+    if (select) {
+        select.addEventListener('change', function() {
+            toggleNewInput(type + '_select', type + '_name');
+        });
+    }
+});
+
+// Nếu reload lại trang mà có giá trị nhập mới thì tự động hiện input
+window.addEventListener('DOMContentLoaded', function() {
+    ['brand', 'category', 'origin'].forEach(function(type) {
+        const select = document.getElementById(type + '_select');
+        const input = document.getElementById(type + '_name');
+        if (input && input.value) {
+            input.classList.remove('hidden');
+            input.required = true;
+            if (select) select.value = "__new__";
+        }
+    });
+});
 
 // Đảm bảo các hàm luôn có trên window để gọi từ HTML
 window.addAttribute = addAttribute;

@@ -74,12 +74,12 @@
     </td>
     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
         <div class="flex justify-end space-x-2">
-            <a href="{{ route('products.edit', $product->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
+            <a href="{{ route('admin.products.edit', $product->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                 </svg>
             </a>
-            <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">
+            <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="text-red-600 hover:text-red-900">
@@ -101,37 +101,59 @@
                                                         <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
                                                         <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá</th>
                                                         <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng</th>
-                                                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
                                                         <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thuộc tính</th>
+                                                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá trị thuộc tính</th>
+                                                        <th class="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="bg-white divide-y divide-gray-200">
                                                     @forelse($product->variants as $variant)
-                                                        <tr class="hover:bg-gray-50">
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $variant->sku }}</td>
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{{ number_format($variant->price, 0, ',', '.') }} ₫</td>
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $variant->quantity }}</td>
-                                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                                @if($variant->status == 1)
-                                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                                        Đang bán
-                                                                    </span>
-                                                                @else
-                                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                                        Ngừng bán
-                                                                    </span>
-                                                                @endif
-                                                            </td>
-                                                            <td class="px-6 py-4 text-sm text-gray-500">
-                                                                @forelse($variant->variantAttributeValues as $attrValue)
-                                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1 mb-1">
-                                                                        {{ $attrValue->attribute->name ?? '' }}: {{ $attrValue->value ?? '' }}
-                                                                    </span>
-                                                                @empty
-                                                                    <span class="text-gray-400">Không có thuộc tính</span>
-                                                                @endforelse
-                                                            </td>
-                                                        </tr>
+                                                        @php $attrCount = isset($variant->variantAttributeValues) ? count($variant->variantAttributeValues) : 0; @endphp
+                                                        @if($attrCount > 0)
+                                                            @foreach($variant->variantAttributeValues as $i => $attrValue)
+                                                                <tr class="hover:bg-gray-50">
+                                                                    @if($i == 0)
+                                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" rowspan="{{ $attrCount }}">{{ $variant->sku }}</td>
+                                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium" rowspan="{{ $attrCount }}">{{ number_format($variant->price, 0, ',', '.') }} ₫</td>
+                                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" rowspan="{{ $attrCount }}">{{ $variant->quantity }}</td>
+                                                                    @endif
+                                                                    <td class="px-6 py-4 text-sm text-gray-500">{{ $attrValue->attribute->name ?? '' }}</td>
+                                                                    <td class="px-6 py-4 text-sm text-gray-500">{{ $attrValue->attributeValue->value ?? '' }}</td>
+                                                                    @if($i == 0)
+                                                                        <td class="px-6 py-4 whitespace-nowrap" rowspan="{{ $attrCount }}">
+                                                                            @if($variant->status == 1)
+                                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                                                    Đang bán
+                                                                                </span>
+                                                                            @else
+                                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                                                    Ngừng bán
+                                                                                </span>
+                                                                            @endif
+                                                                        </td>
+                                                                    @endif
+                                                                </tr>
+                                                            @endforeach
+                                                        @else
+                                                            <tr class="hover:bg-gray-50">
+                                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $variant->sku }}</td>
+                                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{{ number_format($variant->price, 0, ',', '.') }} ₫</td>
+                                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $variant->quantity }}</td>
+                                                                <td class="px-6 py-4 text-gray-400">Không có thuộc tính</td>
+                                                                <td class="px-6 py-4 text-gray-400">Không có giá trị</td>
+                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                    @if($variant->status == 1)
+                                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                                            Đang bán
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                                            Ngừng bán
+                                                                        </span>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                        @endif
                                                     @empty
                                                         <tr>
                                                             <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
@@ -153,7 +175,8 @@
                                                     <tr>
                                                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
                                                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thuộc tính/giá trị</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thuộc tính</th>
+                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá trị thuộc tính</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="bg-white divide-y divide-gray-200">
@@ -168,18 +191,12 @@
                                                                 @endif
                                                             </td>
                                                             <td class="px-4 py-2 text-sm">
-                                                                @forelse($variant->variantAttributeValues as $attrValue)
-                                                                    <span class="inline-block bg-blue-100 text-blue-800 rounded px-2 py-1 mr-1 mb-1 text-xs">
-                                                                        {{ $attrValue->attribute->name ?? '' }}: {{ $attrValue->value ?? '' }}
-                                                                    </span>
-                                                                @empty
-                                                                    <span class="text-gray-400">Không có thuộc tính</span>
-                                                                @endforelse
+                                                                @include('admin.products.partials.variant-attributes', ['variant' => $variant])
                                                             </td>
                                                         </tr>
                                                     @empty
                                                         <tr>
-                                                            <td colspan="3" class="px-4 py-2 text-center text-gray-400">Sản phẩm chưa có biến thể nào</td>
+                                                            <td colspan="4" class="px-4 py-2 text-center text-gray-400">Sản phẩm chưa có biến thể nào</td>
                                                         </tr>
                                                     @endforelse
                                                 </tbody>

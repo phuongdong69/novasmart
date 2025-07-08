@@ -18,7 +18,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CheckoutController;
-
+use App\Http\Controllers\Admin\BrandController;
 /*
 |--------------------------------------------------------------------------
 | Trang chủ
@@ -121,6 +121,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('product_variants', ProductVariantController::class);
     //Variant_attribute_value
     Route::resource('variant_attribute_values', VariantAttributeValueController::class);
+    //brands
+    Route::resource('brands', BrandController::class);
 });
 
 /*
@@ -129,7 +131,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    Route::get('/user/pages.home', function () {
+    Route::get('/user/pages/home', function () {
         return view('user.pages.home');
     })->name('user.pages.home');
 });
