@@ -24,7 +24,6 @@ class ProductThumbnailController extends Controller
     {
         $data = $request->validate([
             'product_id' => 'required|integer',
-            'product_variant_id' => 'required|integer',
             'url' => 'required|image',
             'is_primary' => 'required|boolean',
             'sort_order' => 'nullable|integer',
@@ -46,7 +45,6 @@ class ProductThumbnailController extends Controller
     {
         $data = $request->validate([
             'product_id' => 'required|integer',
-            'product_variant_id' => 'required|integer',
             'url' => 'nullable|image',
             'is_primary' => 'required|boolean',
             'sort_order' => 'nullable|integer',

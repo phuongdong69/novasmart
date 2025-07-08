@@ -13,7 +13,6 @@ class ProductThumbnail extends Model
 
     protected $fillable = [
         'product_id',
-        'product_variant_id',
         'url',
         'is_primary',
         'sort_order',

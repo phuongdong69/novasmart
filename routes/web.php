@@ -27,9 +27,13 @@ use App\Http\Controllers\User\PaymentController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return view('user.pages.home');
-})->name('home');
+use App\Http\Controllers\User\HomeController;
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// User-facing product list
+use App\Http\Controllers\User\ProductController as UserProductController;
+Route::get('/products', [UserProductController::class, 'index'])->name('products.list');
 
 /*
 |--------------------------------------------------------------------------
