@@ -22,7 +22,14 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'brand_id' => 'nullable|exists:brands,id',
+            'brand_name' => 'nullable|string|max:255',
+            'origin_id' => 'nullable|exists:origins,id',
+            'origin_name' => 'nullable|string|max:255',
+            'category_id' => 'nullable|exists:categories,id',
+            'category_name' => 'nullable|string|max:255',
+            'name' => 'required|string|max:255|unique:products,name,' . $this->route('product'),
+            'description' => 'nullable|string',
         ];
     }
 }

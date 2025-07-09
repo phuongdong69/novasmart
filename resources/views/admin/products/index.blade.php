@@ -33,7 +33,7 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($products as $product)
 @php $thumbnail = $product->thumbnails->first(); @endphp
-<tr class="hover:bg-gray-50 cursor-pointer" onclick="toggleVariants({{ $product->id }})" style="transition: background 0.2s;">
+<tr class="hover:bg-gray-50" style="transition: background 0.2s;">
     <td class="px-6 py-4 whitespace-nowrap">
         <input type="checkbox" class="rounded border-gray-300">
     </td>
@@ -41,9 +41,9 @@
         <div class="flex items-center">
             <div class="flex-shrink-0 h-10 w-10">
                 @if($thumbnail)
-                    <img class="h-10 w-10 rounded-full object-cover border border-gray-300" src="{{ asset($thumbnail->url) }}" alt="{{ $product->name }}">
+                    <img class="h-10 w-10 rounded-full object-contain border border-gray-300 bg-white cursor-pointer" src="{{ asset('storage/' . $thumbnail->url) }}" alt="{{ $product->name }}" onclick="event.stopPropagation(); toggleVariants({{ $product->id }})">
                 @else
-                    <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300">
+                    <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300 cursor-pointer" onclick="event.stopPropagation(); toggleVariants({{ $product->id }})">
                         <svg class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.67 0 8.99 2.222 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
@@ -51,7 +51,7 @@
                 @endif
             </div>
             <div class="ml-4">
-                <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
+                <div class="text-sm font-medium text-gray-900 cursor-pointer" onclick="event.stopPropagation(); toggleVariants({{ $product->id }})">{{ $product->name }}</div>
             </div>
         </div>
     </td>
@@ -61,7 +61,7 @@
     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
         {{ $product->origin->country ?? 'Chưa có xuất xứ' }}
     </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+    
         {{ $product->category->name ?? 'Chưa phân loại' }}
     </td>
     <td class="px-6 py-4 whitespace-nowrap">
@@ -117,7 +117,7 @@
                                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium" rowspan="{{ $attrCount }}">{{ number_format($variant->price, 0, ',', '.') }} ₫</td>
                                                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" rowspan="{{ $attrCount }}">{{ $variant->quantity }}</td>
                                                                     @endif
-                                                                    <td class="px-6 py-4 text-sm text-gray-500">{{ $attrValue->attribute->name ?? '' }}</td>
+                                                                    <td>{{ $attrValue->attributeValue->attribute->name ?? '' }}</td>
                                                                     <td class="px-6 py-4 text-sm text-gray-500">{{ $attrValue->attributeValue->value ?? '' }}</td>
                                                                     @if($i == 0)
                                                                         <td class="px-6 py-4 whitespace-nowrap" rowspan="{{ $attrCount }}">

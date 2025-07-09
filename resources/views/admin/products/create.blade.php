@@ -38,7 +38,7 @@
         </ul>
     </div>
 @endif
-<form action="{{ route('admin.products.store') }}" method="POST" class="px-6 pt-4 pb-6">
+<form action="{{ route('admin.products.store') }}" method="POST" class="px-6 pt-4 pb-6" enctype="multipart/form-data">
                     @csrf
 
                     {{-- Tên sản phẩm --}}
