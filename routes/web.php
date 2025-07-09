@@ -21,6 +21,7 @@ use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\User\PaymentController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Trang chủ
@@ -137,9 +138,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    Route::get('/user/pages/home', function () {
-        return view('user.pages.home');
-    })->name('user.pages.home');
+    Route::get('/user/pages/home', [HomeController::class, 'index'])->name('user.pages.home');
 });
 
 /*
