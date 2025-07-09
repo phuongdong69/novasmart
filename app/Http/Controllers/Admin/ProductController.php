@@ -98,13 +98,11 @@ class ProductController extends Controller
                     }
                     $created = \App\Models\VariantAttributeValue::create([
                         'product_variant_id' => $productVariant->id,
-                        'attribute_id' => $attribute->id,
                         'attribute_value_id' => $attributeValue->id,
                     ]);
                     if (!$created) {
                         \Log::error('Không lưu được VariantAttributeValue', [
                             'variant_id' => $productVariant->id,
-                            'attribute_id' => $attribute->id,
                             'attribute_value_id' => $attributeValue->id
                         ]);
                     }
