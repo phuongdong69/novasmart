@@ -30,7 +30,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($data as $brand)
+                            @foreach ($brands as $brand)
                             <tr class="border-b border-slate-100 dark:border-slate-700">
                                 <td class="border-b-0 px-6 py-4">
                                     {{ $loop->index + 1 }}
@@ -79,7 +79,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($data as $brand )
+            @foreach ($brands as $brand )
             <tr class="">
                 <td scope="row">{{$loop->index+1}}</td>
 
