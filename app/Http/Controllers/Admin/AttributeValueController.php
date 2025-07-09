@@ -34,7 +34,7 @@ class AttributeValueController extends Controller
     public function store(StoreAttributeValueRequest $request)
     {
         AttributeValue::create($request->validated());
-        return redirect()->route('attribute-values.index')->with('success', 'Thêm giá trị thuộc tính thành công.');
+        return redirect()->route('admin.attribute_values.index')->with('success', 'Thêm giá trị thuộc tính thành công.');
     }
     
 
@@ -61,7 +61,7 @@ class AttributeValueController extends Controller
     public function update(UpdateAttributeValueRequest $request, AttributeValue $attributeValue)
     {
         $attributeValue->update($request->validated());
-        return redirect()->route('attribute-values.index')->with('success', 'Cập nhật giá trị thuộc tính thành công.');
+        return redirect()->route('admin.attribute_values.index')->with('success', 'Cập nhật giá trị thuộc tính thành công.');
     }
 
     /**
@@ -70,6 +70,6 @@ class AttributeValueController extends Controller
     public function destroy(AttributeValue $attributeValue)
     {
         $attributeValue->delete();
-        return redirect()->route('attribute-values.index')->with('success', 'Xóa giá trị thuộc tính thành công.');
+        return redirect()->route('admin.attribute_values.index')->with('success', 'Xóa giá trị thuộc tính thành công.');
     }
 }
