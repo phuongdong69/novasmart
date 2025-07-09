@@ -21,7 +21,8 @@ class ProductController extends Controller
             'brand',
             'origin',
             'category',
-            'variants.variantAttributeValues.attribute'
+            'variants.variantAttributeValues.attribute',
+            'variants.variantAttributeValues.attributeValue'
         ])->latest()->paginate(5);
 
         return view('admin.products.index', compact('products'));
@@ -66,6 +67,28 @@ class ProductController extends Controller
 
         // Tạo sản phẩm
         $product = Product::create($data);
+
+        // Xử lý ảnh chính (thumbnail_primary)
+        if ($request->hasFile('thumbnail_primary')) {
+            $path = $request->file('thumbnail_primary')->store('uploads/products/thumbnails', 'public');
+            $product->thumbnails()->create([
+                'url' => $path,
+                'is_primary' => 1,
+                'sort_order' => 0,
+            ]);
+        }
+
+        // Xử lý ảnh phụ (thumbnails[])
+        if ($request->hasFile('thumbnails')) {
+            foreach ($request->file('thumbnails') as $file) {
+                $path = $file->store('uploads/products/thumbnails', 'public');
+                $product->thumbnails()->create([
+                    'url' => $path,
+                    'is_primary' => 0,
+                    'sort_order' => 0,
+                ]);
+            }
+        }
 
         // Thêm biến thể nếu có
         if ($request->has('variants')) {

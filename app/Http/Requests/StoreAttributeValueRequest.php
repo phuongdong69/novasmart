@@ -23,7 +23,7 @@ class StoreAttributeValueRequest extends FormRequest
     {
         return [
             'attribute_id' => 'required|exists:attributes,id',
-        'value' => 'required|string|max:255',
+        'value' => 'required|string|max:255|unique:attribute_values,value,NULL,id,attribute_id,' . $this->input('attribute_id'),
         ];
     }
 }

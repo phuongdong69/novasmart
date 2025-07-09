@@ -24,7 +24,7 @@ class UpdateVariantAttributeValueRequest extends FormRequest
         return [
             'product_variant_id' => 'sometimes|exists:product_variants,id',
             'attribute_id' => 'sometimes|exists:attributes,id',
-            'attribute_value_id' => 'sometimes|exists:attribute_values,id',
+            'attribute_value_id' => 'sometimes|exists:attribute_values,id|unique:variant_attribute_values,attribute_value_id,' . $this->route('variant_attribute_value') . ',id,product_variant_id,' . $this->input('product_variant_id'),
         ];
     }
 }

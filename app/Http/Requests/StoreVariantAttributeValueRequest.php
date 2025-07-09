@@ -16,13 +16,13 @@ class StoreVariantAttributeValueRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     */
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>     */
     public function rules(): array
     {
         return [
             'product_variant_id' => 'required|exists:product_variants,id',
-            'attribute_id' => 'required|exists:attributes,id',
-            'attribute_value_id' => 'required|exists:attribute_values,id',
+            'attribute_value_id' => 'required|exists:attribute_values,id|unique:variant_attribute_values,attribute_value_id,NULL,id,product_variant_id,' . $this->input('product_variant_id'),
         ];
     }
 
@@ -34,8 +34,6 @@ class StoreVariantAttributeValueRequest extends FormRequest
         return [
             'product_variant_id.required' => 'Biến thể sản phẩm là bắt buộc',
             'product_variant_id.exists' => 'Biến thể sản phẩm không tồn tại',
-            'attribute_id.required' => 'Thuộc tính là bắt buộc',
-            'attribute_id.exists' => 'Thuộc tính không tồn tại',
             'attribute_value_id.required' => 'Giá trị thuộc tính là bắt buộc',
             'attribute_value_id.exists' => 'Giá trị thuộc tính không tồn tại',
         ];
