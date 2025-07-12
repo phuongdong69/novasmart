@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\VariantAttributeValueController;
-use App\Http\Controllers\AttributeController;
+use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\ProductThumbnailController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -18,15 +18,23 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\User\PaymentController;
+
+
 /*
 |--------------------------------------------------------------------------
 | Trang chủ
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return view('user.pages.home');
-})->name('home');
+use App\Http\Controllers\User\HomeController;
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// User-facing product list
+use App\Http\Controllers\User\ProductController as UserProductController;
+Route::get('/products', [UserProductController::class, 'index'])->name('products.list');
 
 /*
 |--------------------------------------------------------------------------
@@ -136,6 +144,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Cập nhật trạng thái order
     Route::post('orders/{order}/update-status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update_status');
     Route::resource('statuses', App\Http\Controllers\Admin\StatusController::class);
+    //brands
+    Route::resource('brands', BrandController::class);
 });
 
 /*
@@ -144,9 +154,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    Route::get('/user/pages.home', function () {
-        return view('user.pages.home');
-    })->name('user.pages.home');
+    Route::get('/user/pages/home', [HomeController::class, 'index'])->name('user.pages.home');
 });
 
 /*
@@ -154,7 +162,6 @@ Route::middleware('auth')->group(function () {
 | Giỏ hàng (dùng được cả khi chưa đăng nhập)
 |--------------------------------------------------------------------------
 */
-
 
 // Giỏ hàng
 Route::get('/shop-cart', [CartController::class, 'show'])->name('cart.show');
@@ -166,8 +173,10 @@ Route::delete('/cart/remove/{itemId}', [CartController::class, 'remove'])->name(
 | Thanh toán
 |--------------------------------------------------------------------------
 */
-Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
+Route::delete('/checkout/remove-voucher', [CheckoutController::class, 'removeVoucher'])->name('checkout.remove-voucher');
 Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.show');
 Route::post('/checkout/store', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/success', fn() => view('user.pages.checkout-success'))->name('checkout.success');
+Route::post('/vnpay-checkout', [PaymentController::class, 'vnpayCheckout'])->name('payment.vnpay.checkout');
+Route::get('/vnpay-return', [PaymentController::class, 'vnpayReturn'])->name('payment.vnpay.return');

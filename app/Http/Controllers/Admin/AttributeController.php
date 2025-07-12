@@ -1,66 +1,102 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Attribute;
 use App\Http\Requests\StoreAttributeRequest;
 use App\Http\Requests\UpdateAttributeRequest;
+use Illuminate\Http\Request;
 
 class AttributeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Hiển thị danh sách tất cả thuộc tính
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $query = Attribute::query();
+
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', "%$keyword%")
+                  ->orWhere('id', $keyword);
+            });
+        }
+
+        $attributes = $query->latest()->paginate(10)->withQueryString();
+        return view('admin.attributes.index', compact('attributes'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Hiển thị form tạo mới thuộc tính
      */
     public function create()
     {
-        //
+        return view('admin.attributes.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Lưu mới thuộc tính vào database
      */
     public function store(StoreAttributeRequest $request)
     {
-        //
+        try {
+            $attribute = Attribute::create($request->validated());
+            return redirect()->route('admin.attributes.index')
+                ->with('success', 'Thuộc tính đã được tạo thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Không thể tạo thuộc tính. Vui lòng thử lại.');
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Hiển thị chi tiết thuộc tính
      */
     public function show(Attribute $attribute)
     {
-        //
+        return view('admin.attributes.show', compact('attribute'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Hiển thị form chỉnh sửa thuộc tính
      */
     public function edit(Attribute $attribute)
     {
-        //
+        return view('admin.attributes.edit', compact('attribute'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Cập nhật thuộc tính
      */
     public function update(UpdateAttributeRequest $request, Attribute $attribute)
     {
-        //
+        try {
+            $attribute->update($request->validated());
+            return redirect()->route('admin.attributes.index')
+                ->with('success', 'Thuộc tính đã được cập nhật thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Không thể cập nhật thuộc tính. Vui lòng thử lại.');
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Xóa thuộc tính
      */
     public function destroy(Attribute $attribute)
     {
-        //
+        try {
+            $attribute->delete();
+            return redirect()->route('admin.attributes.index')
+                ->with('success', 'Thuộc tính đã được xóa thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Không thể xóa thuộc tính. Vui lòng thử lại.');
+        }
     }
+
+
 }

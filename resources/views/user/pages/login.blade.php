@@ -22,35 +22,35 @@
                                 <form class="text-start lg:py-20 py-8">
                                     <div class="grid grid-cols-1">
                                         <div class="mb-4">
-                                            <label class="font-semibold" for="LoginEmail">Email Address:</label>
-                                            <input id="LoginEmail" type="email" class="mt-3 w-full py-2 px-3 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-100 dark:border-gray-800 focus:ring-0" placeholder="name@example.com">
+                                            <label class="font-semibold" for="LoginEmail">Địa chỉ Email:</label>
+                                            <input id="LoginEmail" type="email" class="mt-3 w-full py-2 px-3 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-100 dark:border-gray-800 focus:ring-0" placeholder="ten@example.com">
                                         </div>
         
                                         <div class="mb-4">
-                                            <label class="font-semibold" for="LoginPassword">Password:</label>
-                                            <input id="LoginPassword" type="password" class="mt-3 w-full py-2 px-3 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-100 dark:border-gray-800 focus:ring-0" placeholder="Password:">
+                                            <label class="font-semibold" for="LoginPassword">Mật khẩu:</label>
+                                            <input id="LoginPassword" type="password" class="mt-3 w-full py-2 px-3 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-100 dark:border-gray-800 focus:ring-0" placeholder="Mật khẩu">
                                         </div>
         
                                         <div class="flex justify-between mb-4">
                                             <div class="flex items-center mb-0">
                                                 <input class="form-checkbox size-4 appearance-none rounded border border-gray-200 dark:border-gray-800 accent-orange-600 checked:appearance-auto dark:accent-orange-600 focus:border-orange-300 focus:ring focus:ring-offset-0 focus:ring-orange-200 focus:ring-opacity-50 me-2" type="checkbox" value="" id="RememberMe">
-                                                <label class="form-checkbox-label text-slate-400" for="RememberMe">Remember me</label>
+                                                <label class="form-checkbox-label text-slate-400" for="RememberMe">Ghi nhớ đăng nhập</label>
                                             </div>
-                                            <p class="text-slate-400 mb-0"><a href="forgot-password.html" class="text-slate-400">Forgot password ?</a></p>
+                                            <p class="text-slate-400 mb-0"><a href="forgot-password.html" class="text-slate-400">Quên mật khẩu?</a></p>
                                         </div>
         
                                         <div class="mb-4">
-                                            <input type="submit" class="py-2 px-5 inline-block tracking-wide align-middle duration-500 text-base text-center bg-orange-500 text-white rounded-md w-full" value="Login / Sign in">
+                                            <input type="submit" class="py-2 px-5 inline-block tracking-wide align-middle duration-500 text-base text-center bg-orange-500 text-white rounded-md w-full" value="Đăng nhập">
                                         </div>
         
                                         <div class="text-center">
-                                            <span class="text-slate-400 me-2">Don't have an account ?</span> <a href="signup.html" class="text-slate-900 dark:text-white font-bold inline-block">Sign Up</a>
+                                            <span class="text-slate-400 me-2">Chưa có tài khoản?</span> <a href="signup.html" class="text-slate-900 dark:text-white font-bold inline-block">Đăng ký</a>
                                         </div>
                                     </div>
                                 </form>
 
                                 <div class="text-center">
-                                    <p class="mb-0 text-slate-400">© <script>document.write(new Date().getFullYear())</script> Nova. Design with <i class="mdi mdi-heart text-red-600"></i> by <a  class="text-reset">Nova Dev</a>.</p>
+                                    <p class="mb-0 text-slate-400">© <script>document.write(new Date().getFullYear())</script> Nova. Thiết kế với <i class="mdi mdi-heart text-red-600"></i> bởi <a class="text-reset">Nova Dev</a>.</p>
                                 </div>
                             </div>
                         </div>

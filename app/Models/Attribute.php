@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Attribute extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'description'];
+    protected $fillable = [
+        'name',
+        'description',
+        'status_id'
+    ];
+    
+    protected $with = ['status'];
 
     public function values()
     {
@@ -18,5 +24,10 @@ class Attribute extends Model
     public function variantAttributeValues()
     {
         return $this->hasMany(VariantAttributeValue::class);
+    }
+    
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
     }
 }

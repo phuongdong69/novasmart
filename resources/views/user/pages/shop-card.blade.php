@@ -3,7 +3,9 @@
 @section('title', 'Giỏ hàng')
 
 @section('content')
+
 <section class="relative table w-full py-20 lg:py-24 bg-gray-50 dark:bg-slate-800">
+    
     <div class="container relative">
                 <div class="grid grid-cols-1 mt-14">
                     <h3 class="text-3xl leading-normal font-semibold">Giỏ hàng</h3>
@@ -20,6 +22,11 @@
 </section>
 
 <section class="relative md:py-24 py-16">
+    @if (session('error'))
+    <div class="w-full bg-red-500 text-white text-center py-3 font-semibold text-base">
+        {{ session('error') }}
+    </div>
+    @endif
     <div class="container relative">
         <div class="grid lg:grid-cols-1">
             <div class="relative overflow-x-auto shadow-sm dark:shadow-gray-800 rounded-md">

@@ -12,7 +12,8 @@ return new class extends Migration
     public function up()
 {
     Schema::create('origins', function (Blueprint $table) {
-        $table->id(); 
+        $table->id();
+        $table->foreignId('status_id')->nullable()->constrained('statuses')->after('id');
         $table->string('country'); 
         $table->timestamps(); 
     });

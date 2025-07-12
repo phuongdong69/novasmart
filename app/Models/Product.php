@@ -9,13 +9,19 @@ class Product extends Model
 {
     use HasFactory;
 
+    /**
+     * Các trường có thể gán hàng loạt cho Product
+     */
     protected $fillable = [
         'brand_id',
         'origin_id',
         'category_id',
+        'status_id',
         'name',
         'description',
     ];
+    
+    protected $with = ['status'];
 
     public function brand()
     {
@@ -36,20 +42,18 @@ class Product extends Model
     {
         return $this->hasMany(ProductVariant::class);
     }
-
+    public function thumbnails()
+    {
+        return $this->hasMany(ProductThumbnail::class);
+    }
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id');
     }
-
     public function statusLogs()
     {
         return $this->morphMany(StatusLog::class, 'loggable');
     }
-
-    /**
-     * Cập nhật trạng thái cho Product và ghi log
-     */
     public function updateStatus($status_id, $user_id = null, $note = null)
     {
         $this->status_id = $status_id;

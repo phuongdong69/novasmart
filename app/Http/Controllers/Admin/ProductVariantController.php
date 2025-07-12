@@ -14,8 +14,8 @@ class ProductVariantController extends Controller
      */
     public function index()
     {
-        $variants = ProductVariant::with('product')->latest()->paginate(10);
-        return view('admin.variants.index', compact('variants'));
+        $productVariants = ProductVariant::with('product')->latest()->paginate(10);
+        return view('admin.product_variants.index', ['productVariants' => $productVariants]);
     }
 
     /**
@@ -24,7 +24,7 @@ class ProductVariantController extends Controller
     public function create()
     {
         $products = Product::all();
-        return view('admin.variants.create', compact('products'));
+        return view('admin.product_variants.create', compact('products'));
     }
 
     /**
@@ -32,8 +32,13 @@ class ProductVariantController extends Controller
      */
     public function store(StoreProductVariantRequest $request)
     {
-        ProductVariant::create($request->validated());
-        return redirect()->route('product-variants.index')->with('success', 'Thêm biến thể thành công.');
+        $data = $request->validated();
+        if (empty($data['status_id'])) {
+            $activeStatusId = \App\Models\Status::where('code', 'active')->value('id');
+            $data['status_id'] = $activeStatusId;
+        }
+        ProductVariant::create($data);
+        return redirect()->route('admin.product_variants.index')->with('success', 'Thêm biến thể thành công.');
     }
 
     /**
@@ -50,7 +55,7 @@ class ProductVariantController extends Controller
     public function edit(ProductVariant $productVariant)
     {
         $products = Product::all();
-        return view('admin.variants.edit', compact('productVariant', 'products'));
+        return view('admin.product_variants.edit', compact('productVariant', 'products'));
     }
 
     /**
@@ -59,7 +64,7 @@ class ProductVariantController extends Controller
     public function update(UpdateProductVariantRequest $request, ProductVariant $productVariant)
     {
         $productVariant->update($request->validated());
-        return redirect()->route('product-variants.index')->with('success', 'Cập nhật biến thể thành công.');
+        return redirect()->route('admin.product_variants.index')->with('success', 'Cập nhật biến thể thành công.');
     }
 
     /**
@@ -68,6 +73,6 @@ class ProductVariantController extends Controller
     public function destroy(ProductVariant $productVariant)
     {
         $productVariant->delete();
-        return redirect()->route('product-variants.index')->with('success', 'Xóa biến thể thành công.');
+        return redirect()->route('admin.product_variants.index')->with('success', 'Xóa biến thể thành công.');
     }
 }
