@@ -3,48 +3,59 @@
 @section('title', 'Cập nhật chức vụ')
 
 @section('content')
-<div class="px-6 py-6">
-    <div class="max-w-xl mx-auto bg-white shadow rounded-lg p-6">
-        <h2 class="text-lg font-semibold mb-4">Cập nhật chức vụ</h2>
+    <div class="max-w-3xl mx-auto px-6 py-8">
+        <div class="bg-white shadow-lg rounded-xl p-6">
+            <div class="mb-6 border-b pb-4 flex justify-between items-center">
+                <h1 class="text-xl font-semibold text-gray-800">Cập nhật chức vụ</h1>
+                <a href="{{ route('admin.roles.index') }}" e
+                    class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
 
-        {{-- Hiển thị lỗi --}}
-        @if ($errors->any())
-            <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-700">
-                <ul class="list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('admin.roles.update', $role->id) }}" method="POST" class="space-y-4">
-            @csrf
-            @method('PUT')
-
-            <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Tên chức vụ</label>
-                <input type="text" name="name" id="name" value="{{ old('name', $role->name) }}" required
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-            </div>
-
-            <div>
-                <label for="description" class="block text-sm font-medium text-gray-700">Ghi chú</label>
-                <textarea name="description" id="description" rows="3"
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $role->description) }}</textarea>
-            </div>
-
-            <div class="flex items-center space-x-2">
-                <button type="submit"
-                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                    Cập nhật
-                </button>
-                <a href="{{ route('admin.roles.index') }}"
-                   class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">
                     Quay lại
                 </a>
+
             </div>
-        </form>
+
+            {{-- Thông báo lỗi --}}
+            @if ($errors->any())
+                <div class="mb-4 p-4 bg-red-100 border border-red-300 text-red-700 rounded-md">
+                    <ul class="list-disc list-inside text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Form --}}
+            <form action="{{ route('admin.roles.update', $role->id) }}" method="POST" class="space-y-6">
+                @csrf
+                @method('PUT')
+
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Tên chức vụ <span
+                            class="text-red-500">*</span></label>
+                    <input type="text" name="name" id="name" value="{{ old('name', $role->name) }}" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-400">
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Ghi chú</label>
+                    <textarea name="description" id="description" rows="4"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-400">{{ old('description', $role->description) }}</textarea>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
+                        💾 Cập nhật
+                    </button>
+                    <a href="{{ route('admin.roles.index') }}"
+                        class="bg-blue-500 hover:bg-red-700 text-white text-sm font-bold py-2 px-4 rounded">
+                        ❌ Hủy
+                    </a>
+
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 @endsection

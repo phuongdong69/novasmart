@@ -17,6 +17,12 @@ class AuthorSeeder extends Seeder
     {
         DB::table('users')->insert([
             [
+                'name' => 'Admin Nova',
+                'email' => 'admin@novasmart.vn',
+                'role_id' => 1, // <- role admin
+                'password' => bcrypt('admin1234'), // hoặc mật khẩu mạnh hơn
+            ],
+            [
                 'name' => 'John Michael',
                 'email' => 'john@creative-tim.com',
                 'role_id' => 2,
