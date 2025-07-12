@@ -135,6 +135,22 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('product_variants', ProductVariantController::class);
     //Variant_attribute_value
     Route::resource('variant_attribute_values', VariantAttributeValueController::class);
+    Route::put('users/{id}/toggle-status', [App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggleStatus');
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+    Route::post('users/{id}/update-role', [App\Http\Controllers\Admin\UserController::class, 'updateRole'])->name('users.updateRole');
+    Route::get('status', function() {
+        return view('admin.pages.status');
+    })->name('status');
+    Route::get('users/{user}/status-logs', [App\Http\Controllers\Admin\UserController::class, 'statusLogs'])->name('users.status_logs');
+    Route::get('products/{product}/status-logs', [App\Http\Controllers\Admin\ProductController::class, 'statusLogs'])->name('products.status_logs');
+    Route::get('orders/{order}/status-logs', [App\Http\Controllers\Admin\OrderController::class, 'statusLogs'])->name('orders.status_logs');
+    // Cập nhật trạng thái user
+    Route::post('users/{user}/update-status', [App\Http\Controllers\Admin\UserController::class, 'updateStatus'])->name('users.update_status');
+    // Cập nhật trạng thái product
+    Route::post('products/{product}/update-status', [App\Http\Controllers\Admin\ProductController::class, 'updateStatus'])->name('products.update_status');
+    // Cập nhật trạng thái order
+    Route::post('orders/{order}/update-status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update_status');
+    Route::resource('statuses', App\Http\Controllers\Admin\StatusController::class);
     //brands
     Route::resource('brands', BrandController::class);
 });

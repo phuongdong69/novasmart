@@ -5,5 +5,6 @@
 </head>
 <body>
     @include('admin.pages.body')
+
 </body>
 </html>
