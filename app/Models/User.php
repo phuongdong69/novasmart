@@ -4,18 +4,18 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Notifiable, SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Role;
+use App\Models\Cart;
 
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes;
+    use Notifiable, HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'role_id',
         'name',
@@ -26,38 +26,30 @@ class User extends Authenticatable
         'address',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
     /**
-     * Get the role that owns the user.
+     * Quan hệ: User thuộc về 1 Role
      */
     public function role(): BelongsTo
     {
-        return $this->belongsTo(Role::class, 'role_id');
+        return $this->belongsTo(Role::class, 'role_id', 'id');
     }
-    
-    public function cart()
+
+    /**
+     * Quan hệ: User có 1 giỏ hàng
+     */
+    public function cart(): HasOne
     {
         return $this->hasOne(Cart::class);
     }
-
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id');
@@ -82,3 +74,4 @@ class User extends Authenticatable
         ]);
     }
 }
+

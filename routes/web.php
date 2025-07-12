@@ -34,6 +34,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // User-facing product list
 use App\Http\Controllers\User\ProductController as UserProductController;
+
 Route::get('/products', [UserProductController::class, 'index'])->name('products.list');
 
 /*
@@ -97,7 +98,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     ]);
 
     // Roles
-    Route::resource('roles', RoleController::class);
+    Route::resource('roles', RoleController::class)->names([
+        'index' => 'roles.index',
+        'create'  => 'roles.create',
+        'store'   => 'roles.store',
+        'edit'    => 'roles.edit',
+        'update'  => 'roles.update',
+    ]);
 
     // Product Thumbnails
     Route::resource('product-thumbnails', ProductThumbnailController::class)->only(['index', 'create', 'store', 'edit', 'update'])->names([

@@ -11,8 +11,8 @@ class RoleController extends Controller
     // Hiển thị danh sách roles
     public function index()
     {
-        $roles = Role::with('users') // Load luôn danh sách user thuộc role
-            ->orderBy('id', 'desc')
+        $roles = Role::with('users')
+            ->orderBy('id', 'asc')
             ->paginate(10);
 
         return view('admin.roles.index', compact('roles'));
@@ -40,6 +40,12 @@ class RoleController extends Controller
     // Hiển thị form sửa
     public function edit($id)
     {
+        // Không cho phép sửa role đang gán cho chính user hiện tại
+        if (auth()->user()->role_id == $id) {
+            return redirect()->route('admin.roles.index')
+                ->with('error', 'Bạn không thể sửa chức vụ của chính mình.');
+        }
+
         $role = Role::findOrFail($id);
         return view('admin.roles.edit', compact('role'));
     }
@@ -47,6 +53,12 @@ class RoleController extends Controller
     // Cập nhật dữ liệu
     public function update(Request $request, $id)
     {
+        // Không cho phép cập nhật role đang gán cho chính user hiện tại
+        if (auth()->user()->role_id == $id) {
+            return redirect()->route('admin.roles.index')
+                ->with('error', 'Bạn không thể cập nhật chức vụ của chính mình.');
+        }
+
         $request->validate([
             'name' => 'required|unique:roles,name,' . $id,
             'description' => 'nullable',
