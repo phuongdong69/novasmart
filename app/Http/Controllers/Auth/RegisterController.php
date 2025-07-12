@@ -12,7 +12,7 @@ class RegisterController extends Controller
 {
     public function showRegistrationForm()
     {
-        return view('auth.register'); // Cập nhật đường dẫn view
+        return view('auth.register'); // Giao diện form đăng ký
     }
 
     public function register(Request $request)
@@ -25,30 +25,27 @@ class RegisterController extends Controller
             'terms' => 'accepted',
         ], [
             'fullname.required' => 'Họ và tên là bắt buộc.',
-            'fullname.string' => 'Họ và tên phải là chuỗi ký tự.',
-            'fullname.max' => 'Họ và tên không được vượt quá 255 ký tự.',
             'email.required' => 'Email là bắt buộc.',
-            'email.email' => 'Email không đúng định dạng.',
             'email.unique' => 'Email đã được sử dụng.',
-            'email.max' => 'Email không được vượt quá 255 ký tự.',
             'phone.required' => 'Số điện thoại là bắt buộc.',
-            'phone.string' => 'Số điện thoại phải là chuỗi ký tự.',
-            'phone.max' => 'Số điện thoại không được vượt quá 15 ký tự.',
             'password.required' => 'Mật khẩu là bắt buộc.',
-            'password.string' => 'Mật khẩu phải là chuỗi ký tự.',
-            'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự.',
             'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
             'terms.accepted' => 'Bạn phải đồng ý với Điều khoản sử dụng và Chính sách bảo mật.',
         ]);
 
-        // Tạo 1 role mới cho user
-        $role = Role::create([
-            'name' => 'user_' . uniqid(),
-            'description' => 'Role tự động tạo cho user: ' . $validatedData['fullname'],
-        ]);
+        // ✅ Lấy role 'user' đã được seed sẵn
+        $role = Role::where('name', 'user')->first();
 
-        // Tạo user và gán role_id vừa tạo
-        $user = User::create([
+        if (!$role) {
+            // Nếu chưa có role 'user' thì tạo (an toàn)
+            $role = Role::create([
+                'name' => 'user',
+                'description' => 'Người dùng mặc định',
+            ]);
+        }
+
+        // ✅ Tạo user và gán role_id là role 'user'
+        User::create([
             'role_id' => $role->id,
             'name' => $validatedData['fullname'],
             'email' => $validatedData['email'],
