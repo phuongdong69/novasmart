@@ -37,7 +37,7 @@ class VariantAttributeValueController extends Controller
     {
         $variantAttributeValue = VariantAttributeValue::create($request->validated());
 
-        return redirect()->route('variant_attribute_values.index')
+        return redirect()->route('admin.variant_attribute_values.index')
             ->with('success', 'Giá trị thuộc tính biến thể đã được tạo thành công!');
     }
 
@@ -64,7 +64,7 @@ class VariantAttributeValueController extends Controller
     {
         $variantAttributeValue->update($request->validated());
 
-        return redirect()->route('variant_attribute_values.index')
+        return redirect()->route('admin.variant_attribute_values.index')
             ->with('success', 'Giá trị thuộc tính biến thể đã được cập nhật thành công!');
     }
 
@@ -75,7 +75,7 @@ class VariantAttributeValueController extends Controller
     {
         $variantAttributeValue->delete();
 
-        return redirect()->route('variant_attribute_values.index')
+        return redirect()->route('admin.variant_attribute_values.index')
             ->with('success', 'Giá trị thuộc tính biến thể đã được xóa thành công!');
     }
 }

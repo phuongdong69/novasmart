@@ -16,9 +16,12 @@ class Product extends Model
         'brand_id',
         'origin_id',
         'category_id',
+        'status_id',
         'name',
         'description',
     ];
+    
+    protected $with = ['status'];
 
     public function brand()
     {
@@ -42,5 +45,10 @@ class Product extends Model
     public function thumbnails()
     {
         return $this->hasMany(ProductThumbnail::class);
+    }
+    
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
     }
 }

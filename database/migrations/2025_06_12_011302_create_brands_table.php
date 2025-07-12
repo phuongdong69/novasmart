@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('brands', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('status_id')->nullable()->constrained('statuses')->after('id');
             $table->string('name')->unique();
             $table->timestamps();
         });

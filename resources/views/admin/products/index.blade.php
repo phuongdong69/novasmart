@@ -66,10 +66,11 @@
     </td>
     <td class="px-6 py-4 whitespace-nowrap">
         @php
-            $isActive = $product->status == 1;
+            $status = $product->status;
         @endphp
-        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-            {{ $isActive ? 'Đang bán' : 'Ngừng bán' }}
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+              style="background-color: {{ $status->color ?? '#888' }};">
+            {{ $status->name ?? 'Chưa rõ' }}
         </span>
     </td>
     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -122,12 +123,14 @@
                                                                     @if($i == 0)
                                                                         <td class="px-6 py-4 whitespace-nowrap" rowspan="{{ $attrCount }}">
                                                                             @if($variant->status == 1)
-                                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                                                    Đang bán
+                                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                                                    style="background-color: {{ $variant->status->color ?? '#888' }};">
+                                                                                    {{ $variant->status->name ?? 'Chưa rõ' }}   
                                                                                 </span>
                                                                             @else
-                                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                                                    Ngừng bán
+                                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                                                    style="background-color: {{ $variant->status->color ?? '#888' }};">
+                                                                                    {{ $variant->status->name ?? 'Chưa rõ' }}
                                                                                 </span>
                                                                             @endif
                                                                         </td>
@@ -142,15 +145,10 @@
                                                                 <td class="px-6 py-4 text-gray-400">Không có thuộc tính</td>
                                                                 <td class="px-6 py-4 text-gray-400">Không có giá trị</td>
                                                                 <td class="px-6 py-4 whitespace-nowrap">
-                                                                    @if($variant->status == 1)
-                                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                                            Đang bán
-                                                                        </span>
-                                                                    @else
-                                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                                            Ngừng bán
-                                                                        </span>
-                                                                    @endif
+                                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+      style="background-color: {{ $variant->status->color ?? '#888' }};">
+    {{ $variant->status->name ?? 'Chưa rõ' }}
+</span>
                                                                 </td>
                                                             </tr>
                                                         @endif

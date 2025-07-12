@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('attributes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('status_id')->nullable()->constrained('statuses')->after('id');
             $table->string('name');
             $table->text('description')->nullable();
             $table->timestamps();

@@ -9,6 +9,7 @@ return new class extends Migration {
     {
         Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('status_id')->nullable()->constrained('statuses')->after('id');
             $table->string('code', 50)->unique();
             $table->enum('discount_type', ['percentage', 'fixed']);
             $table->decimal('discount_value', 10, 2);
