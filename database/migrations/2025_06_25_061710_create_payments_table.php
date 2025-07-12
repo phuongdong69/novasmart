@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('status_id')->nullable()->constrained('statuses')->after('id');
 
-            $table->enum('status', ['pending', 'completed', 'unpaid'])->default('pending')->change();
+            $table->enum('status', ['pending', 'completed', 'unpaid'])->default('pending');
             $table->string('payment_method'); 
             $table->decimal('amount', 12, 2);
             $table->string('transaction_code')->nullable();

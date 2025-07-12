@@ -10,11 +10,13 @@ class ProductVariant extends Model
     use HasFactory;
     protected $fillable = [
         'product_id',
+        'status_id',
         'sku',
         'price',
-        'status',
         'quantity',
     ];
+    
+    protected $with = ['status', 'variantAttributeValues'];
 
     public function product()
     {
@@ -29,6 +31,11 @@ class ProductVariant extends Model
     public function attributes()
     {
         return $this->belongsToMany(Attribute::class, 'variant_attribute_values')
-                    ->withPivot('attribute_value_id');
+                   ->withPivot('attribute_value_id');
+    }
+    
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
     }
 }

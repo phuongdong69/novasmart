@@ -43,8 +43,17 @@ class StoreProductRequest extends FormRequest
             'variants.*.status' => 'nullable|string|max:50',
 
             // Validate thuộc tính cho từng biến thể (nếu có)
-            'variants.*.attributes' => 'nullable|array',
-            'variants.*.attributes.*.attribute_id' => 'required_with:variants.*.attributes|exists:attributes,id|distinct',
+            'variants.*.attributes' => [
+                'nullable',
+                'array',
+                function ($attribute, $value, $fail) {
+                    $attributeIds = collect($value)->pluck('attribute_id')->toArray();
+                    if (count($attributeIds) !== count(array_unique($attributeIds))) {
+                        $fail('Mỗi biến thể không được có thuộc tính trùng lặp.');
+                    }
+                },
+            ],
+            'variants.*.attributes.*.attribute_id' => 'required_with:variants.*.attributes|exists:attributes,id',
             'variants.*.attributes.*.value' => 'required_with:variants.*.attributes|string|max:255',
 
             // Nếu muốn thêm thuộc tính cho sản phẩm (không phải cho biến thể)
@@ -99,7 +108,7 @@ class StoreProductRequest extends FormRequest
             if (empty($signatures)) return;
             // Lấy tất cả các biến thể đã tồn tại có cùng signature
             $existing = VariantAttributeValue::select('product_variant_id')
-                ->with('productVariant.attributeValues')
+                ->with('productVariant.variantAttributeValues')
                 ->get()
                 ->groupBy('product_variant_id')
                 ->filter(function($group) use ($signatures) {

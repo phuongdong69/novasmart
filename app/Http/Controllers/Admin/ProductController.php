@@ -46,6 +46,11 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
 {
     $data = $request->validated();
+    // Lấy status_id mặc định theo code 'active' nếu chưa có
+    if (empty($data['status_id'])) {
+        $activeStatusId = \App\Models\Status::where('code', 'active')->value('id');
+        $data['status_id'] = $activeStatusId;
+    }
 
     // Tìm hoặc tạo Brand
     if (!empty($data['brand_name'])) {
