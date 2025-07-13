@@ -25,20 +25,34 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
-
     public function voucher()
     {
         return $this->belongsTo(Voucher::class);
     }
-
     public function payment()
     {
         return $this->belongsTo(Payment::class);
     }
-
     public function orderDetails()
     {
         return $this->hasMany(OrderDetail::class);
     }
-    
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'status_id');
+    }
+    public function statusLogs()
+    {
+        return $this->morphMany(StatusLog::class, 'loggable');
+    }
+    public function updateStatus($status_id, $user_id = null, $note = null)
+    {
+        $this->status_id = $status_id;
+        $this->save();
+        $this->statusLogs()->create([
+            'status_id' => $status_id,
+            'user_id' => $user_id,
+            'note' => $note,
+        ]);
+    }
 }

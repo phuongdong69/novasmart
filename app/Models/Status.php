@@ -10,13 +10,7 @@ class Status extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'code',
-        'type',
-        'color',
-        'priority',
-        'is_active',
-        'description'
+        'name', 'type', 'color', 'priority', 'is_active', 'description'
     ];
 
     protected $casts = [
@@ -46,11 +40,5 @@ class Status extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
-    }
-
-    // Get status by code
-    public static function getByCode($code)
-    {
-        return self::where('code', $code)->first();
     }
 }
