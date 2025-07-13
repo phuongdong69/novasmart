@@ -20,6 +20,8 @@ use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\User\PaymentController;
+use App\Http\Controllers\User\ProfileController;
+
 
 
 /*
@@ -138,7 +140,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('users/{id}/toggle-status', [App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggleStatus');
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
     Route::post('users/{id}/update-role', [App\Http\Controllers\Admin\UserController::class, 'updateRole'])->name('users.updateRole');
-    Route::get('status', function() {
+    Route::get('status', function () {
         return view('admin.pages.status');
     })->name('status');
     Route::get('users/{user}/status-logs', [App\Http\Controllers\Admin\UserController::class, 'statusLogs'])->name('users.status_logs');
@@ -162,6 +164,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 */
 Route::middleware('auth')->group(function () {
     Route::get('/user/pages/home', [HomeController::class, 'index'])->name('user.pages.home');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 /*

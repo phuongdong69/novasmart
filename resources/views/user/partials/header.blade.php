@@ -137,10 +137,12 @@
                     <button data-dropdown-toggle="dropdown" class="dropdown-toggle items-center" type="button">
                         <span
                             class="size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full border border-orange-500 bg-orange-500 text-white">
-                            <img src="{{ Auth::user()->avatar ?? asset('assets/user/images/client/16.jpg') }}"
-                                class="rounded-full" alt="avatar">
+                            <img src="{{ Auth::user()->image_user ? asset('storage/' . Auth::user()->image_user) : asset('assets/user/images/client/16.jpg') }}"
+                                class="rounded-full w-9 h-9 object-cover" alt="avatar">
                         </span>
                     </button>
+
+
                     <!-- Dropdown menu -->
                     <div class="dropdown-menu absolute end-0 m-0 mt-4 z-10 w-48 rounded-md overflow-hidden bg-white dark:bg-slate-900 shadow-sm dark:shadow-gray-700 hidden"
                         onclick="event.stopPropagation();">
@@ -149,7 +151,7 @@
                                 <p class="text-slate-400 pt-2 px-4">Xin chào {{ Auth::user()->name }}!</p>
                             </li>
                             <li>
-                                <a href="{{ url('profile') }}"
+                                <a href="{{ route('profile.edit') }}"
                                     class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white">
                                     <i data-feather="user" class="h-4 w-4 me-2"></i>Tài khoản
                                 </a>
@@ -175,6 +177,7 @@
                     </div>
                 </li>
             @endauth
+
 
             <!-- Nếu chưa đăng nhập thì hiển thị Sign in / Sign up -->
             @guest
