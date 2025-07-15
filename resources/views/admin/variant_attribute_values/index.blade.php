@@ -48,8 +48,8 @@ Danh sách giá trị biến thể
                                 @forelse ($variantAttributeValues as $value)
                                     <tr class="border-b dark:border-white/40 hover:bg-gray-50 transition">
                                         <td class="px-6 py-3 text-sm">{{ $loop->index + 1 }}</td>
-                                        <td class="px-6 py-3 text-sm">{{ $value->variant->sku }}</td>
-                                        <td class="px-6 py-3 text-sm">{{ $value->value }}</td>
+                                        <td class="px-6 py-3 text-sm">{{ $value->productVariant->sku ?? '' }}</td>
+                                        <td class="px-6 py-3 text-sm">{{ $value->attributeValue->value ?? '' }}</td>
                                         <td class="px-6 py-3 text-sm">
                                             <a href="{{ route('admin.variant_attribute_values.edit', $value->id) }}" class="text-blue-600 hover:underline mr-2">Sửa</a>
                                             <form action="{{ route('admin.variant_attribute_values.destroy', $value->id) }}" method="post" style="display:inline-block;">

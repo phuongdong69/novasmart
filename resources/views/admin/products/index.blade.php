@@ -62,6 +62,7 @@
         {{ $product->origin->country ?? 'Chưa có xuất xứ' }}
     </td>
     
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
         {{ $product->category->name ?? 'Chưa phân loại' }}
     </td>
     <td class="px-6 py-4 whitespace-nowrap">
