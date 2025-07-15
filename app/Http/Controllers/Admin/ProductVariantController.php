@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ProductVariant;
 use App\Http\Requests\StoreProductVariantRequest;
 use App\Http\Requests\UpdateProductVariantRequest;
+use App\Models\Product;
 
 class ProductVariantController extends Controller
 {
@@ -24,7 +25,8 @@ class ProductVariantController extends Controller
     public function create()
     {
         $products = Product::all();
-        return view('admin.product_variants.create', compact('products'));
+        $statuses = \App\Models\Status::where('type', 'product_variant')->get();
+        return view('admin.product_variants.create', compact('products', 'statuses'));
     }
 
     /**
@@ -34,7 +36,7 @@ class ProductVariantController extends Controller
     {
         $data = $request->validated();
         if (empty($data['status_id'])) {
-            $activeStatusId = \App\Models\Status::where('code', 'active')->value('id');
+            $activeStatusId = \App\Models\Status::where('type', 'product_variant')->where('code', 'active')->value('id');
             $data['status_id'] = $activeStatusId;
         }
         ProductVariant::create($data);
@@ -55,7 +57,8 @@ class ProductVariantController extends Controller
     public function edit(ProductVariant $productVariant)
     {
         $products = Product::all();
-        return view('admin.product_variants.edit', compact('productVariant', 'products'));
+        $statuses = \App\Models\Status::where('type', 'product_variant')->get();
+        return view('admin.product_variants.edit', compact('productVariant', 'products', 'statuses'));
     }
 
     /**

@@ -16,16 +16,47 @@ Sửa biến thể sản phẩm
                         @csrf
                         @method('PUT')
                         <div class="mb-4">
-                            <label for="name" class="block text-gray-700 font-bold mb-2">Tên biến thể <span class="text-red-500">*</span></label>
-                            <input type="text" name="name" id="name" class="border border-slate-300 rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring focus:border-blue-300" value="{{ old('name', $productVariant->name) }}" required>
-                            @error('name')
+                            <label for="product_id" class="block text-gray-700 font-bold mb-2">Sản phẩm <span class="text-red-500">*</span></label>
+                            <select name="product_id" id="product_id" class="border border-slate-300 rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring focus:border-blue-300" required>
+                                <option value="">-- Chọn sản phẩm --</option>
+                                @foreach ($products as $product)
+                                    <option value="{{ $product->id }}" {{ old('product_id', $productVariant->product_id) == $product->id ? 'selected' : '' }}>{{ $product->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('product_id')
                                 <span class="text-red-500 text-xs">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="mb-4">
-                            <label for="description" class="block text-gray-700 font-bold mb-2">Mô tả</label>
-                            <textarea name="description" id="description" rows="3" class="border border-slate-300 rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring focus:border-blue-300">{{ old('description', $productVariant->description) }}</textarea>
-                            @error('description')
+                            <label for="status_id" class="block text-gray-700 font-bold mb-2">Trạng thái</label>
+                            <select name="status_id" id="status_id" class="border border-slate-300 rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring focus:border-blue-300">
+                                <option value="">-- Chọn trạng thái --</option>
+                                @foreach ($statuses as $status)
+                                    <option value="{{ $status->id }}" {{ old('status_id', $productVariant->status_id) == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('status_id')
+                                <span class="text-red-500 text-xs">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="mb-4">
+                            <label for="sku" class="block text-gray-700 font-bold mb-2">SKU <span class="text-red-500">*</span></label>
+                            <input type="text" name="sku" id="sku" class="border border-slate-300 rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring focus:border-blue-300" value="{{ old('sku', $productVariant->sku) }}" required>
+                            @error('sku')
+                                <span class="text-red-500 text-xs">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="mb-4">
+                            <label for="price" class="block text-gray-700 font-bold mb-2">Giá <span class="text-red-500">*</span></label>
+                            <input type="number" name="price" id="price" class="border border-slate-300 rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring focus:border-blue-300" value="{{ old('price', $productVariant->price) }}" step="0.01" required>
+                            @error('price')
+                                <span class="text-red-500 text-xs">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="mb-4">
+                            <label for="quantity" class="block text-gray-700 font-bold mb-2">Số lượng <span class="text-red-500">*</span></label>
+                            <input type="number" name="quantity" id="quantity" class="border border-slate-300 rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring focus:border-blue-300" value="{{ old('quantity', $productVariant->quantity) }}" required>
+                            @error('quantity')
                                 <span class="text-red-500 text-xs">{{ $message }}</span>
                             @enderror
                         </div>

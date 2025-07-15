@@ -16,21 +16,26 @@ Sửa giá trị biến thể
                         @csrf
                         @method('PUT')
                         <div class="mb-4">
-                            <label for="variant_id" class="block text-gray-700 font-bold mb-2">Biến thể <span class="text-red-500">*</span></label>
-                            <select name="variant_id" id="variant_id" class="border border-slate-300 rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring focus:border-blue-300" required>
+                            <label for="product_variant_id" class="block text-gray-700 font-bold mb-2">Biến thể <span class="text-red-500">*</span></label>
+                            <select name="product_variant_id" id="product_variant_id" class="border border-slate-300 rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring focus:border-blue-300" required>
                                 <option value="">-- Chọn biến thể --</option>
                                 @foreach ($variants as $variant)
-                                    <option value="{{ $variant->id }}" {{ old('variant_id', $variantAttributeValue->variant_id) == $variant->id ? 'selected' : '' }}>{{ $variant->name }}</option>
+                                    <option value="{{ $variant->id }}" {{ old('product_variant_id', $variantAttributeValue->product_variant_id) == $variant->id ? 'selected' : '' }}>{{ $variant->name }}</option>
                                 @endforeach
                             </select>
-                            @error('variant_id')
+                            @error('product_variant_id')
                                 <span class="text-red-500 text-xs">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="mb-4">
-                            <label for="value" class="block text-gray-700 font-bold mb-2">Giá trị <span class="text-red-500">*</span></label>
-                            <input type="text" name="value" id="value" class="border border-slate-300 rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring focus:border-blue-300" value="{{ old('value', $variantAttributeValue->value) }}" required>
-                            @error('value')
+                            <label for="attribute_value_id" class="block text-gray-700 font-bold mb-2">Giá trị thuộc tính <span class="text-red-500">*</span></label>
+                            <select name="attribute_value_id" id="attribute_value_id" class="border border-slate-300 rounded px-3 py-2 w-full text-sm focus:outline-none focus:ring focus:border-blue-300" required>
+                                <option value="">-- Chọn giá trị thuộc tính --</option>
+                                @foreach ($attributeValues as $attrValue)
+                                    <option value="{{ $attrValue->id }}" {{ old('attribute_value_id', $variantAttributeValue->attribute_value_id) == $attrValue->id ? 'selected' : '' }}>{{ $attrValue->value }}</option>
+                                @endforeach
+                            </select>
+                            @error('attribute_value_id')
                                 <span class="text-red-500 text-xs">{{ $message }}</span>
                             @enderror
                         </div>

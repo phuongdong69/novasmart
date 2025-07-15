@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -16,15 +15,15 @@ use App\Models\StatusLog;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasFactory, SoftDeletes;
+    use Notifiable, HasFactory;
 
     protected $fillable = [
+        'status_id',
         'role_id',
         'name',
         'email',
         'password',
         'phoneNumber',
-        'image_user',
         'address',
     ];
 
