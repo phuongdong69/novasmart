@@ -13,29 +13,24 @@ class ProductVariant extends Model
         'status_id',
         'sku',
         'price',
+        'status',
         'quantity',
     ];
     
-    protected $with = ['status', 'variantAttributeValues'];
+    protected $with = ['status'];
 
     public function product()
     {
         return $this->belongsTo(Product::class);
     }
 
-    public function variantAttributeValues()
-    {
-        return $this->hasMany(VariantAttributeValue::class);
-    }
-
-    public function attributes()
-    {
-        return $this->belongsToMany(Attribute::class, 'variant_attribute_values')
-                   ->withPivot('attribute_value_id');
-    }
-    
     public function status()
     {
         return $this->belongsTo(Status::class);
+    }
+
+    public function variantAttributeValues()
+    {
+        return $this->hasMany(VariantAttributeValue::class);
     }
 }

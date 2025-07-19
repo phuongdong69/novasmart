@@ -10,7 +10,6 @@ class VariantAttributeValue extends Model
     use HasFactory;
     protected $fillable = [
         'product_variant_id',
-        'attribute_id',
         'attribute_value_id',
     ];
 
@@ -19,11 +18,7 @@ class VariantAttributeValue extends Model
         return $this->belongsTo(ProductVariant::class);
     }
 
-    public function attribute()
-    {
-        return $this->belongsTo(Attribute::class);
-    }
-
+    // Bỏ quan hệ attribute vì không có cột attribute_id
     public function attributeValue()
     {
         return $this->belongsTo(AttributeValue::class);

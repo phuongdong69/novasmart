@@ -52,12 +52,12 @@
                                     @forelse ($productVariants as $productVariant)
                                         <tr class="border-b dark:border-white/40 hover:bg-gray-50 transition">
                                             <td class="px-6 py-3 text-sm">{{ $loop->index + 1 }}</td>
-                                            <td class="px-6 py-3 text-sm">{{ $productVariant->product ? $productVariant->product->name : '' }}</td>
+                                            <td class="px-6 py-3 text-sm">{{ $productVariant->product && is_object($productVariant->product) ? $productVariant->product->name : '' }}</td>
                                             <td class="px-6 py-3 text-sm">{{ $productVariant->sku }}</td>
                                             <td class="px-6 py-3 text-sm">{{ number_format($productVariant->price, 0, ',', '.') }}₫</td>
                                             <td class="px-6 py-3 text-sm">{{ $productVariant->quantity }}</td>
                                             <td class="px-6 py-3 text-sm">
-                                                @if($productVariant->status)
+                                                @if($productVariant->status && is_object($productVariant->status))
                                                     <span class="inline-block px-2 py-1 rounded text-white text-xs font-semibold"
                                                         style="background-color: {{ $productVariant->status->color ?? '#888' }};">
                                                         {{ $productVariant->status->name }}

@@ -21,7 +21,7 @@ use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\ProfileController;
-
+use App\Http\Controllers\Admin\OrderController;
 
 
 /*
@@ -156,6 +156,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('statuses', App\Http\Controllers\Admin\StatusController::class);
     //brands
     Route::resource('brands', BrandController::class);
+    Route::resource('orders', OrderController::class);
 });
 
 /*

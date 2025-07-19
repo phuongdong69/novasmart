@@ -22,8 +22,8 @@ class ProductController extends Controller
             'brand',
             'origin',
             'category',
-            'variants.variantAttributeValues.attribute',
-            'variants.variantAttributeValues.attributeValue',
+            // 'variants.variantAttributeValues.attribute',
+            // 'variants.variantAttributeValues.attributeValue',
             'status',
         ])->orderBy('id', 'desc')->paginate(10)->withQueryString();
         return view('admin.products.index', compact('products'));
