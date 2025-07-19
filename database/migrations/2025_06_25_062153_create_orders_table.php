@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-         Schema::create('orders', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('status_id')->nullable()->constrained('statuses')->after('id');
+            $table->foreignId('status_id')->nullable()->constrained('statuses')->cascadeOnDelete()->after('id');
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('voucher_id')->nullable()->constrained('vouchers')->nullOnDelete();
             $table->foreignId('payment_id')->nullable()->constrained('payments')->nullOnDelete();
@@ -25,7 +25,6 @@ return new class extends Migration
 
             $table->decimal('total_price', 12, 2)->default(0);
             $table->string('order_code')->unique();
-            $table->enum('status', ['pending', 'unpaid', 'paid', 'cancelled'])->default('pending');
 
             $table->timestamps();
         });

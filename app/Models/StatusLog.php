@@ -7,16 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 class StatusLog extends Model
 {
     protected $fillable = [
-        'loggable_type', 'loggable_id', 'status_id', 'user_id', 'note'
+        'status_id',
+        'user_id',
+        'note',
+        'loggable_id',
+        'loggable_type',
     ];
+
+    public function loggable()
+    {
+        return $this->morphTo();
+    }
 
     public function status()
     {
         return $this->belongsTo(Status::class);
     }
 
-    public function loggable()
+    public function user()
     {
-        return $this->morphTo();
+        return $this->belongsTo(User::class);
     }
-} 
+}
