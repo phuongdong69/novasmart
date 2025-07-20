@@ -23,7 +23,7 @@ class Attribute extends Model
 
     public function variantAttributeValues()
     {
-        return $this->hasMany(VariantAttributeValue::class);
+        return $this->hasManyThrough(VariantAttributeValue::class, AttributeValue::class);
     }
     
     public function status()

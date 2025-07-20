@@ -11,7 +11,7 @@ class UpdateProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -28,8 +28,9 @@ class UpdateProductRequest extends FormRequest
             'origin_name' => 'nullable|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'category_name' => 'nullable|string|max:255',
-            'name' => 'required|string|max:255|unique:products,name,' . $this->route('product'),
+            'name' => 'required|string|max:255|unique:products,name,' . $this->route('product')->id,
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ];
     }
 }

@@ -12,41 +12,28 @@
         {{-- Alerts --}}
         <div class="px-6 mt-4">
           @if (session('success'))
-          <div class="alert alert-success">{{ session('success') }}</div>
+          <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md mb-4">{{ session('success') }}</div>
           @endif
           @if (session('error'))
-          <div class="alert alert-danger">{{ session('error') }}</div>
+          <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">{{ session('error') }}</div>
           @endif
         </div>
         {{-- Form --}}
         <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" class="px-6 pt-4 pb-6">
           @csrf
-          @method('PUT')
+          @method('PATCH')
           {{-- Tên sản phẩm --}}
           <div class="mb-4">
             <label for="name" class="block text-sm font-medium text-slate-600 mb-2">Tên sản phẩm</label>
-            <input type="text" name="name" id="name" class="form-input w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 @error('name') border-red-500 @enderror" placeholder="Nhập tên sản phẩm" value="{{ old('name', $product->name) }}">
+            <input type="text" name="name" id="name" class="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 @error('name') border-red-500 @enderror" placeholder="Nhập tên sản phẩm" value="{{ old('name', $product->name) }}">
             @error('name')
             <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
             @enderror
           </div>
-          {{-- Ảnh sản phẩm --}}
-          @if($product->thumbnails && $product->thumbnails->count())
-            <div class="flex flex-wrap gap-4 mb-4">
-              @foreach($product->thumbnails as $thumb)
-                <div>
-                  <img src="{{ asset($thumb->url) }}" alt="Thumbnail" class="w-24 h-24 object-cover rounded shadow">
-                  @if($thumb->is_primary)
-                    <div class="text-xs text-blue-600 text-center mt-1">Ảnh chính</div>
-                  @endif
-                </div>
-              @endforeach
-            </div>
-          @endif
           {{-- Thương hiệu --}}
           <div class="mb-4">
             <label for="brand_id" class="block text-sm font-medium text-slate-600 mb-2">Thương hiệu</label>
-            <select name="brand_id" id="brand_id" class="form-input w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 @error('brand_id') border-red-500 @enderror">
+            <select name="brand_id" id="brand_id" class="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 @error('brand_id') border-red-500 @enderror">
               @foreach($brands as $brand)
                 <option value="{{ $brand->id }}" {{ $product->brand_id == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
               @endforeach
@@ -58,9 +45,11 @@
           {{-- Xuất xứ --}}
           <div class="mb-4">
             <label for="origin_id" class="block text-sm font-medium text-slate-600 mb-2">Xuất xứ</label>
-            <select name="origin_id" id="origin_id" class="form-input w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 @error('origin_id') border-red-500 @enderror">
+            <select name="origin_id" id="origin_id" class="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 @error('origin_id') border-red-500 @enderror">
               @foreach($origins as $origin)
-                <option value="{{ $origin->id }}" {{ $product->origin_id == $origin->id ? 'selected' : '' }}>{{ $origin->name }}</option>
+                <option value="{{ $origin->id }}" {{ $product->origin_id == $origin->id ? 'selected' : '' }}>
+                    {{ $origin->name ?? $origin->country ?? 'Không rõ' }}
+                </option>
               @endforeach
             </select>
             @error('origin_id')
@@ -70,7 +59,7 @@
           {{-- Danh mục --}}
           <div class="mb-4">
             <label for="category_id" class="block text-sm font-medium text-slate-600 mb-2">Danh mục</label>
-            <select name="category_id" id="category_id" class="form-input w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 @error('category_id') border-red-500 @enderror">
+            <select name="category_id" id="category_id" class="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 @error('category_id') border-red-500 @enderror">
               @foreach($categories as $category)
                 <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
               @endforeach
@@ -82,25 +71,36 @@
           {{-- Mô tả --}}
           <div class="mb-4">
             <label for="description" class="block text-sm font-medium text-slate-600 mb-2">Mô tả</label>
-            <textarea name="description" id="description" rows="4" class="form-input w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 @error('description') border-red-500 @enderror" placeholder="Nhập mô tả">{{ old('description', $product->description) }}</textarea>
+            <textarea name="description" id="description" rows="4" class="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 @error('description') border-red-500 @enderror" placeholder="Nhập mô tả">{{ old('description', $product->description) }}</textarea>
             @error('description')
             <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
             @enderror
           </div>
-          {{-- Ảnh sản phẩm --}}
+          {{-- Ảnh sản phẩm mới --}}
           <div class="mb-4">
-            <label for="image" class="block text-sm font-medium text-slate-600 mb-2">Ảnh sản phẩm</label>
-                            <input type="file" class="form-control" id="image" name="image">
-                            @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" alt="Ảnh sản phẩm" class="img-thumbnail mt-2" width="120">
-                            @endif
-                        </div>
-                        <button type="submit" class="btn btn-primary">Cập nhật</button>
-                        <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Quay lại</a>
-                    </form>
+            <label for="image" class="block text-sm font-medium text-slate-600 mb-2">Ảnh sản phẩm mới</label>
+            <input type="file" class="w-full border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" id="image" name="image" accept="image/*">
+            @php
+              $primaryThumbnail = $product->thumbnails->where('is_primary', 1)->first();
+            @endphp
+            @if($primaryThumbnail)
+              <div class="mt-2">
+                <label class="block text-sm font-medium text-slate-600 mb-2">Ảnh chính hiện tại</label>
+                <img src="{{ asset('storage/' . $primaryThumbnail->url) }}" alt="Ảnh sản phẩm" style="width: 80px; height: 80px; object-fit: cover; border-radius: 0.375rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div style="width: 80px; height: 80px; background-color: #f3f4f6; border-radius: 0.375rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); display: none; align-items: center; justify-content: center;">
+                  <span style="color: #6b7280; font-size: 0.875rem;">Không có ảnh</span>
                 </div>
-            </div>
-        </div>
+              </div>
+            @endif
+          </div>
+          {{-- Buttons --}}
+          <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+            <button type="submit" style="padding: 8px 24px; background-color: #2563eb; color: white; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">Cập nhật</button>
+            <a href="{{ route('admin.products.index') }}" style="padding: 8px 24px; background-color: #9ca3af; color: white; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-block; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#6b7280'" onmouseout="this.style.backgroundColor='#9ca3af'">Quay lại</a>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 @endsection
