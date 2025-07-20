@@ -12,13 +12,13 @@ class Order extends Model
     'user_id',
     'voucher_id', 
     'payment_id',
+    'status_id',
     'name',
     'phoneNumber',
     'email',
     'address',
     'total_price',
     'order_code',
-    'status',
 ];
 
     public function user()
@@ -37,7 +37,7 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class);
     }
-    public function status()
+    public function orderStatus()
     {
         return $this->belongsTo(Status::class, 'status_id');
     }
