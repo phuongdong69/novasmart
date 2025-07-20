@@ -22,14 +22,40 @@
                         <td class="px-4 py-2">{{ $order->user->name ?? '-' }}</td>
                         <td class="px-4 py-2">{{ number_format($order->total_amount, 0, ',', '.') }} ₫</td>
                         <td class="px-4 py-2">
-                            <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST" class="inline">
-                                @csrf
-                                <select name="status_id" onchange="this.form.submit()" class="border rounded px-2 py-1">
-                                    @foreach(\App\Models\Status::where('type', 'order')->where('is_active', 1)->orderBy('priority')->get() as $status)
-                                        <option value="{{ $status->id }}" @if($order->status_id == $status->id) selected @endif>{{ $status->name }}</option>
-                                    @endforeach
-                                </select>
-                            </form>
+                            @php
+                                $orderStatuses = \App\Models\Status::where('type', 'order')->where('is_active', 1)->orderBy('priority')->get();
+                                $currentStatus = $order->orderStatus;
+                                
+                                // Kiểm tra xem trạng thái hiện tại có phải là "Đã giao hàng" không
+                                $isDelivered = $currentStatus && (str_contains(strtolower($currentStatus->name), 'đã giao hàng') || str_contains(strtolower($currentStatus->name), 'delivered') || str_contains(strtolower($currentStatus->name), 'hoàn thành'));
+                                
+                                // Tìm trạng thái tiếp theo
+                                $currentStatusIndex = $currentStatus ? $orderStatuses->search(function($status) use ($currentStatus) {
+                                    return $status->id == $currentStatus->id;
+                                }) : -1;
+                                $nextStatus = $currentStatusIndex >= 0 && $currentStatusIndex < $orderStatuses->count() - 1 ? $orderStatuses->get($currentStatusIndex + 1) : null;
+                                $isLastStatus = $currentStatusIndex === $orderStatuses->count() - 1;
+                            @endphp
+                            
+                            <div class="flex items-center gap-2 flex-wrap" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                @if($nextStatus && !$isLastStatus && !$isDelivered)
+                                    <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST" style="display: inline-block; margin: 0; padding: 0;">
+                                        @csrf
+                                        <input type="hidden" name="status_id" value="{{ $nextStatus->id }}">
+                                        <button type="submit" style="display: inline-block; padding: 6px 12px; background-color: {{ $currentStatus ? ($currentStatus->color ?? '#10b981') : '#10b981' }}; color: white; border: none; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer; min-width: 80px; text-decoration: none; line-height: 1.2; transition: background-color 0.2s ease;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                                            {{ $currentStatus ? $currentStatus->name : 'Chưa có trạng thái' }}
+                                        </button>
+                                    </form>
+                                @elseif($isDelivered)
+                                    <span style="display: inline-block; padding: 6px 12px; background-color: {{ $currentStatus ? ($currentStatus->color ?? '#10b981') : '#10b981' }}; color: white; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: not-allowed; min-width: 80px; text-decoration: none; line-height: 1.2;">
+                                        {{ $currentStatus ? $currentStatus->name : 'Chưa có trạng thái' }}
+                                    </span>
+                                @else
+                                    <span style="display: inline-block; padding: 6px 12px; background-color: #d1d5db; color: #4b5563; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: not-allowed; min-width: 80px; text-decoration: none; line-height: 1.2;">
+                                        Hoàn thành
+                                    </span>
+                                @endif
+                            </div>
                         </td>
                         <td class="px-4 py-2">
                             <a href="{{ route('admin.orders.status_logs', $order) }}" class="text-blue-500">Xem lịch sử</a>
