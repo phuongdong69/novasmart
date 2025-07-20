@@ -18,9 +18,13 @@ class VariantAttributeValue extends Model
         return $this->belongsTo(ProductVariant::class);
     }
 
-    // Bỏ quan hệ attribute vì không có cột attribute_id
     public function attributeValue()
     {
         return $this->belongsTo(AttributeValue::class);
+    }
+
+    public function attribute()
+    {
+        return $this->hasOneThrough(Attribute::class, AttributeValue::class, 'id', 'id', 'attribute_value_id', 'attribute_id');
     }
 }

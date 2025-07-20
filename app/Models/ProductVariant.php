@@ -13,7 +13,6 @@ class ProductVariant extends Model
         'status_id',
         'sku',
         'price',
-        'status',
         'quantity',
     ];
     

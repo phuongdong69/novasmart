@@ -10,6 +10,7 @@ use App\Models\Origin;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -22,8 +23,7 @@ class ProductController extends Controller
             'brand',
             'origin',
             'category',
-            // 'variants.variantAttributeValues.attribute',
-            // 'variants.variantAttributeValues.attributeValue',
+            'variants.variantAttributeValues.attributeValue.attribute',
             'status',
         ])->orderBy('id', 'desc')->paginate(10)->withQueryString();
         return view('admin.products.index', compact('products'));
@@ -187,7 +187,54 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        $product->update($request->validated());
+        $oldData = $product->toArray();
+        $data = $request->validated();
+        
+        // Xử lý ảnh mới nếu có
+        if ($request->hasFile('image')) {
+            // Xóa ảnh cũ (primary thumbnail)
+            $oldPrimaryThumbnail = $product->thumbnails()->where('is_primary', 1)->first();
+            if ($oldPrimaryThumbnail) {
+                // Xóa file ảnh cũ
+                if (Storage::disk('public')->exists($oldPrimaryThumbnail->url)) {
+                    Storage::disk('public')->delete($oldPrimaryThumbnail->url);
+                }
+                // Xóa record trong database
+                $oldPrimaryThumbnail->delete();
+            }
+            
+            // Upload ảnh mới
+            $path = $request->file('image')->store('uploads/products/thumbnails', 'public');
+            $product->thumbnails()->create([
+                'url' => $path,
+                'is_primary' => 1,
+                'sort_order' => 0,
+            ]);
+        }
+        
+        // Cập nhật thông tin sản phẩm
+        $product->update($data);
+        
+        // Lưu lịch sử chỉnh sửa
+        $newData = $product->fresh()->toArray();
+        // Chỉ lấy các field cơ bản, bỏ qua relationships
+        $basicFields = ['id', 'name', 'description', 'brand_id', 'origin_id', 'category_id', 'status_id', 'created_at', 'updated_at'];
+        $filteredNewData = array_intersect_key($newData, array_flip($basicFields));
+        $filteredOldData = array_intersect_key($oldData, array_flip($basicFields));
+        $changes = array_diff_assoc($filteredNewData, $filteredOldData);
+        if (!empty($changes) && auth()->check()) {
+            // Lọc ra các key là string, bỏ qua array
+            $changedFields = array_filter(array_keys($changes), function($key) {
+                return is_string($key);
+            });
+            $note = 'Cập nhật thông tin sản phẩm: ' . implode(', ', $changedFields);
+            $product->statusLogs()->create([
+                'status_id' => $product->status_id ?? 1, // Default status_id nếu null
+                'user_id' => auth()->id(),
+                'note' => $note,
+            ]);
+        }
+        
         return redirect()->route('admin.products.index')->with('success', 'Cập nhật sản phẩm thành công.');
     }
 
@@ -222,5 +269,30 @@ class ProductController extends Controller
         ]);
         $product->updateStatus($request->status_id, auth()->id(), $request->note);
         return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
+    }
+
+    /**
+     * Toggle trạng thái active/inactive cho sản phẩm
+     */
+    public function toggleStatus($id)
+    {
+        $product = Product::findOrFail($id);
+        $currentStatus = $product->status;
+        
+        // Tìm status active và inactive
+        $activeStatus = \App\Models\Status::where('code', 'active')->first();
+        $inactiveStatus = \App\Models\Status::where('code', 'inactive')->first();
+        
+        if (!$activeStatus || !$inactiveStatus) {
+            return redirect()->back()->with('error', 'Không tìm thấy trạng thái active/inactive!');
+        }
+        
+        // Toggle trạng thái
+        $newStatusId = $currentStatus && $currentStatus->code === 'active' ? $inactiveStatus->id : $activeStatus->id;
+        $note = $currentStatus && $currentStatus->code === 'active' ? 'Deactivate sản phẩm' : 'Activate sản phẩm';
+        
+        $product->updateStatus($newStatusId, auth()->id(), $note);
+        
+        return redirect()->back()->with('success', 'Đã cập nhật trạng thái sản phẩm!');
     }
 }

@@ -21,7 +21,7 @@ class OriginRequest extends FormRequest
      */
    public function rules()
 {
-    $id = $this->route('origin') ?? $this->id; 
+    $id = $this->route('origin') ? $this->route('origin')->id : ($this->id ?? null); 
 
     return [
         'country' => [

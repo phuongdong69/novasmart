@@ -11,7 +11,7 @@ class UpdateAttributeValueRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,7 @@ class UpdateAttributeValueRequest extends FormRequest
     {
         return [
             'attribute_id' => 'required|exists:attributes,id',
-            'value' => 'required|string|max:255|unique:attribute_values,value,' . $this->route('attribute_value') . ',id,attribute_id,' . $this->input('attribute_id'),
+            'value' => 'required|string|max:255|unique:attribute_values,value,' . $this->route('attribute_value')->id . ',id,attribute_id,' . $this->input('attribute_id'),
         ];
     }
 }
