@@ -2,39 +2,96 @@
 @section('content')
 <div class="w-full px-6 py-6 mx-auto">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Chi tiết đơn hàng #{{ $order->id }}</h1>
-        <a href="{{ route('admin.orders.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
-            Quay lại danh sách
-        </a>
+        <h1 class="text-2xl font-bold">Chi tiết đơn hàng {{ $order->order_code }}</h1>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.orders.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
+                Quay lại danh sách
+            </a>
+            @php
+                $orderStatuses = \App\Models\Status::where('type', 'order')->where('is_active', 1)->orderBy('priority')->get();
+                $currentStatus = $order->orderStatus;
+                $isDelivered = $currentStatus && (
+                    str_contains(strtolower($currentStatus->name), 'đã giao hàng') ||
+                    str_contains(strtolower($currentStatus->code), 'delivered')
+                );
+                $cancelStatus = \App\Models\Status::where('type', 'order')->where('code', 'cancelled')->first();
+            @endphp
+            @if ($cancelStatus && !$isDelivered && $currentStatus && $currentStatus->code !== 'cancelled')
+                <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST" class="inline-block ml-2" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
+                    @csrf
+                    <input type="hidden" name="status_id" value="{{ $cancelStatus->id }}">
+                    <button type="submit"
+                        style="background: #ef4444; color: #fff; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 600; padding: 6px 16px; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.04); transition: background 0.2s;"
+                        onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'"
+                        title="Hủy đơn hàng">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M4.93 4.93a10 10 0 0114.14 0M4.93 19.07a10 10 0 010-14.14M19.07 19.07a10 10 0 01-14.14 0" />
+                        </svg>
+                        Hủy đơn
+                    </button>
+                </form>
+            @endif
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Thông tin đơn hàng -->
         <div class="bg-white shadow rounded-lg p-6">
-            <h2 class="text-lg font-semibold mb-4">Thông tin đơn hàng</h2>
-            <div class="space-y-3">
-                <div class="flex justify-between">
-                    <span class="font-medium">Mã đơn hàng:</span>
-                    <span class="font-mono">{{ $order->order_code }}</span>
+            <h2 class="text-lg font-bold mb-5 border-b pb-2">Thông tin đơn hàng</h2>
+            <div class="grid grid-cols-1 gap-0">
+                <div class="flex items-center py-2 border-b last:border-b-0">
+                    <span class="text-gray-600 font-medium w-2/5 text-left">Mã đơn hàng:</span>
+                    <span class="w-3/5 font-mono text-gray-900 text-left">{{ $order->order_code }}</span>
                 </div>
-                <div class="flex justify-between">
-                    <span class="font-medium">Trạng thái:</span>
-                    <span class="px-2 py-1 rounded text-white text-sm" style="background-color: {{ $order->orderStatus->color ?? '#6b7280' }}">
-                        {{ $order->orderStatus->name ?? 'Chưa có trạng thái' }}
+                <div class="flex items-center py-2 border-b last:border-b-0">
+                    <span class="text-gray-600 font-medium w-2/5 text-left">Trạng thái:</span>
+                    <span class="w-3/5 text-left">
+                        @php
+                            $orderStatuses = \App\Models\Status::where('type', 'order')->where('is_active', 1)->orderBy('priority')->get();
+                            $currentStatus = $order->orderStatus;
+                            $isDelivered = $currentStatus && (
+                                str_contains(strtolower($currentStatus->name), 'đã giao hàng') ||
+                                str_contains(strtolower($currentStatus->code), 'delivered')
+                            );
+                            $currentStatusIndex = $currentStatus ? $orderStatuses->search(function($status) use ($currentStatus) {
+                                return $status->id == $currentStatus->id;
+                            }) : -1;
+                            $nextStatus = $currentStatusIndex >= 0 && $currentStatusIndex < $orderStatuses->count() - 1 ? $orderStatuses->get($currentStatusIndex + 1) : null;
+                            $isLastStatus = $currentStatusIndex === $orderStatuses->count() - 1;
+                        @endphp
+                        <div class="flex items-center gap-2 flex-wrap">
+                            @if($nextStatus && !$isLastStatus && !$isDelivered)
+                                <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST" style="display: inline-block; margin: 0; padding: 0;">
+                                    @csrf
+                                    <input type="hidden" name="status_id" value="{{ $nextStatus->id }}">
+                                    <button type="submit" style="display: inline-block; padding: 6px 12px; background-color: {{ $currentStatus ? ($currentStatus->color ?? '#10b981') : '#10b981' }}; color: white; border: none; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer; min-width: 80px; text-decoration: none; line-height: 1.2; transition: background-color 0.2s ease;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                                        {{ $currentStatus ? $currentStatus->name : 'Chưa có trạng thái' }}
+                                    </button>
+                                </form>
+                            @elseif($isDelivered)
+                                <span style="display: inline-block; padding: 6px 12px; background-color: {{ $currentStatus ? ($currentStatus->color ?? '#10b981') : '#10b981' }}; color: white; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: not-allowed; min-width: 80px; text-decoration: none; line-height: 1.2;">
+                                    {{ $currentStatus ? $currentStatus->name : 'Chưa có trạng thái' }}
+                                </span>
+                            @else
+                                <span style="display: inline-block; padding: 6px 12px; background-color: #d1d5db; color: #4b5563; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: not-allowed; min-width: 80px; text-decoration: none; line-height: 1.2;">
+                                    Hoàn thành
+                                </span>
+                            @endif
+                        </div>
                     </span>
                 </div>
-                <div class="flex justify-between">
-                    <span class="font-medium">Tổng tiền:</span>
-                    <span class="font-semibold text-lg">{{ number_format($order->total_price, 0, ',', '.') }} ₫</span>
+                <div class="flex items-center py-2 border-b last:border-b-0">
+                    <span class="text-gray-600 font-medium w-2/5 text-left">Tổng tiền:</span>
+                    <span class="w-3/5 text-lg font-bold text-green-600 text-left">{{ number_format($order->total_price, 0, ',', '.') }} ₫</span>
                 </div>
-                <div class="flex justify-between">
-                    <span class="font-medium">Ngày tạo:</span>
-                    <span>{{ $order->created_at->format('d/m/Y H:i:s') }}</span>
+                <div class="flex items-center py-2 border-b last:border-b-0">
+                    <span class="text-gray-600 font-medium w-2/5 text-left">Ngày tạo:</span>
+                    <span class="w-3/5 text-left">{{ $order->created_at->format('d/m/Y') }}</span>
                 </div>
                 @if($order->voucher)
-                <div class="flex justify-between">
-                    <span class="font-medium">Mã giảm giá:</span>
-                    <span class="text-green-600">{{ $order->voucher->code }}</span>
+                <div class="flex items-center py-2 border-b last:border-b-0">
+                    <span class="text-gray-600 font-medium w-2/5 text-left">Mã giảm giá:</span>
+                    <span class="w-3/5 text-green-600 text-left">{{ $order->voucher->code }}</span>
                 </div>
                 @endif
             </div>
@@ -42,28 +99,28 @@
 
         <!-- Thông tin khách hàng -->
         <div class="bg-white shadow rounded-lg p-6">
-            <h2 class="text-lg font-semibold mb-4">Thông tin khách hàng</h2>
-            <div class="space-y-3">
-                <div>
-                    <span class="font-medium">Họ tên:</span>
-                    <span>{{ $order->name }}</span>
+            <h2 class="text-lg font-bold mb-5 border-b pb-2">Thông tin khách hàng</h2>
+            <div class="grid grid-cols-1 gap-0">
+                <div class="flex items-center py-2 border-b last:border-b-0">
+                    <span class="text-gray-600 font-medium w-2/5 text-left">Họ tên:</span>
+                    <span class="w-3/5 text-gray-900 text-left">{{ $order->name }}</span>
                 </div>
-                <div>
-                    <span class="font-medium">Số điện thoại:</span>
-                    <span>{{ $order->phoneNumber }}</span>
+                <div class="flex items-center py-2 border-b last:border-b-0">
+                    <span class="text-gray-600 font-medium w-2/5 text-left">Số điện thoại:</span>
+                    <span class="w-3/5 text-gray-900 text-left">{{ $order->phoneNumber }}</span>
                 </div>
-                <div>
-                    <span class="font-medium">Email:</span>
-                    <span>{{ $order->email }}</span>
+                <div class="flex items-center py-2 border-b last:border-b-0">
+                    <span class="text-gray-600 font-medium w-2/5 text-left">Email:</span>
+                    <span class="w-3/5 text-gray-900 text-left">{{ $order->email }}</span>
                 </div>
-                <div>
-                    <span class="font-medium">Địa chỉ:</span>
-                    <span>{{ $order->address }}</span>
+                <div class="flex items-center py-2 border-b last:border-b-0">
+                    <span class="text-gray-600 font-medium w-2/5 text-left">Địa chỉ:</span>
+                    <span class="w-3/5 text-gray-900 text-left">{{ $order->address }}</span>
                 </div>
                 @if($order->user)
-                <div>
-                    <span class="font-medium">Tài khoản:</span>
-                    <span>{{ $order->user->name }} ({{ $order->user->email }})</span>
+                <div class="flex items-center py-2 border-b last:border-b-0">
+                    <span class="text-gray-600 font-medium w-2/5 text-left">Tài khoản:</span>
+                    <span class="w-3/5 text-gray-900 text-left">{{ $order->user->name }} ({{ $order->user->email }})</span>
                 </div>
                 @endif
             </div>
@@ -71,40 +128,59 @@
     </div>
 
     <!-- Danh sách sản phẩm -->
-    <div class="mt-6 bg-white shadow rounded-lg">
+    <div class="mt-6 bg-white shadow rounded-lg w-full">
         <div class="p-6">
             <h2 class="text-lg font-semibold mb-4">Danh sách sản phẩm</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+            <div class="overflow-x-auto w-full">
+                <table class="w-full min-w-0 table-auto divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sản phẩm</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Biến thể</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Biến thể (SKU)</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thuộc tính</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Đơn giá</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Số lượng</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thành tiền</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($order->orderDetails as $detail)
                         <tr>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-4 align-middle">
                                 <div class="flex items-center">
-                                    @if($detail->productVariant->product->thumbnails->where('is_primary', true)->first())
-                                        <img src="{{ asset('storage/' . $detail->productVariant->product->thumbnails->where('is_primary', true)->first()->url) }}" 
-                                             alt="{{ $detail->productVariant->product->name }}" 
-                                             class="w-12 h-12 object-cover rounded mr-3">
+                                    @php
+                                        $thumb = $detail->productVariant->product->thumbnails->where('is_primary', true)->first();
+                                    @endphp
+                                    @if($thumb)
+                                        <img src="{{ asset('storage/' . $thumb->url) }}" alt="{{ $detail->productVariant->product->name }}" class="w-12 h-12 object-cover rounded mr-3">
                                     @endif
                                     <div>
-                                        <div class="font-medium">{{ $detail->productVariant->product->name }}</div>
-                                        <div class="text-sm text-gray-500">SKU: {{ $detail->productVariant->sku ?? 'N/A' }}</div>
+                                        <div class="font-medium text-base">{{ $detail->productVariant->product->name }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-900">{{ $detail->productVariant->name ?? 'Mặc định' }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-900">{{ number_format($detail->price, 0, ',', '.') }} ₫</td>
-                            <td class="px-6 py-4 text-sm text-gray-900">{{ $detail->quantity }}</td>
-                            <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ number_format($detail->price * $detail->quantity, 0, ',', '.') }} ₫</td>
+                            <td class="px-6 py-4 align-middle text-base text-gray-700">
+                                {{ $detail->productVariant->sku ?? 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 align-middle text-base text-gray-900">
+                                @php $variant = $detail->productVariant; @endphp
+                                @if(isset($variant->variantAttributeValues) && count($variant->variantAttributeValues))
+                                    <div class="flex flex-col gap-1">
+                                    @foreach($variant->variantAttributeValues as $attrValue)
+                                        <span class="inline-block px-2.5 py-0.5 rounded text-base font-semibold bg-blue-100 text-blue-800">
+                                            {{ $attrValue->attributeValue->attribute->name ?? '' }}: <span class="font-normal">{{ $attrValue->attributeValue->value ?? '' }}</span>
+                                        </span>
+                                    @endforeach
+                                    </div>
+                                @else
+                                    <span class="text-gray-400">Không có thuộc tính</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 align-middle text-base text-right text-gray-900">
+                                {{ number_format($detail->price, 0, ',', '.') }} ₫
+                            </td>
+                            <td class="px-6 py-4 align-middle text-base text-right text-gray-900">
+                                {{ $detail->quantity }}
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -116,30 +192,32 @@
     <!-- Thông tin thanh toán -->
     @if($order->payment)
     <div class="mt-6 bg-white shadow rounded-lg p-6">
-        <h2 class="text-lg font-semibold mb-4">Thông tin thanh toán</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <span class="font-medium">Phương thức:</span>
-                <span class="ml-2">{{ ucfirst($order->payment->payment_method) }}</span>
+        <h2 class="text-lg font-bold mb-5 border-b pb-2">Thông tin thanh toán</h2>
+        <div class="grid grid-cols-1 gap-0">
+            <div class="flex items-center py-2 border-b last:border-b-0">
+                <span class="text-gray-600 font-medium w-2/5 text-left">Phương thức:</span>
+                <span class="w-3/5 text-left">{{ ucfirst($order->payment->payment_method) }}</span>
             </div>
-            <div>
-                <span class="font-medium">Trạng thái:</span>
-                <span class="ml-2 px-2 py-1 rounded text-white text-sm 
-                    {{ $order->payment->status === 'completed' ? 'bg-green-500' : 
-                       ($order->payment->status === 'pending' ? 'bg-yellow-500' : 'bg-red-500') }}">
-                    {{ ucfirst($order->payment->status) }}
+            <div class="flex items-center py-2 border-b last:border-b-0">
+                <span class="text-gray-600 font-medium w-2/5 text-left">Trạng thái:</span>
+                <span class="w-3/5 text-left">
+                    <span class="px-2 py-1 rounded text-white text-xs font-semibold
+                        {{ $order->payment->status === 'completed' ? 'bg-green-500' : 
+                           ($order->payment->status === 'pending' ? 'bg-yellow-500' : 'bg-red-500') }}">
+                        {{ ucfirst($order->payment->status) }}
+                    </span>
                 </span>
             </div>
             @if($order->payment->transaction_code)
-            <div>
-                <span class="font-medium">Mã giao dịch:</span>
-                <span class="ml-2 font-mono">{{ $order->payment->transaction_code }}</span>
+            <div class="flex items-center py-2 border-b last:border-b-0">
+                <span class="text-gray-600 font-medium w-2/5 text-left">Mã giao dịch:</span>
+                <span class="w-3/5 text-left font-mono">{{ $order->payment->transaction_code }}</span>
             </div>
             @endif
             @if($order->payment->note)
-            <div>
-                <span class="font-medium">Ghi chú:</span>
-                <span class="ml-2">{{ $order->payment->note }}</span>
+            <div class="flex items-center py-2 border-b last:border-b-0">
+                <span class="text-gray-600 font-medium w-2/5 text-left">Ghi chú:</span>
+                <span class="w-3/5 text-left">{{ $order->payment->note }}</span>
             </div>
             @endif
         </div>
