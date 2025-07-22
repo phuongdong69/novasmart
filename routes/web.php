@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\User\OrderrController;
 
 
 /*
@@ -168,6 +169,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/pages/home', [HomeController::class, 'index'])->name('user.pages.home');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/orders', [OrderrController::class, 'index'])->name('user.orders.index');
+    Route::get('/orders/{order}', [OrderrController::class, 'show'])->name('user.orders.show');
+    Route::post('/orders/{id}/cancel', [OrderrController::class, 'cancel'])->name('user.orders.cancel');
+    Route::post('/orders/{id}/confirm-received', [OrderrController::class, 'confirmReceived']) ->name('user.orders.confirm-received');
+
 });
 
 /*
