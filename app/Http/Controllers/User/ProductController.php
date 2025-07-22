@@ -23,7 +23,7 @@ class ProductController extends Controller
 
         // Tìm kiếm theo tên sản phẩm
         if ($request->filled('search')) {
-            $search = $request->search;
+           $search = $request->search;
             $query->whereHas('product', function (Builder $q) use ($search) {
                 $q->where('name', 'like', "%{$search}%");
             });
