@@ -8,10 +8,12 @@
                 {{-- Header --}}
                 <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex justify-between items-center">
                     <h6 class="dark:text-white text-lg font-semibold">Danh sách sản phẩm</h6>
-                    <a href="{{ route('admin.products.create') }}"
-                       class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
-                        + Thêm mới
-                    </a>
+                    <div class="flex gap-2">
+                        <a href="{{ route('admin.products.create') }}"
+                           class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
+                            + Thêm mới
+                        </a>
+                    </div>
                 </div>
                 
                 <!-- Product List -->
@@ -80,6 +82,9 @@
                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                 </svg>
+            </a>
+            <a href="{{ route('admin.products.status_logs', $product->id) }}" class="text-blue-500 hover:text-blue-700 mr-2" title="Lịch sử trạng thái">
+                <i class="fa fa-history"></i>
             </a>
             <form action="{{ route('admin.products.toggleStatus', $product->id) }}" method="POST" class="inline">
                 @csrf
