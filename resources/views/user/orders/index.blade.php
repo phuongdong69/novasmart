@@ -42,8 +42,7 @@
                     <thead class="bg-gray-100 text-gray-700 uppercase font-semibold border-b">
                         <tr>
                             <th class="py-3 px-6">Mã đơn</th>
-                            <th class="py-3 px-6">Sản phẩm</th>
-                            <th class="py-3 px-6">Ảnh sản phẩm</th>
+
                             <th class="py-3 px-6">Ngày đặt</th>
                             <th class="py-3 px-6">Trạng thái</th>
                             <th class="py-3 px-6">Tổng tiền</th>
@@ -54,22 +53,13 @@
                         @forelse ($orders as $order)
                             @php
                                 $firstDetail = $order->orderDetails->first();
-                                $product = $firstDetail->productVariant->product ?? null;
-                                $image = $product->image ?? null;
-                                $name = $product->name ?? 'Không rõ sản phẩm';
+
                                 $status = $order->orderStatus ?? null;
                             @endphp
                             <tr class="border-b hover:bg-gray-50">
                                 <td class="py-4 px-6 font-medium text-gray-800">{{ $order->order_code }}</td>
-                                <td class="py-4 px-6">{{ $name }}</td>
-                                <td class="py-4 px-6">
-                                    @if ($image)
-                                        <img src="{{ asset('storage/' . $image) }}" alt="Ảnh"
-                                            class="w-14 h-14 object-cover rounded">
-                                    @else
-                                        <span class="text-gray-400 italic">Không có ảnh</span>
-                                    @endif
-                                </td>
+                               
+
                                 <td class="py-4 px-6">{{ $order->created_at->format('d/m/Y H:i') }}</td>
                                 <td class="py-4 px-6">
                                     @if ($status)
