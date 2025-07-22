@@ -157,6 +157,13 @@
                                 </a>
                             </li>
                             <li>
+                                <a href="{{ route('user.orders.index') }}"
+                                    class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white">
+                                    <i data-feather="shopping-bag" class="h-4 w-4 me-2"></i>Quản lý đơn hàng
+                                </a>
+                            </li>
+
+                            <li>
                                 <a href="{{ url('settings') }}"
                                     class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white">
                                     <i data-feather="settings" class="h-4 w-4 me-2"></i>Cài đặt
