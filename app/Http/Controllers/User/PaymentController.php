@@ -107,6 +107,9 @@ class PaymentController extends Controller
                     'note'             => $data['note'] ?? null,
                 ]);
 
+                // Thêm ở đầu hàm vnpayReturn:
+                $pendingStatus = \App\Models\Status::where('type', 'order')->where('code', 'pending')->first();
+
                 // Tạo order
                 $order = Order::create([
                     'user_id'     => Auth::id(),
@@ -118,7 +121,7 @@ class PaymentController extends Controller
                     'address'     => $data['address'],
                     'total_price' => $payment->amount,
                     'order_code'  => $orderCode,
-                    'status'      => 'paid',
+                    'status_id' => $pendingStatus ? $pendingStatus->id : null,
                 ]);
 
                 // Tạo chi tiết đơn hàng và trừ tồn kho

@@ -76,6 +76,8 @@ return view('user.pages.checkout', compact('cartItems', 'total', 'voucher', 'fin
             $total = $request->input('final_total');
             $orderCode = strtoupper(Str::random(10));
 
+            $pendingStatus = \App\Models\Status::where('type', 'order')->where('code', 'pending')->first();
+
             // Tạo bản ghi thanh toán
             $payment = Payment::create([
                 'status' => $request->payment_method === 'vnpay' ? 'unpaid' : 'pending',
@@ -95,7 +97,7 @@ return view('user.pages.checkout', compact('cartItems', 'total', 'voucher', 'fin
                 'address' => $request->address,
                 'total_price' => $total,
                 'order_code' => $orderCode,
-                'status' => $request->payment_method === 'vnpay' ? 'unpaid' : 'pending',
+                'status_id' => $pendingStatus ? $pendingStatus->id : null,
             ]);
 
             // Duyệt qua từng sản phẩm để tạo chi tiết đơn hàng
