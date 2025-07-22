@@ -157,6 +157,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     //brands
     Route::resource('brands', BrandController::class);
     Route::resource('orders', OrderController::class);
+    Route::put('products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
 });
 
 /*
