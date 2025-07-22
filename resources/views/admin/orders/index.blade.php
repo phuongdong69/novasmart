@@ -6,7 +6,7 @@
             <table class="w-full min-w-0 table-auto divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Mã đơn hàng</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Khách hàng</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tổng tiền</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Trạng thái</th>
@@ -18,9 +18,9 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($orders as $order)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-2">{{ $order->id }}</td>
+                            <td class="px-4 py-2">{{ $order->order_code }}</td>
                             <td class="px-4 py-2">{{ $order->user->name ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ number_format($order->total_amount, 0, ',', '.') }} ₫</td>
+                            <td class="px-4 py-2">{{ number_format($order->total_price, 0, ',', '.') }} ₫</td>
                             <td class="px-4 py-2">
                                 @php
                                     $orderStatuses = \App\Models\Status::where('type', 'order')
@@ -93,8 +93,9 @@
                                     $cancelStatus = \App\Models\Status::where('type', 'order')
                                         ->where('code', 'cancelled')
                                         ->first();
+                                    $allowCancel = $currentStatus && in_array($currentStatus->code, ['pending', 'confirmed']);
                                 @endphp
-                                @if ($cancelStatus && !$isDelivered && $currentStatus && $currentStatus->code !== 'cancelled')
+                                @if ($cancelStatus && $allowCancel)
                                     <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST" class="inline-block ml-2" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
                                         @csrf
                                         <input type="hidden" name="status_id" value="{{ $cancelStatus->id }}">
