@@ -8,7 +8,7 @@
 
         {{-- Header --}}
         <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex items-center justify-between">
-          <h6 class="dark:text-white text-lg font-semibold">Chỉnh sửa danh mục</h6>
+          <h3 class="dark:text-white text-lg font-semibold">Chỉnh sửa danh mục</h3>
           <a href="{{ route('admin.categories.index') }}"
             class="border border-slate-400 text-slate-700 hover:bg-slate-100 hover:text-slate-900 text-sm font-medium py-2 px-4 rounded transition-all duration-150">
             ← Quay lại

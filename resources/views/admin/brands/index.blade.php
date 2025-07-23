@@ -6,7 +6,7 @@
         <div class="relative flex flex-col min-w-0 break-words bg-white border-0 border-transparent border-solid shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
             <div class="border-b-0 px-6 py-6 dark:bg-slate-850/80">
                 <div class="mb-8 flex items-center justify-between">
-                    <h6 class="mb-0 dark:text-white">Danh sách nhãn hiệu</h6>
+                    <h3 class="mb-0 dark:text-white">Danh sách nhãn hiệu</h3>
                     <a href="{{ route('admin.brands.create') }}" class="inline-block rounded-lg bg-blue-500 px-4 py-2.5 text-xs font-bold uppercase text-white shadow-md hover:bg-blue-600">
                         <i class="mr-1.5 fa fa-plus"></i> Thêm mới
                     </a>

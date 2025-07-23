@@ -8,7 +8,7 @@
 
         {{-- Tiêu đề + Nút thêm mới --}}
         <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex justify-between items-center">
-          <h6 class="dark:text-white text-lg font-semibold">Danh sách danh mục</h6>
+          <h3 class="dark:text-white text-lg font-semibold">Danh sách danh mục</h3>
           <a href="{{ route('admin.categories.create') }}"
             class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
             + Thêm mới

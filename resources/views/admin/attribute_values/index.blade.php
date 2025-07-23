@@ -9,7 +9,7 @@ Danh sách giá trị thuộc tính
             <div class="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
                 {{-- Tiêu đề + Nút thêm mới --}}
                 <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex justify-between items-center">
-                    <h6 class="dark:text-white text-lg font-semibold">Danh sách giá trị thuộc tính</h6>
+                    <h3 class="dark:text-white text-lg font-semibold">Danh sách giá trị thuộc tính</h3>
                     <a href="{{ route('admin.attribute_values.create') }}"
                         class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
                         + Thêm mới

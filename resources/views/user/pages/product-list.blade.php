@@ -1,119 +1,131 @@
 @extends('user.layouts.client')
-@section('title', 'Danh sách sản phẩm')
-@section('meta_description', 'Đây là danh sách sản phẩm của Nova Smart.')
 
 @section('content')
-    <!-- Start Hero -->
-    <section class="relative table w-full py-20 lg:py-24 md:pt-28 bg-gray-50 dark:bg-slate-800">
-        <div class="container relative">
-            <div class="grid grid-cols-1 mt-14">
-                <h3 class="text-3xl leading-normal font-semibold">Thời trang</h3>
-            </div><!--end grid-->
+<section class="relative lg:py-24 py-16">
+    <div class="container relative">
+        <div class="grid grid-cols-1 mt-14">
+            <h3 class="text-3xl leading-normal font-semibold">Sản phẩm</h3>
+        </div><!--end grid-->
 
-            <div class="relative mt-3">
-                <ul class="tracking-[0.5px] mb-0 inline-block">
-                    <li class="inline-block uppercase text-[13px] font-bold duration-500 ease-in-out hover:text-orange-500">
-                        <a href="index.html">Trang chủ</a></li>
-                    <li class="inline-block text-base text-slate-950 dark:text-white mx-0.5 ltr:rotate-0 rtl:rotate-180">
-                        <i class="mdi mdi-chevron-right"></i>
-                    </li>
-                    <li class="inline-block uppercase text-[13px] font-bold text-orange-500" aria-current="page">Cửa hàng</li>
-                </ul>
-            </div>
-        </div><!--end container-->
-    </section><!--end section-->
-    <!-- End Hero -->
+        <div class="relative mt-3">
+            <ul class="tracking-[0.5px] mb-0 inline-block">
+                <li class="inline-block uppercase text-[13px] font-bold duration-500 ease-in-out hover:text-orange-500">
+                    <a href="{{ route('home') }}">Trang chủ</a></li>
+                <li class="inline-block text-base text-slate-950 dark:text-white mx-0.5 ltr:rotate-0 rtl:rotate-180">
+                    <i class="mdi mdi-chevron-right"></i>
+                </li>
+                <li class="inline-block text-base text-slate-950 dark:text-white mx-0.5 ltr:rotate-0 rtl:rotate-180">
+                    <a href="#" class="hover:text-orange-500">Sản phẩm</a>
+                </li>
+            </ul>
+        </div><!--end relative-->
+    </div><!--end container-->
 
-    <!-- Start -->
-    <section class="relative md:py-24 py-16">
-        <div class="container relative">
-            <div class="grid md:grid-cols-12 sm:grid-cols-2 grid-cols-1 gap-6">
+    <div class="container relative mt-8">
+        <div class="grid lg:grid-cols-12 md:grid-cols-2 grid-cols-1 gap-6">
+            <!-- Filter Sidebar -->
+            @include('user.partials.filter')
 
-                @include('user.partials.filter')
+            <!-- Product List -->
+            <div class="lg:col-span-9 md:col-span-8">
+                <div class="md:flex justify-between items-center mb-6">
+                    <span class="font-semibold">
+                        Hiển thị {{ $products->firstItem() ?? 0 }}–{{ $products->lastItem() ?? 0 }} 
+                        trên tổng số {{ $products->total() }} sản phẩm
+                    </span>
 
-                <div class="lg:col-span-9 md:col-span-8">
-                    <div class="md:flex justify-between items-center mb-6">
-                        <span class="font-semibold">Hiển thị 1–16 trên tổng số 40 sản phẩm</span>
-
-                        <div class="md:flex items-center">
-                            <label class="font-semibold md:me-2">Sắp xếp theo:</label>
-                            <select
+                    <div class="md:flex items-center">
+                        <label class="font-semibold md:me-2">Sắp xếp theo:</label>
+                        <select name="sort" onchange="this.form.submit()" form="filterForm"
                                 class="form-select form-input md:w-36 w-full md:mt-0 mt-1 py-2 px-3 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-100 dark:border-gray-800 focus:ring-0">
-                                <option value="">Nổi bật</option>
-                                <option value="">Giảm giá</option>
-                                <option value="">Tên A-Z</option>
-                                <option value="">Tên Z-A</option>
-                                <option value="">Giá tăng dần</option>
-                                <option value="">Giá giảm dần</option>
-                            </select>
-                        </div>
+                            <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Mới nhất</option>
+                            <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Giá tăng dần</option>
+                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Giá giảm dần</option>
+                            <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Tên A-Z</option>
+                            <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Tên Z-A</option>
+                        </select>
                     </div>
-                    <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
-    @forelse($products as $product)
-        @php
-            $variant = $product->variants->first();
-        @endphp
-        <div class="group">
-            <div class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
-                <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}" class="group-hover:scale-110 duration-500 w-full h-64 object-cover" alt="{{ $product->name }}">
-                <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
-                    @if($variant)
-                        <a href="{{ route('cart.add', ['product_variant_id' => $variant->id]) }}" class="py-2 px-5 inline-block font-semibold tracking-wide text-base text-center bg-slate-900 text-white w-full rounded-md">Thêm vào giỏ</a>
-                    @else
-                        <span class="py-2 px-5 inline-block font-semibold tracking-wide text-base text-center bg-gray-300 text-gray-700 w-full rounded-md cursor-not-allowed">Liên hệ</span>
-                    @endif
                 </div>
-                <ul class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
-                                        <li><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="heart" class="size-4"></i></a></li>
-                                        <li class="mt-1"><a href="#" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="eye" class="size-4"></i></a></li>
-                                        <li class="mt-1"><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="bookmark" class="size-4"></i></a></li>
-                                    </ul>
-                                    @if($product->sale_percent)
-                                    <ul class="list-none absolute top-[10px] start-4">
-                                        <li><a href="javascript:void(0)" class="bg-orange-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded h-5">-{{ $product->sale_percent }}% giảm</a></li>
-                                    </ul>
+
+                <!-- Danh sách sản phẩm -->
+                <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
+                    @forelse($products as $variant)
+                        @php
+                            $product = $variant->product;
+                            $thumbnail = $product->thumbnails->where('is_primary', true)->first();
+                            $imageUrl = $thumbnail ? asset('storage/' . $thumbnail->url) : asset('assets/user/images/shop/default-product.jpg');
+                            
+                            // Lấy các thuộc tính để hiển thị
+                            $attributes = $variant->variantAttributeValues->map(function($vav) {
+                                return $vav->attribute->name . ': ' . $vav->attributeValue->value;
+                            })->implode(', ');
+                        @endphp
+                        <div class="group">
+                            <div class="relative overflow-hidden rounded-md shadow dark:shadow-gray-800">
+                                <img src="{{ $imageUrl }}" class="group-hover:scale-110 duration-500 w-full h-64 object-cover" alt="{{ $product->name }}">
+                                
+                                <div class="absolute top-4 end-4">
+                                    <a href="{{ route('products.show', $variant->id) }}" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow">
+                                        <i data-feather="eye" class="size-4"></i>
+                                    </a>
+                                </div>
+                                
+                                @if($variant->quantity <= 0)
+                                    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                        <span class="text-white font-semibold">Hết hàng</span>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="mt-4">
+                                <a href="{{ route('products.show', $variant->id) }}" class="h5 text-lg font-semibold hover:text-orange-500">{{ $product->name }}</a>
+                                
+                                @if($product->brand)
+                                    <p class="text-slate-400 mt-1">{{ $product->brand->name }}</p>
+                                @endif
+                                
+                                @if($attributes)
+                                    <p class="text-sm text-slate-500 mt-1">{{ $attributes }}</p>
+                                @endif
+                                
+                                <div class="flex justify-between items-center mt-3">
+                                    <span class="text-lg font-semibold">{{ number_format($variant->price) }}₫</span>
+                                    
+                                    @if($variant->quantity > 0)
+                                        <form action="{{ route('cart.add') }}" method="POST" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md hover:bg-orange-500">
+                                                Thêm vào giỏ
+                                            </button>
+                                        </form>
+                                    @else
+                                        <button disabled class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-400 text-white w-full rounded-md cursor-not-allowed">
+                                            Hết hàng
+                                        </button>
                                     @endif
                                 </div>
-                                <div class="mt-4">
-                                    <a href="#" class="hover:text-orange-500 text-lg font-medium">{{ $product->name }}</a>
-                                    <div class="flex justify-between items-center mt-1">
-                                        <p>
-                                            {{ number_format($product->price, 0, ',', '.') }}₫
-                                            @if($product->compare_price)
-                                                <del class="text-slate-400">{{ number_format($product->compare_price, 0, ',', '.') }}₫</del>
-                                            @endif
-                                        </p>
-                                        <ul class="font-medium text-amber-400 list-none">
-                                            @for($i = 0; $i < 5; $i++)
-                                                <li class="inline"><i class="mdi mdi-star"></i></li>
-                                            @endfor
-                                        </ul>
-                                    </div>
-                                </div>
                             </div>
-                        @empty
-                            <div class="col-span-12 text-center">Không có sản phẩm nào.</div>
-                        @endforelse
-                    </div><!--end grid-->
-
-                    <!-- Phân trang -->
-                    <div class="grid md:grid-cols-12 grid-cols-1 mt-6">
-                        <div class="md:col-span-12 text-center">
-                            <nav aria-label="Page navigation">
-                                <ul class="inline-flex items-center -space-x-px">
-                                    <li><a href="#" class="size-[40px] inline-flex justify-center items-center text-slate-400 bg-white dark:bg-slate-900 rounded-s-3xl hover:text-white border border-gray-100 dark:border-gray-800 hover:border-orange-500 hover:bg-orange-500"><i data-feather="chevron-left" class="size-5 rtl:rotate-180 rtl:-mt-1"></i></a></li>
-                                    <li><a href="#" class="size-[40px] inline-flex justify-center items-center text-slate-400 hover:text-white bg-white dark:bg-slate-900 border hover:border-orange-500 hover:bg-orange-500">1</a></li>
-                                    <li><a href="#" class="size-[40px] inline-flex justify-center items-center text-slate-400 hover:text-white bg-white dark:bg-slate-900 border hover:border-orange-500 hover:bg-orange-500">2</a></li>
-                                    <li><a href="#" aria-current="page" class="z-10 size-[40px] inline-flex justify-center items-center text-white bg-orange-500 border border-orange-500">3</a></li>
-                                    <li><a href="#" class="size-[40px] inline-flex justify-center items-center text-slate-400 hover:text-white bg-white dark:bg-slate-900 border hover:border-orange-500 hover:bg-orange-500">4</a></li>
-                                    <li><a href="#" class="size-[40px] inline-flex justify-center items-center text-slate-400 hover:text-white bg-white dark:bg-slate-900 border hover:border-orange-500 hover:bg-orange-500">5</a></li>
-                                    <li><a href="#" class="size-[40px] inline-flex justify-center items-center text-slate-400 bg-white dark:bg-slate-900 rounded-e-3xl hover:text-white border hover:border-orange-500 hover:bg-orange-500"><i data-feather="chevron-right" class="size-5 rtl:rotate-180 rtl:-mt-1"></i></a></li>
-                                </ul>
-                            </nav>
                         </div>
-                    </div><!--end grid-->
-                </div><!--end col-->
-            </div><!--end grid-->
-        </div><!--end container-->
-    </section><!--end section-->
+                    @empty
+                        <div class="col-span-full text-center py-12">
+                            <i data-feather="package" class="size-16 mx-auto text-gray-400 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-600 mb-2">Không tìm thấy sản phẩm</h3>
+                            <p class="text-gray-500">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+                        </div>
+                    @endforelse
+                </div>
+
+                <!-- Phân trang -->
+                @if($products->hasPages())
+                <div class="grid md:grid-cols-12 grid-cols-1 mt-6">
+                    <div class="md:col-span-12 text-center">
+                        {{ $products->links() }}
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</section>
 @endsection

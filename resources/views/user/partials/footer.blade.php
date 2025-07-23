@@ -6,10 +6,8 @@
                 <div class="py-[60px] px-0">
                     <div class="grid md:grid-cols-12 grid-cols-1 gap-6">
                         <div class="lg:col-span-3 md:col-span-12">
-                            <a class="logo" href="index.html">
-                                <div class="px-4 py-2 inline-flex items-center justify-center gap-2 tracking-wide align-middle duration-500 text-sm text-center rounded-full bg-orange-500 hover:bg-orange-600 border border-orange-500 text-white hover:scale-105 transition-al">
-                                    <h1>Nova Smart</h1>
-                                </div>
+                            <a class="logo" href="/">
+                                <img src="{{ asset('assets/user/images/logonova.jpg') }}" alt="NovaSmart Logo" style="max-height:48px; width:auto; display:block; border-radius:50%; object-fit:cover;"/>
                             </a>
                             <p class="mt-6 text-gray-300">Nâng tầm phong cách với các set đồ được chọn lọc. Hãy tự tin và thể hiện cá tính riêng của bạn.</p>
                             <ul class="list-none mt-6">

@@ -7,7 +7,7 @@
 
             <!-- Header -->
             <div class="p-6 pb-0 mb-0 border-b border-b-solid rounded-t-2xl border-b-slate-200 flex items-center justify-between">
-              <h6 class="dark:text-white text-lg font-semibold">Thêm mới xuất xứ</h6>
+              <h3 class="dark:text-white text-lg font-semibold">Thêm mới xuất xứ</h3>
               <a href="{{ route('admin.origins.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-semibold py-2 px-4 rounded">
                 ← Quay lại
               </a>

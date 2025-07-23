@@ -39,6 +39,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 use App\Http\Controllers\User\ProductController as UserProductController;
 
 Route::get('/products', [UserProductController::class, 'index'])->name('products.list');
+Route::get('/products/{id}', [UserProductController::class, 'show'])->name('products.show');
 
 /*
 |--------------------------------------------------------------------------

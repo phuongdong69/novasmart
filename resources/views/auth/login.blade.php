@@ -75,6 +75,16 @@
         .pulse-custom {
             animation: pulse-custom 2s infinite;
         }
+        .btn-orange, .bg-orange, .bg-orange-500, .hover\:bg-orange-600:hover {
+            background: linear-gradient(to right, #ff8800, #ff6600) !important;
+            color: #fff !important;
+        }
+        .text-orange, .text-orange-500, .hover\:text-orange-600:hover {
+            color: #ff6600 !important;
+        }
+        .border-orange, .border-orange-500 {
+            border-color: #ff6600 !important;
+        }
     </style>
 </head>
 
@@ -127,28 +137,28 @@
                             <span class="text-md text-slate-600">Nhớ đăng nhập</span>
                         </div>
                         <a href="{{ route('password.request') }}"
-                            class="font-bold text-md text-blue-600 hover:text-blue-800">
+                            class="font-bold text-md text-orange-500 hover:text-orange-600">
                             Quên mật khẩu?
                         </a>
 
                     </div>
 
                     <button type="submit"
-                        class="w-full bg-slate-800 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors duration-300 font-medium">
+                        class="w-full bg-orange-500 text-white p-3 rounded-lg hover:bg-orange-600 transition-colors duration-300 font-medium">
                         Đăng nhập
                     </button>
                 </form>
 
                 <div class="text-center text-slate-500 mt-6">
                     Không có tài khoản?
-                    <a href="{{ route('register') }}" class="font-bold text-blue-600 hover:text-blue-800 ml-1">Đăng
+                    <a href="{{ route('register') }}" class="font-bold text-orange-500 hover:text-orange-600 ml-1">Đăng
                         ký</a>
                 </div>
             </div>
 
             <!-- Right side - Nova Smart Banner -->
             <div
-                class="relative w-full md:w-96 h-64 md:h-auto bg-gradient-to-br from-slate-800 via-blue-600 to-slate-700 overflow-hidden flex flex-col justify-center items-center rounded-r-2xl">
+                class="relative w-full md:w-96 h-64 md:h-auto bg-gradient-to-br from-orange-800 via-orange-500 to-orange-700 overflow-hidden flex flex-col justify-center items-center rounded-r-2xl">
                 <div class="absolute inset-0 overflow-hidden">
                     <div class="absolute top-8 left-8 text-white text-2xl opacity-10 float">📱</div>
                     <div class="absolute top-12 right-12 text-white text-2xl opacity-10 float float-delay-1">💻</div>
@@ -167,7 +177,7 @@
                         Dịch vụ tận tâm
                     </div>
                     <button
-                        class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl pulse-custom">
+                        class="bg-gradient-to-r from-orange-400 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-medium hover:from-orange-500 hover:to-orange-600 transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl pulse-custom">
                         Khám Phá Ngay
                     </button>
                 </div>

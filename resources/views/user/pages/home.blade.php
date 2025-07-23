@@ -149,41 +149,57 @@
                 </div><!--end grid-->
 
                 <div class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 pt-6 gap-6">
-                    <div class="group">
-                        <div class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
-                            <img src="{{ asset('assets/user/images/shop/luxurious-bag2.jpg')}}" class="group-hover:scale-110 duration-500" alt="">
-    
-                            <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
-                                <a href="shop-cart.html" class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md">Thêm Vào Giỏ</a>
-                            </div>
-    
-                            <ul class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
-                                <li><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="heart" class="size-4"></i></a></li>
-                                <li class="mt-1"><a href="shop-item-detail.html" class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="eye" class="size-4"></i></a></li>
-                                <li class="mt-1"><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="bookmark" class="size-4"></i></a></li>
-                            </ul>
-
-                            <ul class="list-none absolute top-[10px] start-4">
-                                <li><a href="javascript:void(0)" class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded h-5">Mới</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="mt-4">
-                            <a href="product-detail-one.html" class="hover:text-orange-500 text-lg font-medium">Túi Xách Sang Trọng Màu Cam</a>
-                            <div class="flex justify-between items-center mt-1">
-                                <p>$16.00 <del class="text-slate-400">$21.00</del></p>
-                                <ul class="font-medium text-amber-400 list-none">
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
+                    @forelse($popularProducts as $product)
+                        @php $variant = $product->variants->first(); @endphp
+                        <div class="group">
+                            <div class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
+                                <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}" class="group-hover:scale-110 duration-500 w-full h-64 object-cover" alt="{{ $product->name }}">
+                                <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
+                                    @if($variant)
+                                        <form action="{{ route('cart.add') }}" method="POST" class="w-full">
+                                            @csrf
+                                            <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                            <button type="submit" class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md">
+                                                Thêm Vào Giỏ
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-300 text-gray-700 w-full rounded-md cursor-not-allowed">Liên hệ</span>
+                                    @endif
+                                </div>
+                                <ul class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
+                                    <li><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="heart" class="size-4"></i></a></li>
+                                    <li class="mt-1"><a href="#" class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="eye" class="size-4"></i></a></li>
+                                    <li class="mt-1"><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="bookmark" class="size-4"></i></a></li>
                                 </ul>
                             </div>
+                            <div class="mt-4">
+                                <a href="#" class="hover:text-orange-500 text-lg font-medium">{{ $product->name }}</a>
+                                <div class="flex justify-between items-center mt-1">
+                                    <p>
+                                        @if($variant)
+                                            {{ number_format($variant->price, 0, ',', '.') }}₫
+                                            @if($variant->compare_price && $variant->compare_price > $variant->price)
+                                                <del class="text-slate-400">{{ number_format($variant->compare_price, 0, ',', '.') }}₫</del>
+                                            @endif
+                                        @else
+                                            Liên hệ
+                                        @endif
+                                    </p>
+                                    <ul class="font-medium text-amber-400 list-none">
+                                        <li class="inline"><i class="mdi mdi-star"></i></li>
+                                        <li class="inline"><i class="mdi mdi-star"></i></li>
+                                        <li class="inline"><i class="mdi mdi-star"></i></li>
+                                        <li class="inline"><i class="mdi mdi-star"></i></li>
+                                        <li class="inline"><i class="mdi mdi-star"></i></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                    </div><!--end content-->
-
-                </div><!--end grid-->
+                    @empty
+                        <div class="col-span-4 text-center text-slate-400">Không có sản phẩm phổ biến.</div>
+                    @endforelse
+                </div>
 
                 <div class="grid grid-cols-1 mt-6">
                     <div class="text-center md:hidden block">

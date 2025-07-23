@@ -13,8 +13,7 @@
     <div class="flex items-center justify-center min-h-screen bg-slate-100">
         <div class="w-full max-w-md bg-white rounded-xl shadow-xl p-8">
             <div class="text-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" alt="Logo"
-                    class="w-16 h-16 mx-auto mb-4">
+                <img src="{{ asset('assets/user/images/logonova.jpg') }}" alt="NovaSmart Logo" class="w-16 h-16 mx-auto mb-4" style="object-fit:cover; border-radius:50%; max-height:64px; width:auto;"/>
                 <h2 class="text-2xl font-bold text-slate-800 mb-1">Đặt lại mật khẩu</h2>
                 <p class="text-slate-500 text-sm">Nhập mật khẩu mới cho tài khoản của bạn.</p>
             </div>
@@ -60,12 +59,12 @@
                 </div>
 
                 <button type="submit"
-                    class="w-full bg-slate-800 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-300">
+                    class="w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 transition-colors duration-300">
                     Đặt lại mật khẩu
                 </button>
 
                 <div class="mt-4 text-center">
-                    <a href="{{ route('login') }}" class="text-blue-600 text-sm hover:underline">Quay lại đăng nhập</a>
+                    <a href="{{ route('login') }}" class="text-orange-500 text-sm hover:underline">Quay lại đăng nhập</a>
                 </div>
             </form>
         </div>

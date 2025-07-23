@@ -4,12 +4,37 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\OrderDetail;
+use App\Models\Status;
 
 class HomeController extends Controller
 {
     public function index()
     {
         $products = Product::with(['thumbnails', 'variants'])->latest()->take(8)->get();
-        return view('user.pages.home', compact('products'));
+        
+        // Lấy id các status đơn hàng hợp lệ
+        $statusCodes = ['completed', 'delivered', 'confirmed'];
+        $statusIds = Status::where('type', 'order')->whereIn('code', $statusCodes)->pluck('id');
+
+        // Lấy top 5 variant bán chạy nhất
+        $topVariantIds = OrderDetail::whereHas('order', function($q) use ($statusIds) {
+            $q->whereIn('status_id', $statusIds);
+        })
+        ->selectRaw('product_variant_id, SUM(quantity) as total_sold')
+        ->groupBy('product_variant_id')
+        ->orderByDesc('total_sold')
+        ->limit(5)
+        ->pluck('product_variant_id');
+
+        $popularProducts = Product::whereHas('variants', function($q) use ($topVariantIds) {
+            $q->whereIn('id', $topVariantIds);
+        })
+        ->with(['thumbnails', 'variants' => function($q) use ($topVariantIds) {
+            $q->whereIn('id', $topVariantIds);
+        }])
+        ->get();
+
+        return view('user.pages.home', compact('products', 'popularProducts'));
     }
 }
