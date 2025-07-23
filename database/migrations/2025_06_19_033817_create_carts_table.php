@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('status_id')->nullable()->constrained('statuses')->after('id');
             $table->unsignedBigInteger('user_id');
-            $table->decimal('total_price', 10, 2)->default(0);
+            $table->decimal('total_price', 15, 2)->default(0);
             $table->timestamps();
 
             // Foreign Key

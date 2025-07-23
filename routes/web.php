@@ -187,15 +187,27 @@ Route::get('/shop-cart', [CartController::class, 'show'])->name('cart.show');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{itemId}', [CartController::class, 'updateQuantity'])->name('cart.update');
 Route::delete('/cart/remove/{itemId}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/selected', [CartController::class, 'checkoutSelected'])->name('cart.selected');
+Route::post('/cart/remove-selected', [CartController::class, 'removeSelected'])->name('cart.removeselected');
+Route::post('/cart/update-voucher', [CartController::class, 'updateVoucher']);
+Route::delete('/cart/remove-voucher', [CartController::class, 'removeVoucher'])->name('cart.remove-voucher');
+Route::post('/cart/remove-voucher', [CartController::class, 'removeVoucher'])->name('cart.remove-voucher');
+Route::post('/cart/apply-voucher', [CartController::class, 'applyVoucher'])->name('cart.apply-voucher');
 /*
 |--------------------------------------------------------------------------
 | Thanh toán
 |--------------------------------------------------------------------------
 */
-Route::delete('/checkout/remove-voucher', [CheckoutController::class, 'removeVoucher'])->name('checkout.remove-voucher');
-Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.apply-voucher');
+Route::post('/cart/checkout-selected', [CartController::class, 'checkoutSelected'])->name('cart.checkoutSelected');
+
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.show');
 Route::post('/checkout/store', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/success', fn() => view('user.pages.checkout-success'))->name('checkout.success');
 Route::post('/vnpay-checkout', [PaymentController::class, 'vnpayCheckout'])->name('payment.vnpay.checkout');
 Route::get('/vnpay-return', [PaymentController::class, 'vnpayReturn'])->name('payment.vnpay.return');
+Route::get('/vnpay-redirect', function () {
+    $data = session('vnpay_order_data');
+    if (!$data) return redirect()->route('checkout.show')->with('error', 'Không tìm thấy dữ liệu thanh toán VNPay.');
+
+    return view('user.checkout.vnpay_redirect', $data);
+})->name('vnpay.redirect.view');
