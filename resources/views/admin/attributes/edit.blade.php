@@ -12,7 +12,7 @@ Chỉnh sửa thuộc tính
             <div class="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
                 {{-- Header --}}
                 <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex items-center justify-between">
-                    <h6 class="dark:text-white text-lg font-semibold">Chỉnh sửa thuộc tính</h6>
+                    <h3 class="dark:text-white text-lg font-semibold">Chỉnh sửa thuộc tính</h3>
                     <a href="{{ route('admin.attributes.index') }}"
                         class="border border-slate-400 text-slate-700 hover:bg-slate-100 hover:text-slate-900 text-sm font-medium py-2 px-4 rounded transition-all duration-150">
                         ← Quay lại

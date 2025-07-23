@@ -9,7 +9,7 @@
         crossorigin="anonymous" />
     <style>
         body {
-            background: linear-gradient(135deg, #0a2e65, #1e90ff);
+            background: linear-gradient(135deg, #ff8800, #ff6600);
             min-height: 100vh;
         }
 
@@ -24,6 +24,7 @@
             height: 60px;
             object-fit: contain;
             margin-bottom: 10px;
+            filter: drop-shadow(0 0 8px #ff8800);
         }
 
         .error-msg {
@@ -37,6 +38,15 @@
             font-size: 0.9rem;
             margin-top: 10px;
         }
+        .btn-orange, .btn-primary {
+            background: linear-gradient(to right, #ff8800, #ff6600) !important;
+            border: none !important;
+            color: #fff !important;
+        }
+        .btn-orange:hover, .btn-primary:hover {
+            background: linear-gradient(to right, #ff6600, #ff8800) !important;
+            color: #fff !important;
+        }
     </style>
 </head>
 
@@ -46,8 +56,7 @@
             <div class="col-12 col-sm-8 col-md-6 col-lg-4">
                 <div class="card p-4">
                     <div class="text-center mb-3">
-                        <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" alt="Logo"
-                            class="brand-logo">
+                        <img src="{{ asset('assets/user/images/logonova.jpg') }}" alt="NovaSmart Logo" class="brand-logo" style="max-height:60px; width:auto; object-fit:cover; border-radius:50%; margin-bottom:10px;"/>
                         <h3 class="mb-1">Quên mật khẩu?</h3>
                         <p class="text-muted mb-3">Nhập email để nhận liên kết đặt lại mật khẩu</p>
                     </div>

@@ -75,6 +75,16 @@
         .pulse-custom {
             animation: pulse-custom 2s infinite;
         }
+        .btn-orange, .bg-orange, .bg-orange-500, .hover\:bg-orange-600:hover {
+            background: linear-gradient(to right, #ff8800, #ff6600) !important;
+            color: #fff !important;
+        }
+        .text-orange, .text-orange-500, .hover\:text-orange-600:hover {
+            color: #ff6600 !important;
+        }
+        .border-orange, .border-orange-500 {
+            border-color: #ff6600 !important;
+        }
     </style>
 </head>
 
@@ -149,10 +159,10 @@
                             class="mr-3 mt-1 @error('terms') border-red-500 @enderror" />
                         <span class="text-sm text-slate-600">
                             Tôi đồng ý với
-                            <span class="font-bold text-blue-600 hover:text-blue-800 cursor-pointer">Điều khoản sử
+                            <span class="font-bold text-orange-500 hover:text-orange-600 cursor-pointer">Điều khoản sử
                                 dụng</span>
                             và
-                            <span class="font-bold text-blue-600 hover:text-blue-800 cursor-pointer">Chính sách bảo
+                            <span class="font-bold text-orange-500 hover:text-orange-600 cursor-pointer">Chính sách bảo
                                 mật</span>
                             của Nova Smart
                         </span>
@@ -162,7 +172,7 @@
                     </div>
 
                     <button type="submit"
-                        class="w-full bg-slate-800 text-white p-3 rounded-lg mb-6 hover:bg-blue-600 transition-colors duration-300 font-medium">
+                        class="w-full bg-orange-500 text-white p-3 rounded-lg mb-6 hover:bg-orange-600 transition-colors duration-300 font-medium">
                         Tạo tài khoản
                     </button>
                 </form>
@@ -189,14 +199,14 @@
 
                 <div class="text-center text-slate-500">
                     Đã có tài khoản?
-                    <a href="{{ route('login') }}" class="font-bold text-blue-600 hover:text-blue-800 ml-1">Đăng nhập
+                    <a href="{{ route('login') }}" class="font-bold text-orange-500 hover:text-orange-600 ml-1">Đăng nhập
                         ngay</a>
                 </div>
             </div>
 
             <!-- Right side - Nova Smart Banner -->
             <div
-                class="relative w-full md:w-96 h-64 md:h-auto bg-gradient-to-br from-slate-800 via-blue-600 to-slate-700 overflow-hidden flex flex-col justify-center items-center rounded-r-2xl">
+                class="relative w-full md:w-96 h-64 md:h-auto bg-gradient-to-br from-orange-800 via-orange-500 to-orange-700 overflow-hidden flex flex-col justify-center items-center rounded-r-2xl">
 
                 <!-- Background Tech Icons -->
                 <div class="absolute inset-0 overflow-hidden">

@@ -5,7 +5,7 @@
     <div class="flex-none w-full max-w-full px-3">
         <div class="relative flex flex-col min-w-0 break-words bg-white border-0 border-transparent border-solid shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
             <div class="border-b-0 px-6 py-6 dark:bg-slate-850/80">
-                <h6 class="mb-0 dark:text-white">Thêm mới nhãn hiệu</h6>
+                <h3 class="mb-0 dark:text-white">Thêm mới nhãn hiệu</h3>
             </div>
             <div class="flex-auto px-6 py-4">
                 @if ($errors->any())

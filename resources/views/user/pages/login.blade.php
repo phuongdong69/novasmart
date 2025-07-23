@@ -14,7 +14,7 @@
                             <div class="p-8 lg:px-20">
                                 <div class="text-center">
                                     <a href="index.html">
-                                        <img src="assets/images/logo-dark.png" class="mx-auto block dark:hidden" alt="">
+                                        <img src="{{ asset('assets/user/images/logonova.jpg') }}" class="mx-auto block" alt="NovaSmart Logo" style="max-height:48px; width:auto; border-radius:50%; object-fit:cover;"/>
                                         <img src="assets/images/logo-light.png" class="mx-auto hidden dark:block" alt="">
                                     </a>
                                 </div>
