@@ -10,8 +10,14 @@ class Status extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'type', 'color', 'priority', 'is_active', 'description'
-    ];
+    'name',
+    'code', 
+    'type',
+    'color',
+    'priority',
+    'is_active',
+    'description'
+];
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -40,5 +46,9 @@ class Status extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }
