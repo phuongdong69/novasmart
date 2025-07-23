@@ -22,46 +22,46 @@
 
 <section class="relative md:py-24 py-16">
     @if (session('error'))
-        <div class="w-full bg-red-500 text-white text-center py-3 font-semibold text-base">
-            {{ session('error') }}
-        </div>
+    <div class="w-full bg-red-500 text-white text-center py-3 font-semibold text-base">
+        {{ session('error') }}
+    </div>
     @endif
 
     @php
-        $uniqueItems = collect();
-        $seenIds = [];
+    $uniqueItems = collect();
+    $seenIds = [];
 
-        foreach ($cartItems as $item) {
-            $variant = is_array($item) ? ($item['variant'] ?? null) : ($item->productVariant ?? null);
-            $quantity = is_array($item) ? ($item['quantity'] ?? 1) : ($item->quantity ?? 1);
+    foreach ($cartItems as $item) {
+    $variant = is_array($item) ? ($item['variant'] ?? null) : ($item->productVariant ?? null);
+    $quantity = is_array($item) ? ($item['quantity'] ?? 1) : ($item->quantity ?? 1);
 
-            if ($variant && !in_array($variant->id, $seenIds)) {
-                $seenIds[] = $variant->id;
-                $uniqueItems->push([
-                    'variant' => $variant,
-                    'quantity' => $quantity,
-                ]);
-            }
-        }
+    if ($variant && !in_array($variant->id, $seenIds)) {
+    $seenIds[] = $variant->id;
+    $uniqueItems->push([
+    'variant' => $variant,
+    'quantity' => $quantity,
+    ]);
+    }
+    }
 
-        $total = $uniqueItems->sum(fn($i) => $i['variant']->price * $i['quantity']);
+    $total = $uniqueItems->sum(fn($i) => $i['variant']->price * $i['quantity']);
 
-        $voucher = session('voucher') ?? [];
-        $voucherId = $voucher['id'] ?? null;
+    $voucher = session('voucher') ?? [];
+    $voucherId = $voucher['id'] ?? null;
 
-        $discount = 0;
-        if ($voucherId) {
-            $voucherModel = \App\Models\Voucher::find($voucherId);
-            if ($voucherModel) {
-                $discount = $voucherModel->discount_type === 'percentage'
-                    ? round($total * ($voucherModel->discount_value / 100))
-                    : min($voucherModel->discount_value, $total);
-            }
-        }
+    $discount = 0;
+    if ($voucherId) {
+    $voucherModel = \App\Models\Voucher::find($voucherId);
+    if ($voucherModel) {
+    $discount = $voucherModel->discount_type === 'percentage'
+    ? round($total * ($voucherModel->discount_value / 100))
+    : min($voucherModel->discount_value, $total);
+    }
+    }
 
-        $finalTotal = max(0, $total - $discount);
+    $finalTotal = max(0, $total - $discount);
 
-        $user = Auth::user();
+    $user = Auth::user();
     @endphp
 
     <div class="container relative">
@@ -86,7 +86,8 @@
                                 <input id="name" type="text" name="name"
                                     value="{{ old('name', $user->name ?? '') }}"
                                     class="form-input w-full py-2 px-3 h-10 border border-gray-300 rounded"
-                                    placeholder="Nhập họ và tên">
+                                    placeholder="Nhập họ và tên"
+                                    @auth readonly @endauth>
                                 <span id="name-error" class="text-red-600 text-sm mt-1 hidden"></span>
                             </div>
 
@@ -96,7 +97,8 @@
                                 <input id="phoneNumber" type="text" name="phoneNumber"
                                     value="{{ old('phoneNumber', $user->phoneNumber ?? '') }}"
                                     class="form-input w-full py-2 px-3 h-10 border border-gray-300 rounded"
-                                    placeholder="Nhập số điện thoại">
+                                    placeholder="Nhập số điện thoại"
+                                    @auth readonly @endauth>
                                 <span id="phoneNumber-error" class="text-red-600 text-sm mt-1 hidden"></span>
                             </div>
 
@@ -106,7 +108,8 @@
                                 <input id="email" type="email" name="email"
                                     value="{{ old('email', $user->email ?? '') }}"
                                     class="form-input w-full py-2 px-3 h-10 border border-gray-300 rounded"
-                                    placeholder="Nhập Email">
+                                    placeholder="Nhập Email"
+                                    @auth readonly @endauth>
                                 <span id="email-error" class="text-red-600 text-sm mt-1 hidden"></span>
                             </div>
 
@@ -147,6 +150,7 @@
                                 </button>
                             </div>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -162,16 +166,16 @@
                     </div>
 
                     @foreach ($uniqueItems as $item)
-                        <input type="hidden" name="selected_items[]" value="{{ $item['variant']->id }}">
-                        <div class="flex justify-between items-start py-2 border-b">
-                            <div>
-                                <p class="text-sm font-medium">{{ $item['variant']->product->name ?? 'Tên sản phẩm' }}</p>
-                                <p class="text-xs text-gray-500">{{ $item['variant']->name ?? '' }} × {{ $item['quantity'] }}</p>
-                            </div>
-                            <p class="text-sm font-semibold whitespace-nowrap">
-                                {{ number_format($item['variant']->price * $item['quantity'], 0, ',', '.') }}₫
-                            </p>
+                    <input type="hidden" name="selected_items[]" value="{{ $item['variant']->id }}">
+                    <div class="flex justify-between items-start py-2 border-b">
+                        <div>
+                            <p class="text-sm font-medium">{{ $item['variant']->product->name ?? 'Tên sản phẩm' }}</p>
+                            <p class="text-xs text-gray-500">{{ $item['variant']->name ?? '' }} × {{ $item['quantity'] }}</p>
                         </div>
+                        <p class="text-sm font-semibold whitespace-nowrap">
+                            {{ number_format($item['variant']->price * $item['quantity'], 0, ',', '.') }}₫
+                        </p>
+                    </div>
                     @endforeach
 
                     <div class="pt-4 space-y-1 text-sm">
@@ -183,12 +187,12 @@
                         </div>
 
                         @if ($discount > 0)
-                            <div class="flex justify-between text-red-600">
-                                <span>Giảm giá</span>
-                                <span id="discount-value" data-amount="{{ $discount }}">
-                                    -{{ number_format($discount, 0, ',', '.') }}₫
-                                </span>
-                            </div>
+                        <div class="flex justify-between text-red-600">
+                            <span>Giảm giá</span>
+                            <span id="discount-value" data-amount="{{ $discount }}">
+                                -{{ number_format($discount, 0, ',', '.') }}₫
+                            </span>
+                        </div>
                         @endif
 
                         <div class="flex justify-between font-bold text-base pt-1 border-t mt-2">
