@@ -74,12 +74,15 @@
                                 @foreach ($order->orderDetails as $item)
                                     @php
                                         $product = $item->productVariant->product ?? null;
-                                        $image = $product->image ?? 'no-image.jpg';
+                                        $thumb = $product && $product->thumbnails ? $product->thumbnails->where('is_primary', true)->first() : null;
                                     @endphp
                                     <tr class="border-t">
                                         <td class="p-3">
-                                            <img src="{{ asset('storage/' . $image) }}" alt="Ảnh sản phẩm"
-                                                class="h-16 w-16 object-cover rounded border">
+                                            @if($thumb)
+                                                <img src="{{ asset('storage/' . $thumb->url) }}" alt="Ảnh sản phẩm" class="h-16 w-16 object-cover rounded border">
+                                            @else
+                                                <img src="{{ asset('assets/user/images/no-image.png') }}" alt="No image" class="h-16 w-16 object-cover rounded border">
+                                            @endif
                                         </td>
                                         <td class="p-3">{{ $product->name ?? '[SP đã xóa]' }}</td>
                                         <td class="p-3">{{ number_format($item->price, 0, ',', '.') }}đ</td>

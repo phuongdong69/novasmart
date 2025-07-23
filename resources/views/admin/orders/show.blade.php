@@ -15,24 +15,47 @@
                     str_contains(strtolower($currentStatus->code), 'delivered')
                 );
                 $cancelStatus = \App\Models\Status::where('type', 'order')->where('code', 'cancelled')->first();
+                $allowCancel = $currentStatus && in_array($currentStatus->code, ['pending', 'confirmed']);
             @endphp
-            @if ($cancelStatus && !$isDelivered && $currentStatus && $currentStatus->code !== 'cancelled')
-                <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST" class="inline-block ml-2" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
-                    @csrf
-                    <input type="hidden" name="status_id" value="{{ $cancelStatus->id }}">
-                    <button type="submit"
-                        style="background: #ef4444; color: #fff; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 600; padding: 6px 16px; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.04); transition: background 0.2s;"
-                        onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'"
-                        title="Hủy đơn hàng">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M4.93 4.93a10 10 0 0114.14 0M4.93 19.07a10 10 0 010-14.14M19.07 19.07a10 10 0 01-14.14 0" />
-                        </svg>
-                        Hủy đơn
-                    </button>
-                </form>
+            @if ($cancelStatus && $allowCancel)
+                <button type="button"
+                    onclick="document.getElementById('cancelModal').classList.remove('hidden')"
+                    style="background: #ef4444; color: #fff; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 600; padding: 6px 16px; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.04); transition: background 0.2s;"
+                    onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'"
+                    title="Hủy đơn hàng">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M4.93 4.93a10 10 0 0114.14 0M4.93 19.07a10 10 0 010-14.14M19.07 19.07a10 10 0 01-14.14 0" />
+                    </svg>
+                    Hủy đơn
+                </button>
             @endif
         </div>
     </div>
+
+    <!-- Modal nhập lý do huỷ cho admin -->
+    @if ($cancelStatus && $allowCancel)
+        <div id="cancelModal" class="hidden fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg shadow max-w-md w-full">
+                <h2 class="text-lg font-semibold mb-4">Nhập lý do huỷ đơn hàng</h2>
+                <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="status_id" value="{{ $cancelStatus->id }}">
+                    <textarea name="note" rows="4" required
+                        class="w-full border rounded p-2 focus:outline-none focus:ring focus:border-blue-400"
+                        placeholder="Vui lòng nhập lý do..."></textarea>
+                    <div class="flex justify-end mt-4 gap-3">
+                        <button type="button" onclick="document.getElementById('cancelModal').classList.add('hidden')"
+                            class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">
+                            Đóng
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                            Xác nhận huỷ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Thông tin đơn hàng -->
@@ -60,7 +83,11 @@
                             $isLastStatus = $currentStatusIndex === $orderStatuses->count() - 1;
                         @endphp
                         <div class="flex items-center gap-2 flex-wrap">
-                            @if($nextStatus && !$isLastStatus && !$isDelivered)
+                            @if($currentStatus && in_array($currentStatus->code, ['cancelled', 'refunded']))
+                                <span style="display: inline-block; padding: 6px 12px; background-color: {{ $currentStatus->color ?? '#6b7280' }}; color: white; border-radius: 4px; font-size: 12px; font-weight: 500; min-width: 80px;">
+                                    {{ $currentStatus->name }}
+                                </span>
+                            @elseif($nextStatus && !$isLastStatus && !$isDelivered)
                                 <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST" style="display: inline-block; margin: 0; padding: 0;">
                                     @csrf
                                     <input type="hidden" name="status_id" value="{{ $nextStatus->id }}">
@@ -201,11 +228,13 @@
             <div class="flex items-center py-2 border-b last:border-b-0">
                 <span class="text-gray-600 font-medium w-2/5 text-left">Trạng thái:</span>
                 <span class="w-3/5 text-left">
-                    <span class="px-2 py-1 rounded text-white text-xs font-semibold
-                        {{ $order->payment->status === 'completed' ? 'bg-green-500' : 
-                           ($order->payment->status === 'pending' ? 'bg-yellow-500' : 'bg-red-500') }}">
-                        {{ ucfirst($order->payment->status) }}
-                    </span>
+                    @if($order->payment->status)
+                        <span class="px-2 py-1 rounded text-white text-xs font-semibold" style="background-color: {{ $order->payment->status->color ?? '#6b7280' }};">
+                            {{ $order->payment->status->name ?? 'Không xác định' }}
+                        </span>
+                    @else
+                        <span class="px-2 py-1 rounded text-xs font-semibold bg-gray-300 text-gray-700">Chưa có</span>
+                    @endif
                 </span>
             </div>
             @if($order->payment->transaction_code)
