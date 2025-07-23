@@ -27,62 +27,103 @@
     </div>
     @endif
 
+    @php
+    $uniqueItems = collect();
+    $seenIds = [];
+
+    foreach ($cartItems as $item) {
+    $variant = is_array($item) ? ($item['variant'] ?? null) : ($item->productVariant ?? null);
+    $quantity = is_array($item) ? ($item['quantity'] ?? 1) : ($item->quantity ?? 1);
+
+    if ($variant && !in_array($variant->id, $seenIds)) {
+    $seenIds[] = $variant->id;
+    $uniqueItems->push([
+    'variant' => $variant,
+    'quantity' => $quantity,
+    ]);
+    }
+    }
+
+    $total = $uniqueItems->sum(fn($i) => $i['variant']->price * $i['quantity']);
+
+    $voucher = session('voucher') ?? [];
+    $voucherId = $voucher['id'] ?? null;
+
+    $discount = 0;
+    if ($voucherId) {
+    $voucherModel = \App\Models\Voucher::find($voucherId);
+    if ($voucherModel) {
+    $discount = $voucherModel->discount_type === 'percentage'
+    ? round($total * ($voucherModel->discount_value / 100))
+    : min($voucherModel->discount_value, $total);
+    }
+    }
+
+    $finalTotal = max(0, $total - $discount);
+
+    $user = Auth::user();
+    @endphp
 
     <div class="container relative">
         <div class="grid lg:grid-cols-12 md:grid-cols-2 grid-cols-1 gap-6">
+            {{-- FORM THANH TOÁN --}}
             <div class="lg:col-span-8">
                 <div class="p-6 rounded-md shadow-sm dark:shadow-gray-800">
                     <h3 class="text-xl font-semibold">Thông tin thanh toán</h3>
-                    <form id="checkout-form" method="POST" action="{{ route('checkout.store') }}" data-vnpay-route="{{ route('payment.vnpay.checkout') }}">
-
-
+                    <form id="checkout-form" method="POST"
+                        action="{{ route('checkout.store') }}"
+                        data-vnpay-route="{{ route('payment.vnpay.checkout') }}">
                         @csrf
-
-                        @php
-                        $voucher = session('voucher') ?? [];
-                        $voucherId = $voucher['id'] ?? null;
-                        $voucherDiscount = $voucher['discount'] ?? 0;
-                        $finalTotal = $total - $voucherDiscount;
-                        @endphp
 
                         <input type="hidden" name="voucher_id" value="{{ $voucherId }}">
                         <input type="hidden" name="final_total" value="{{ (int) $finalTotal }}">
                         <input type="hidden" name="amount" id="amount" value="{{ (int) $finalTotal }}">
 
-
                         <div class="grid lg:grid-cols-12 grid-cols-1 mt-6 gap-5">
+                            {{-- Họ và tên --}}
                             <div class="lg:col-span-12">
                                 <label class="form-label font-semibold">Họ và tên :</label>
-                                <input id="name" type="text" name="name" value="{{ old('name') }}"
+                                <input id="name" type="text" name="name"
+                                    value="{{ old('name', $user->name ?? '') }}"
                                     class="form-input w-full py-2 px-3 h-10 border border-gray-300 rounded"
-                                    placeholder="Nhập họ và tên">
+                                    placeholder="Nhập họ và tên"
+                                    @auth readonly @endauth>
                                 <span id="name-error" class="text-red-600 text-sm mt-1 hidden"></span>
                             </div>
 
+                            {{-- Số điện thoại --}}
                             <div class="lg:col-span-6">
                                 <label class="form-label font-semibold">Số điện thoại :</label>
-                                <input id="phoneNumber" type="text" name="phoneNumber" value="{{ old('phoneNumber') }}"
+                                <input id="phoneNumber" type="text" name="phoneNumber"
+                                    value="{{ old('phoneNumber', $user->phoneNumber ?? '') }}"
                                     class="form-input w-full py-2 px-3 h-10 border border-gray-300 rounded"
-                                    placeholder="Nhập số điện thoại">
+                                    placeholder="Nhập số điện thoại"
+                                    @auth readonly @endauth>
                                 <span id="phoneNumber-error" class="text-red-600 text-sm mt-1 hidden"></span>
                             </div>
 
+                            {{-- Email --}}
                             <div class="lg:col-span-6">
                                 <label class="form-label font-semibold">Email :</label>
-                                <input id="email" type="email" name="email" value="{{ old('email') }}"
+                                <input id="email" type="email" name="email"
+                                    value="{{ old('email', $user->email ?? '') }}"
                                     class="form-input w-full py-2 px-3 h-10 border border-gray-300 rounded"
-                                    placeholder="Nhập Email">
+                                    placeholder="Nhập Email"
+                                    @auth readonly @endauth>
                                 <span id="email-error" class="text-red-600 text-sm mt-1 hidden"></span>
                             </div>
 
+                            {{-- Địa chỉ --}}
                             <div class="lg:col-span-12">
                                 <label class="form-label font-semibold">Địa chỉ :</label>
-                                <input id="address" type="text" name="address" value="{{ old('address') }}"
+                                <input id="address" type="text" name="address"
+                                    value="{{ old('address', $user->address ?? '') }}"
                                     class="form-input w-full py-2 px-3 h-10 border border-gray-300 rounded"
                                     placeholder="Nhập địa chỉ">
                                 <span id="address-error" class="text-red-600 text-sm mt-1 hidden"></span>
                             </div>
 
+                            {{-- Ghi chú --}}
                             <div class="lg:col-span-12">
                                 <label class="form-label font-semibold">Ghi chú :</label>
                                 <textarea name="note"
@@ -90,6 +131,7 @@
                                     placeholder="Ghi chú đơn hàng" rows="4">{{ old('note') }}</textarea>
                             </div>
 
+                            {{-- Phương thức thanh toán --}}
                             <div class="lg:col-span-12">
                                 <label class="form-label font-semibold">Phương thức thanh toán :</label>
                                 <select name="payment_method"
@@ -108,82 +150,58 @@
                                 </button>
                             </div>
                         </div>
+
                     </form>
                 </div>
             </div>
 
+            {{-- THÔNG TIN ĐƠN HÀNG --}}
             <div class="lg:col-span-4">
-                <div class="p-6 rounded-md shadow-sm dark:shadow-gray-800">
-                    <div class="flex justify-between items-center">
-                        <h5 class="text-lg font-semibold">Giỏ hàng</h5>
-                        <span class="bg-orange-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
-                            {{ count($cartItems) }}
-                        </span>
+                <div class="p-6 rounded-md shadow-sm dark:shadow-gray-800 bg-white">
+                    <h4 class="text-lg font-semibold mb-4">Đơn hàng của bạn</h4>
+
+                    <div class="flex justify-between font-semibold border-b pb-2">
+                        <span>Sản phẩm</span>
+                        <span>Tạm tính</span>
                     </div>
 
-                    <div class="mt-4">
-                        @foreach ($cartItems as $item)
-                        <div class="p-3 flex justify-between items-center border-b">
-                            <div>
-                                @if (is_array($item))
-                                <h5 class="font-semibold">{{ $item['variant']->product->name ?? 'N/A' }}</h5>
-                                <p class="text-sm text-gray-500">{{ $item['variant']->name ?? '' }}</p>
-                                @else
-                                <h5 class="font-semibold">{{ $item->productVariant->product->name ?? 'N/A' }}</h5>
-                                <p class="text-sm text-gray-500">{{ $item->productVariant->name ?? '' }}</p>
-                                <div class="flex items-center space-x-1 text-sm">
-                                    <span class="font-semibold">{{ $item->quantity ?? '' }}</span>
-                                    <span class="text-gray-500">×</span>
-                                    <span class="text-red-500">{{ number_format($item->price ?? 0, 0, ',', '.') }}₫</span>
-                                </div>
-
-                                @endif
-                            </div>
-                            <p class="font-semibold text-right">
-                                {{ number_format((is_array($item) ? $item['variant']->price * $item['quantity'] : $item->productVariant->price * $item->quantity), 0, ',', '.') }}₫
-                            </p>
+                    @foreach ($uniqueItems as $item)
+                    <input type="hidden" name="selected_items[]" value="{{ $item['variant']->id }}">
+                    <div class="flex justify-between items-start py-2 border-b">
+                        <div>
+                            <p class="text-sm font-medium">{{ $item['variant']->product->name ?? 'Tên sản phẩm' }}</p>
+                            <p class="text-xs text-gray-500">{{ $item['variant']->name ?? '' }} × {{ $item['quantity'] }}</p>
                         </div>
-                        @endforeach
+                        <p class="text-sm font-semibold whitespace-nowrap">
+                            {{ number_format($item['variant']->price * $item['quantity'], 0, ',', '.') }}₫
+                        </p>
+                    </div>
+                    @endforeach
 
-                        @if(session('voucher'))
-                        <div class="p-3 flex justify-between items-center bg-gray-50 text-green-600">
-                            <div>
-                                <h5 class="font-semibold">Mã giảm giá</h5>
-                                <p class="text-sm">{{ session('voucher')['code'] }}</p>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <p class="text-red-600 font-semibold">
-                                    -{{ number_format($voucherDiscount, 0, ',', '.') }}₫
-                                </p>
-                                <form action="{{ route('checkout.remove-voucher') }}" method="POST">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800 font-bold text-lg">✕</button>
-                                </form>
-                            </div>
+                    <div class="pt-4 space-y-1 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Tạm tính</span>
+                            <span id="original-total" data-amount="{{ $total }}">
+                                {{ number_format($total, 0, ',', '.') }}₫
+                            </span>
+                        </div>
+
+                        @if ($discount > 0)
+                        <div class="flex justify-between text-red-600">
+                            <span>Giảm giá</span>
+                            <span id="discount-value" data-amount="{{ $discount }}">
+                                -{{ number_format($discount, 0, ',', '.') }}₫
+                            </span>
                         </div>
                         @endif
 
-                        <div class="p-3 flex justify-between items-center border-t">
-                            <h5 class="font-semibold">Tổng tiền</h5>
-                            <p class="font-semibold">{{ number_format($finalTotal, 0, ',', '.') }}₫</p>
+                        <div class="flex justify-between font-bold text-base pt-1 border-t mt-2">
+                            <span>Tổng cộng</span>
+                            <span>{{ number_format($finalTotal, 0, ',', '.') }}₫</span>
                         </div>
-                    </div>
-
-                    <div class="mt-6">
-                        <form class="relative" action="{{ route('checkout.apply-voucher') }}" method="POST">
-                            @csrf
-                            <input type="text" name="voucher_code"
-                                class="py-3 pe-40 ps-6 w-full h-[50px] rounded-full bg-white border shadow-sm"
-                                placeholder="Mã giảm giá">
-                            <button type="submit"
-                                class="py-2 px-5 absolute top-[2px] end-[3px] h-[46px] bg-orange-500 text-white rounded-full">
-                                Áp dụng
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>

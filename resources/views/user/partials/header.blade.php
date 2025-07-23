@@ -114,9 +114,6 @@
                                 <a href="{{ route('cart.show') }}"
                                     class="py-[5px] px-4 inline-block font-semibold text-sm rounded-md bg-orange-500 text-white">Xem
                                     giỏ hàng</a>
-                                <a href="{{ route('checkout.show') }}"
-                                    class="py-[5px] px-4 inline-block font-semibold text-sm rounded-md bg-orange-500 text-white">Thanh
-                                    toán</a>
                             </div>
                             <p class="text-xs text-slate-400 mt-1 text-center">*T&C Apply</p>
                         </li>
@@ -156,6 +153,13 @@
                                     <i data-feather="user" class="h-4 w-4 me-2"></i>Tài khoản
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('user.orders.index') }}"
+                                    class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white">
+                                    <i data-feather="shopping-bag" class="h-4 w-4 me-2"></i>Quản lý đơn hàng
+                                </a>
+                            </li>
+
                             <li>
                                 <a href="{{ url('settings') }}"
                                     class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white">
@@ -266,7 +270,7 @@
                                 <li class="megamenu-head"><img src="{{ asset('assets/user/images/cta.png') }}"
                                         alt=""></li>
 
-                                <li class="text-center"><a href="#!"
+                                <li class="text-center"><a href="{{ route('products.list') }}"
                                         class="py-2 px-5 inline-block font-medium tracking-wide align-middle duration-500 text-base text-center bg-orange-500/10 text-orange-500 rounded-md me-2 mt-2"><i
                                             class="mdi mdi-cart-outline"></i> Shop Now</a></li>
                             </ul>
