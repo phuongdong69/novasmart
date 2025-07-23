@@ -12,6 +12,7 @@
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Khách hàng</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tổng tiền</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Trạng thái</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Trạng thái thanh toán</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Lịch sử trạng thái</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Ngày tạo</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Hành động</th>
@@ -66,6 +67,16 @@
                                         </span>
                                     @endif
                                 </div>
+                            </td>
+
+                            <td class="px-4 py-2">
+                                @if($order->payment && $order->payment->status)
+                                    <span class="px-2 py-1 rounded text-white text-xs font-semibold" style="background-color: {{ $order->payment->status->color ?? '#6b7280' }};">
+                                        {{ $order->payment->status->name ?? 'Không xác định' }}
+                                    </span>
+                                @else
+                                    <span class="px-2 py-1 rounded text-xs font-semibold bg-gray-300 text-gray-700">Chưa có</span>
+                                @endif
                             </td>
 
                             <td class="px-4 py-2">
