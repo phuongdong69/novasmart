@@ -60,14 +60,25 @@
                                     class="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 cursor-not-allowed"
                                     readonly>
                             </div>
-
                             <div>
                                 <label class="block font-medium mb-2">Số điện thoại</label>
                                 <input type="text" name="phoneNumber"
                                     value="{{ old('phoneNumber', Auth::user()->phoneNumber) }}"
-                                    class="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 cursor-not-allowed"
-                                    readonly>
+                                    class="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2">
+                                @error('phoneNumber')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
+                            <div>
+                                <label class="block font-medium mb-2">Địa chỉ</label>
+                                <textarea name="address" rows="3" class="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2"
+                                    placeholder="Nhập địa chỉ của bạn">{{ old('address', Auth::user()->address) }}</textarea>
+                                @error('address')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+
 
                             <div>
                                 <label class="block font-medium mb-2">Giới tính</label>
@@ -86,6 +97,7 @@
                                 @enderror
                             </div>
 
+
                             <div>
                                 <label class="block font-medium mb-2">Ngày sinh</label>
                                 <input type="date" name="birthday" value="{{ old('birthday', Auth::user()->birthday) }}"
@@ -96,26 +108,24 @@
                             </div>
                         </div>
 
-                        {{-- Avatar riêng biệt --}}
+
+                        {{-- Avatar --}}
                         <div class="md:col-span-1">
                             <div>
-                                <label class="block font-medium mb-2" style="margin-left: 233px;">Ảnh đại diện</label>
+                                <label class="block font-medium mb-2 text-center " style="margin-left: 20px">Ảnh đại
+                                    diện</label>
 
-                                @if (Auth::user()->image_user)
-                                    <div class="flex justify-center">
-                                        <img src="{{ asset('storage/' . Auth::user()->image_user) }}" alt="Avatar"
-                                            class="rounded-full object-cover shadow-md" width="120px"
+                                <div class="flex justify-center">
+                                    @if (Auth::user()->image_user)
+                                        <img id="previewAvatar" src="{{ asset('storage/' . Auth::user()->image_user) }}"
+                                            alt="Avatar" class="rounded-full object-cover shadow-md" width="120px"
                                             style="margin-left: 20px;">
-                                    </div>
-                                @else
-                                    <div
-                                        class="w-[120px] h-[120px] rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                                        <svg class="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.2c-2.9 0-8.6 1.5-8.6 4.4v2.2h17.2v-2.2c0-2.9-5.7-4.4-8.6-4.4z" />
-                                        </svg>
-                                    </div>
-                                @endif
+                                    @else
+                                        <img id="previewAvatar" src="#" alt="Avatar mới"
+                                            class="rounded-full object-cover shadow-md" width="120px"
+                                            style="margin-left: 20px; display: none;">
+                                    @endif
+                                </div>
                                 <br>
 
                                 <label for="image_user"
@@ -124,12 +134,9 @@
                                     📁 Chọn ảnh
                                 </label>
 
-                                <input type="file" name="image_user" id="image_user" class="hidden"
+                                <input type="file" name="image_user" id="image_user" class="hidden" accept="image/*"
                                     onchange="updateFileName()" />
 
-                                
-
-                            
                                 @error('image_user')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
@@ -151,16 +158,21 @@
         </div>
     </section>
 
-    {{-- Script hiển thị tên ảnh --}}
+    {{-- Script hiển thị ảnh mới chọn --}}
     <script>
         function updateFileName() {
             const input = document.getElementById("image_user");
-            const fileNameSpan = document.getElementById("selectedFileName");
+            const preview = document.getElementById("previewAvatar");
 
-            if (input.files.length > 0) {
-                fileNameSpan.textContent = "Đã chọn: " + input.files[0].name;
-            } else {
-                fileNameSpan.textContent = "";
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                };
+
+                reader.readAsDataURL(input.files[0]);
             }
         }
     </script>
