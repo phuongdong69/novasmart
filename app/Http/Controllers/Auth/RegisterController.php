@@ -20,7 +20,8 @@ class RegisterController extends Controller
         $validatedData = $request->validate([
             'fullname' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email|max:255',
-            'phone' => 'required|string|max:15',
+            'phone' => 'required|regex:/^[0-9]{10}$/',
+
             'password' => 'required|string|min:8|confirmed',
             'terms' => 'accepted',
         ], [
@@ -28,6 +29,8 @@ class RegisterController extends Controller
             'email.required' => 'Email là bắt buộc.',
             'email.unique' => 'Email đã được sử dụng.',
             'phone.required' => 'Số điện thoại là bắt buộc.',
+            'phone.regex' => 'Số điện thoại phải gồm đúng 10  số.',
+
             'password.required' => 'Mật khẩu là bắt buộc.',
             'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
             'terms.accepted' => 'Bạn phải đồng ý với Điều khoản sử dụng và Chính sách bảo mật.',

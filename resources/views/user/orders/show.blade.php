@@ -36,7 +36,7 @@
                         @if (is_object($order->orderStatus))
                             <span class="text-white px-2 py-1 rounded text-sm"
                                 style="background-color: {{ $order->orderStatus->color ?? '#999' }};">
-                                {{ $order->orderStatus->name ?? 'Không rõ' }} ({{ $order->orderStatus->code ?? '---' }})
+                                {{ $order->orderStatus->name ?? 'Không rõ' }} 
                             </span>
                         @else
                             <span class="text-white px-2 py-1 rounded bg-gray-500 text-sm">Không xác định</span>
