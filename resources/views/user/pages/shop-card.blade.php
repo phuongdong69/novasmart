@@ -18,7 +18,22 @@
             </li>
             <li class="inline-block uppercase text-[13px] font-bold text-orange-500">Giỏ hàng</li>
         </ul>
-
+        @if (session('success'))
+        <div id="toast-success" class="custom-toast">
+            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="toast-message">{{ session('success') }}</span>
+            <button class="toast-close" onclick="this.parentElement.remove()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="toast-close-icon" fill="none" stroke="currentColor"
+                    stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="toast-progress"></div>
+        </div>
+        @endif
         @if (session('error'))
         <div id="cart-error-box" class="mb-4 bg-red-100 text-red-700 p-4 rounded-lg border border-red-300 text-sm flex items-center space-x-2">
             <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -76,42 +91,72 @@
                         $id = $isObject ? $item->id : ($item['variant']->id ?? 0);
                         $thumbnail = $product->thumbnails->where('is_primary', true)->first();
                         $imageUrl = $thumbnail ? asset('storage/' . $thumbnail->url) : ($product->image ? asset('storage/' . $product->image) : asset('images/default-product.jpg'));
+                        $isProductInactive = $product->status?->code !== 'active';
+                        $isVariantOutOfStock = $variant->quantity == 0 || $variant->status?->code === 'out_of_stock';
+                        $outOfStock = $isProductInactive || $isVariantOutOfStock;
+                        $statusMessage = '';
+                        if ($isProductInactive) {
+                        $statusMessage = 'Sản phẩm không hoạt động';
+                        } elseif ($isVariantOutOfStock) {
+                        $statusMessage = 'Sản phẩm hết hàng';
+                        }
                         @endphp
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
+                        <tr class="border-b border-gray-100 dark:border-gray-800 {{ $outOfStock ? 'row-disabled' : '' }}"
+                            data-out-of-stock="{{ $outOfStock ? '1' : '0' }}"
+                            title="{{ $statusMessage }}">
+
                             <td class="p-4 text-center">
                                 <input type="checkbox"
                                     class="item-checkbox form-checkbox text-orange-500 rounded"
                                     value="{{ $variant->id }}"
-                                    {{ in_array($variant->id, $selectedIds) ? 'checked' : '' }}>
+                                    {{ in_array($variant->id, $selectedIds) ? 'checked' : '' }}
+                                    {{ $outOfStock ? 'disabled' : '' }}>
                             </td>
+
                             <td class="p-4">
-                                <div class="flex items-center gap-3">
-                                    <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-20 h-20 rounded-md object-cover border border-gray-200 dark:border-gray-700 shadow-sm">
-                                    <span class="font-semibold">{{ $product->name }}</span>
+                                <div class="flex items-start gap-3">
+                                    <img src="{{ $imageUrl }}" alt="{{ $product->name }}"
+                                        class="w-20 h-20 rounded-md object-cover border border-gray-200 dark:border-gray-700 shadow-sm">
+                                    <div>
+                                        <span class="font-semibold block">{{ $product->name }}</span>
+
+                                        @if ($outOfStock && $statusMessage)
+                                        <span class="text-xs text-red-500 italic mt-1 block">{{ $statusMessage }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
+
                             <td class="p-4 text-center">
                                 <span class="unit-price" data-price="{{ $price }}">{{ number_format($price, 0, ',', '.') }}₫</span>
                             </td>
+
                             <td class="p-4 text-center">
                                 <div class="form-update-qty" data-id="{{ $id }}">
                                     <div class="flex items-center justify-center gap-2">
-                                        <button type="button" class="btn-decrease size-9 flex items-center justify-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white">-</button>
+                                        <button type="button"
+                                            class="btn-decrease size-9 flex items-center justify-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white"
+                                            {{ $outOfStock ? 'disabled' : '' }}>-</button>
                                         <input type="number"
                                             name="quantity"
                                             value="{{ $quantity }}"
                                             min="1"
                                             max="{{ $variant->quantity }}"
                                             data-max="{{ $variant->quantity }}"
-                                            class="quantity-input h-9 text-center rounded-md bg-orange-500/5 text-orange-500 w-16">
-                                        <button type="button" class="btn-increase size-9 flex items-center justify-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white">+</button>
+                                            class="quantity-input h-9 text-center rounded-md bg-orange-500/5 text-orange-500 w-16"
+                                            {{ $outOfStock ? 'disabled' : '' }}>
+                                        <button type="button"
+                                            class="btn-increase size-9 flex items-center justify-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white"
+                                            {{ $outOfStock ? 'disabled' : '' }}>+</button>
                                     </div>
                                     <div class="error-message text-sm text-red-500 mt-1 hidden"></div>
                                 </div>
                             </td>
+
                             <td class="p-4 text-end">
                                 <span class="item-total">{{ number_format($total, 0, ',', '.') }}₫</span>
                             </td>
+
                             <td class="p-4 text-center">
                                 <form method="POST" action="{{ route('cart.remove', $id) }}">
                                     @csrf
@@ -122,6 +167,7 @@
                                 </form>
                             </td>
                         </tr>
+
                         @endforeach
                     </tbody>
                 </table>
@@ -329,6 +375,128 @@
 
     .back-btn {
         margin-top: 1rem;
+    }
+
+    .custom-toast {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        min-width: 260px;
+        max-width: 360px;
+        background-color: #16a34a;
+        /* xanh lá đậm */
+        color: #fff;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        animation: slideIn 0.3s ease-out;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .toast-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        stroke: #fff;
+    }
+
+    .toast-message {
+        flex: 1;
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+    .toast-close {
+        background: transparent;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        padding: 0;
+    }
+
+    .toast-close:hover {
+        opacity: 0.7;
+    }
+
+    .toast-close-icon {
+        width: 16px;
+        height: 16px;
+        stroke: #fff;
+    }
+
+    .toast-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        background-color: #a3e635;
+        /* lime-400 */
+        animation: progressBar 4s linear forwards;
+        width: 100%;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+    }
+
+    /* Animations */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(50%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes progressBar {
+        from {
+            width: 100%;
+        }
+
+        to {
+            width: 0%;
+        }
+    }
+
+    .tr-out-of-stock {
+        opacity: 0.5;
+        pointer-events: none;
+        position: relative;
+        background-color: #f9fafb;
+    }
+
+    .tr-out-of-stock td {
+        pointer-events: none;
+    }
+
+    .tr-out-of-stock td:last-child {
+        pointer-events: all;
+        /* Cho phép bấm nút XÓA */
+    }
+
+    .row-disabled {
+        opacity: 0.6;
+        background-color: #f9fafb;
+        /* light gray */
+        pointer-events: none;
+    }
+
+    .row-disabled * {
+        pointer-events: none;
+    }
+
+    .row-disabled form,
+    .row-disabled button[type="submit"] {
+        pointer-events: auto;
+        opacity: 1;
     }
 </style>
 
