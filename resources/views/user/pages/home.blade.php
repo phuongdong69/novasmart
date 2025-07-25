@@ -49,10 +49,15 @@
 
                 <div class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 pt-6 gap-6">
     @forelse($products as $product)
-        @php
-            $variant = $product->variants->first();
-            $isOutOfStock = $variant && ($variant->status === 'out_of_stock' || $variant->quantity == 0);
-        @endphp
+                    @php
+                        $variant = $product->variants->first();
+                        $status = $variant?->status;
+
+                        $isOutOfStock = $variant && (
+                            ($status && $status->code === 'out_of_stock' && $status->type === 'product_variant')
+                            || $variant->quantity == 0
+                        );
+                    @endphp
         <div class="group">
             <div class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
                 <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}" class="group-hover:scale-110 duration-500 w-full h-64 object-cover" alt="{{ $product->name }}">

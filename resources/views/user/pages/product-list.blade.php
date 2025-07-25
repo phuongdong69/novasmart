@@ -59,6 +59,13 @@
                             $attributes = $variant->variantAttributeValues->map(function($vav) {
                                 return $vav->attribute->name . ': ' . $vav->attributeValue->value;
                             })->implode(', ');
+                            $variant = $product->variants->first();
+                            $status = $variant?->status;
+
+                            $isOutOfStock = $variant && (
+                            ($status && $status->code === 'out_of_stock' && $status->type === 'product_variant')
+                            || $variant->quantity == 0
+                            );
                         @endphp
                         <div class="group">
                             <div class="relative overflow-hidden rounded-md shadow dark:shadow-gray-800">
@@ -90,20 +97,20 @@
                                 <div class="flex justify-between items-center mt-3">
                                     <span class="text-lg font-semibold">{{ number_format($variant->price) }}₫</span>
                                     
-                                    @if($variant->quantity > 0)
-                                        <form action="{{ route('cart.add') }}" method="POST" class="inline">
-                                            @csrf
-                                            <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md hover:bg-orange-500">
-                                                Thêm vào giỏ
-                                            </button>
-                                        </form>
-                                    @else
-                                        <button disabled class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-400 text-white w-full rounded-md cursor-not-allowed">
-                                            Hết hàng
-                                        </button>
-                                    @endif
+                            @if(!$isOutOfStock)
+                                <form action="{{ route('cart.add') }}" method="POST" class="inline">
+                                    @csrf
+                                    <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md hover:bg-orange-500">
+                                        Thêm vào giỏ
+                                    </button>
+                                </form>
+                            @else
+                                <button disabled class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-400 text-white w-full rounded-md cursor-not-allowed">
+                                Hết hàng
+                            </button>
+                            @endif
                                 </div>
                             </div>
                         </div>
