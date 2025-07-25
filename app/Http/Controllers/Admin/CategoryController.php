@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Category;
+use App\Models\{Category, Status};
 use App\Http\Requests\CategoryRequest;
 class CategoryController extends Controller
-{   
+{  
     public function index(Request $request) // Hiển thị danh sách danh mục, có thể lọc theo từ khóa
     {
         $query = Category::query();
@@ -31,30 +31,40 @@ class CategoryController extends Controller
     }
     // Lưu danh mục mới vào cơ sở dữ liệu
     public function store(CategoryRequest $request)
-    {
-        try {
-            // Tạo mới danh mục từ dữ liệu hợp lệ
+{
+    try {
+        $data = $request->validated();
 
-            Category::create($request->validated());
-            return redirect()->route('admin.categories.index')->with('success', 'Thêm danh mục thành công.');
-        } catch (\Exception $e) {
-            return redirect()->route('admin.categories.index')->with('error', 'Không thêm danh mục thành công.');
-        }
+        // Gán mặc định status là "active"
+        $data['status_id'] = Status::where('type', 'category')->where('code', 'active')->value('id');
+
+        Category::create($data);
+
+        return redirect()->route('admin.categories.index')->with('success', 'Thêm danh mục thành công.');
+    } catch (\Exception $e) {
+        return redirect()->route('admin.categories.index')->with('error', 'Không thêm danh mục thành công.');
     }
-    
+}
     // Đổi trạng thái hoạt động của danh mục
     public function toggleStatus($id)
-    {
-        $category = Category::findOrFail($id);
-        $category->status = !$category->status; // Đảo ngược trạng thái
-        $category->save();
-        return redirect()->back()->with('success', 'Đã cập nhật trạng thái danh mục.');
-    }
+{
+    $category = Category::findOrFail($id);
+    $current = $category->status->code ?? 'inactive';
+
+    $newCode = $current === 'active' ? 'inactive' : 'active';
+
+    $newStatusId = Status::where('type', 'category')->where('code', $newCode)->value('id');
+
+    $category->status_id = $newStatusId;
+    $category->save();
+
+    return redirect()->back()->with('success', 'Cập nhật trạng thái thành công.');
+}
     // Hiển thị form sửa danh mục
     public function edit($id)
     {
         $category = Category::findOrFail($id);
-        return view('admin.categories.edit', compact('categories'));
+        return view('admin.categories.edit', compact('category'));
     }
     // Cập nhật thông tin danh mục
     public function update(CategoryRequest $request, $id)
