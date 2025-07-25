@@ -36,12 +36,16 @@
                         @if (is_object($order->orderStatus))
                             <span class="text-white px-2 py-1 rounded text-sm"
                                 style="background-color: {{ $order->orderStatus->color ?? '#999' }};">
-                                {{ $order->orderStatus->name ?? 'Không rõ' }} 
+                                {{ $order->orderStatus->name ?? 'Không rõ' }}
+                                @if (!empty($order->cancel_reason))
+                                    - Lý do: ( {{  $order->cancel_reason }} )
+                                @endif
                             </span>
                         @else
                             <span class="text-white px-2 py-1 rounded bg-gray-500 text-sm">Không xác định</span>
                         @endif
                     </p>
+
                     <p><strong>🕓 Ngày đặt:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
 
                     {{-- Phương thức thanh toán --}}
@@ -74,14 +78,19 @@
                                 @foreach ($order->orderDetails as $item)
                                     @php
                                         $product = $item->productVariant->product ?? null;
-                                        $thumb = $product && $product->thumbnails ? $product->thumbnails->where('is_primary', true)->first() : null;
+                                        $thumb =
+                                            $product && $product->thumbnails
+                                                ? $product->thumbnails->where('is_primary', true)->first()
+                                                : null;
                                     @endphp
                                     <tr class="border-t">
                                         <td class="p-3">
-                                            @if($thumb)
-                                                <img src="{{ asset('storage/' . $thumb->url) }}" alt="Ảnh sản phẩm" class="h-16 w-16 object-cover rounded border">
+                                            @if ($thumb)
+                                                <img src="{{ asset('storage/' . $thumb->url) }}" alt="Ảnh sản phẩm"
+                                                    class="h-16 w-16 object-cover rounded border">
                                             @else
-                                                <img src="{{ asset('assets/user/images/no-image.png') }}" alt="No image" class="h-16 w-16 object-cover rounded border">
+                                                <img src="{{ asset('assets/user/images/no-image.png') }}" alt="No image"
+                                                    class="h-16 w-16 object-cover rounded border">
                                             @endif
                                         </td>
                                         <td class="p-3">{{ $product->name ?? '[SP đã xóa]' }}</td>

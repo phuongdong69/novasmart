@@ -7,14 +7,15 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Status;
 use App\Models\Payment;
+use App\Models\ProductVariant;
+use App\Models\Voucher;
+use App\Models\OrderHistory;
+use App\Models\OrderCancellation; 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OrderrController extends Controller
 {
-    /**
-     * Hiển thị danh sách đơn hàng của người dùng,
-     * có thể lọc theo trạng thái (pending, delivering, completed, cancelled).
-     */
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -36,9 +37,6 @@ class OrderrController extends Controller
         return view('user.orders.index', compact('orders', 'statusFilter'));
     }
 
-    /**
-     * Hiển thị chi tiết một đơn hàng cụ thể.
-     */
     public function show($id)
     {
         $order = Order::with(['orderStatus', 'payment', 'orderDetails.productVariant.product'])
@@ -50,27 +48,74 @@ class OrderrController extends Controller
 
     /**
      * Huỷ đơn hàng nếu đang ở trạng thái 'pending'.
+     * - Nhập lý do
+     * - Hoàn kho
+     * - Hoàn voucher
+     * - Giả lập hoàn tiền nếu thanh toán online
      */
-    public function cancel($id)
+    public function cancel(Request $request, $id)
     {
-        $order = Order::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+        $order = Order::with('orderDetails.productVariant')
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
         $pendingStatus = Status::where('type', 'order')->where('code', 'pending')->first();
         $cancelStatus = Status::where('type', 'order')->where('code', 'cancelled')->first();
+
+        if (!$pendingStatus || !$cancelStatus) {
+            return back()->with('error', 'Không tìm thấy trạng thái cần thiết.');
+        }
 
         if ($order->status_id !== $pendingStatus->id) {
             return back()->with('error', 'Chỉ huỷ được đơn hàng đang chờ xác nhận.');
         }
 
-        $order->status_id = $cancelStatus->id;
-        $order->save();
+        $request->validate([
+            'note' => 'required|string|max:255',
+        ]);
 
-        return redirect()->route('user.orders.show', $order->id)->with('success', 'Đã huỷ đơn hàng thành công.');
+        DB::beginTransaction();
+        try {
+            // Cập nhật trạng thái và lý do
+            $order->status_id = Status::where('name', 'Đã huỷ')->first()->id;
+            $order->cancel_reason = $request->note;
+            $order->save();
+
+            // Hoàn kho
+            foreach ($order->orderDetails as $detail) {
+                $variant = $detail->productVariant;
+                if ($variant) {
+                    $variant->quantity += $detail->quantity;
+                    $variant->save();
+                }
+            }
+
+            // Hoàn voucher
+            if ($order->voucher_id) {
+                $voucher = Voucher::find($order->voucher_id);
+
+                if ($voucher && $voucher->quantity !== null) {
+                    $voucher->quantity += 1;
+                    $voucher->save();
+                }
+            }
+
+
+            // Giả lập hoàn tiền
+            if ($order->payment && $order->payment->payment_method === 'vnpay') {
+                logger("Đã hoàn tiền cho đơn hàng #{$order->id} qua VNPay.");
+            }
+            DB::commit();
+            return redirect()->route('user.orders.show', $order->id)->with('success', 'Đã huỷ đơn hàng thành công.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            logger('Lỗi huỷ đơn: ' . $e->getMessage());
+            return back()->with('error', $e->getMessage()); // ❗ Thêm dòng này ở đây
+        }
     }
 
-    /**
-     * Xác nhận người dùng đã nhận được hàng → chuyển trạng thái sang 'completed'.
-     */
+
     public function confirmReceived($id)
     {
         $order = Order::with('orderStatus')
