@@ -49,7 +49,8 @@
               <thead class="bg-gray-50">
                 <tr>
                   <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">ID</th>
-                  <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">Quốc gia</th>
+                  <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">Tên xuất xứ</th>
+                  <th class="px-6 py-3 text-center uppercase text-xs font-bold text-slate-400">Trạng thái</th>
                   <th class="px-6 py-3 text-center uppercase text-xs font-bold text-slate-400">Ngày tạo</th>
                   <th class="px-6 py-3 text-left uppercase text-xs font-bold text-slate-400">Thao tác</th>
                 </tr>
@@ -59,13 +60,26 @@
                   <tr class="border-b dark:border-white/40 hover:bg-gray-50 transition">
                     <td class="px-6 py-3 text-sm">{{ $origin->id }}</td>
                     <td class="px-6 py-3 text-sm font-medium text-gray-800">{{ $origin->country }}</td>
+                    <td class="px-6 py-3 text-sm text-center">
+                    <form action="{{ route('admin.origins.toggleStatus', $origin->id) }}" method="POST">
+                   @csrf 
+                @method('PUT')
+
+                       @php
+                      $statusCode = $origin->status->code ?? 'inactive';
+                      $isActive = $statusCode === 'active';
+                    @endphp
+
+                    <button type="submit"
+                      class="px-2.5 py-1.4 text-xs rounded-1.8 font-bold uppercase leading-none text-white
+                      {{ $isActive ? 'bg-gradient-to-tl from-emerald-500 to-teal-400' : 'bg-gradient-to-tl from-slate-600 to-slate-300' }}">
+                      {{ $isActive ? 'Hiển thị' : 'Ẩn' }}
+                    </button>
+                  </form>
+                </td>
                     <td class="px-6 py-3 text-sm text-center text-slate-500">{{ $origin->created_at->format('d/m/Y') }}</td>
                     <td class="px-6 py-3 text-sm">
                       <a href="{{ route('admin.origins.edit', $origin->id) }}" class="text-blue-600 hover:underline mr-2">Sửa</a>
-                      <form action="{{ route('admin.origins.destroy', $origin->id) }}" method="POST" class="inline-block">
-                        @csrf @method('DELETE')
-                        <button type="submit" onclick="return confirm('Xác nhận xoá?')" class="text-red-500 hover:underline">Xoá</button>
-                      </form>
                     </td>
                   </tr>
                 @empty

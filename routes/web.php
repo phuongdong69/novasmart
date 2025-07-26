@@ -92,6 +92,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     ]);
 
     // Origins
+    Route::put('origins/{id}/toggle-status', [OriginController::class, 'toggleStatus'])->name('origins.toggleStatus');
     Route::resource('origins', OriginController::class)->names([
         'index'   => 'origins.index',
         'create'  => 'origins.create',

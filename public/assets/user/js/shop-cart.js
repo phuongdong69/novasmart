@@ -1,8 +1,11 @@
 // Khi DOM đã được tải đầy đủ
 document.addEventListener('DOMContentLoaded', () => {
+    
     // 🔑 Key dùng để lưu ID sản phẩm đã chọn trong localStorage
     const CHECKED_KEY = 'selected_cart_ids';
-
+    
+    const CHECK_ALL_KEY = 'cart_check_all';
+    
     // 📦 Kiểm tra URL có tham số voucher_applied không
     const urlParams = new URLSearchParams(location.search);
     const isVoucherJustApplied = urlParams.has('voucher_applied');
@@ -14,16 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const formRemove = document.getElementById('remove-selected-form');
     const voucherForm = document.getElementById('voucher-form');
 
-    // 🧹 Nếu không phải apply voucher, thì xoá checked_ids khỏi localStorage
-    if (!isVoucherJustApplied) localStorage.removeItem(CHECKED_KEY);
-    // ✅ Nếu có, thì xóa tham số khỏi URL sau khi xử lý
-    if (isVoucherJustApplied) {
-        const url = new URL(location.href);
-        url.searchParams.delete('voucher_applied');
-        history.replaceState({}, '', url.toString());
-    }
-
-    // 📋 Lấy headers cho fetch request (bao gồm CSRF token)
     function getHeaders() {
         return {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -31,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'Content-Type': 'application/json'
         };
     }
-
+    
     // 💾 Lưu danh sách ID sản phẩm được chọn vào localStorage
     function saveChecked(ids) {
         localStorage.setItem(CHECKED_KEY, JSON.stringify(ids));
@@ -49,18 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 🔁 Cập nhật danh sách ID được chọn (checkbox), hiển thị tổng tiền và tính lại voucher
     function updateSelectedIds() {
         const selectedIds = [...checkboxes].filter(cb => cb.checked).map(cb => cb.value);
-        
-        // Cập nhật tất cả input hidden trong form
         document.querySelectorAll('input[name="selected_ids"]').forEach(input => {
             input.value = selectedIds.join(',');
         });
-
-        // Cập nhật form xoá
         const hiddenInputRemove = document.getElementById('selected-ids-remove');
         if (hiddenInputRemove) {
             hiddenInputRemove.value = selectedIds.join(',');
         }
-
         saveChecked(selectedIds);
         updateCartSummary(selectedIds);
         updateVoucher(selectedIds);
@@ -69,8 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 💰 Tính lại tổng tiền và cập nhật giao diện giỏ hàng
     function updateCartSummary(selectedIds) {
         let total = 0;
-
-        // Tính tổng tiền của các sản phẩm được chọn
         selectedIds.forEach(id => {
             const row = [...checkboxes].find(cb => cb.value === id)?.closest('tr');
             if (!row) return;
@@ -136,26 +122,77 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => box.classList.add('hidden'), 4000);
     }
 
-    // 📦 Gán sự kiện khi tick chọn sản phẩm
+     const toast = document.getElementById('toast-success');
+    if (toast) {
+        setTimeout(() => toast.remove(), 4000);
+    }
+
+    checkAll.addEventListener('change', () => {
+    const isChecked = checkAll.checked;
+
+    // ✅ Lưu trạng thái vào localStorage
+    localStorage.setItem(CHECK_ALL_KEY, isChecked ? '1' : '0');
+
+    // Chỉ chọn những checkbox không bị disabled
     checkboxes.forEach(cb => {
-        cb.addEventListener('change', () => {
-            updateSelectedIds();
-            if (checkAll) checkAll.checked = [...checkboxes].every(cb => cb.checked);
-        });
+        if (!cb.disabled) cb.checked = isChecked;
     });
 
-    // ✅ Tick/untick tất cả sản phẩm
-    if (checkAll) {
-        checkAll.addEventListener('change', () => {
-            checkboxes.forEach(cb => cb.checked = checkAll.checked);
-            updateSelectedIds();
-        });
+    updateSelectedIds();
+   if (isChecked) {
+    const selectedCount = [...checkboxes].filter(cb => !cb.disabled && cb.checked).length;
+    if (selectedCount > 0) {
+        showSuccessToast(`Đã chọn ${selectedCount} sản phẩm.`);
+    } else {
+        showError('Không có sản phẩm nào có thể chọn.');
+        checkAll.checked = false; // Bỏ tick chọn tất cả nếu không có gì chọn
     }
+}
+});
+    // ✅ Tick/untick tất cả sản phẩm
+   checkboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+        updateSelectedIds();
+
+        // ✅ Tự động tick “chọn tất cả” nếu tất cả sản phẩm còn hàng đều được tick
+        const allAvailableChecked = [...checkboxes]
+            .filter(item => !item.disabled)
+            .every(item => item.checked);
+
+        if (checkAll) {
+            checkAll.checked = allAvailableChecked;
+            localStorage.setItem(CHECK_ALL_KEY, allAvailableChecked ? '1' : '0');
+        }
+
+        if (cb.checked) {
+            showSuccessToast('Đã chọn sản phẩm thành công.');
+        }
+    });
+});
 
     // 🔃 Tải lại danh sách đã chọn khi load trang
     const checked = loadChecked();
-    checkboxes.forEach(cb => cb.checked = checked.includes(cb.value));
-    updateSelectedIds();
+checkboxes.forEach(cb => {
+    if (!cb.disabled && checked.includes(cb.value)) {
+        cb.checked = true;
+    }
+});
+updateSelectedIds();
+
+// ✅ Khôi phục trạng thái checkbox "Chọn tất cả"
+const savedCheckAll = localStorage.getItem(CHECK_ALL_KEY);
+if (checkAll) {
+    const availableCheckboxes = [...checkboxes].filter(cb => !cb.disabled);
+    const allChecked = availableCheckboxes.every(cb => cb.checked);
+    const hasAvailable = availableCheckboxes.length > 0;
+
+    if (savedCheckAll === '1' && hasAvailable && allChecked) {
+        checkAll.checked = true;
+    } else {
+        checkAll.checked = false;
+        localStorage.setItem(CHECK_ALL_KEY, '0'); // reset lại cho đúng
+    }
+}
 
     // 🔢 Xử lý cập nhật số lượng sản phẩm
     document.querySelectorAll('.form-update-qty').forEach(form => {
@@ -170,37 +207,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 📝 Gửi request cập nhật số lượng
         function updateQty(newQty) {
-            if (newQty > maxQty) {
-                errorBox.textContent = `Chỉ còn ${maxQty} sản phẩm trong kho.`;
-                errorBox.classList.remove('hidden');
-                return;
+    if (newQty > maxQty) {
+        newQty = maxQty; // Tự động gán về tồn kho tối đa
+        input.value = newQty;
+        errorBox.textContent = `Chỉ còn ${maxQty} sản phẩm trong kho.`;
+        errorBox.classList.remove('hidden');
+        setTimeout(() => errorBox.classList.add('hidden'), 4000);
+    }
+
+    if (newQty < 1) newQty = 1;
+
+    fetch(`/cart/update/${id}`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ quantity: newQty })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            input.value = newQty; // Đảm bảo đồng bộ input
+            totalCell.textContent = data.item_total;
+            updateSelectedIds();
+
+            const productCheckbox = document.querySelector(`.item-checkbox[value="${id}"]`);
+            if (productCheckbox && productCheckbox.checked) {
+                showSuccessToast(data.message);
             }
-            if (newQty < 1) newQty = 1;
-
-            errorBox.classList.add('hidden');
-
-            fetch(`/cart/update/${id}`, {
-                method: 'POST',
-                headers: getHeaders(),
-                body: JSON.stringify({ quantity: newQty })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    input.value = newQty;
-                    totalCell.textContent = data.item_total;
-                    updateSelectedIds();
-                } else {
-                    errorBox.textContent = data.message || 'Không thể cập nhật.';
-                    errorBox.classList.remove('hidden');
-                }
-            });
+        } else {
+            errorBox.textContent = data.message || 'Không thể cập nhật.';
+            errorBox.classList.remove('hidden');
         }
+    });
+}
+
+    
 
         // ➕ ➖ Gán sự kiện cho nút tăng/giảm và input
         inc.addEventListener('click', () => updateQty(parseInt(input.value) + 1));
         dec.addEventListener('click', () => updateQty(parseInt(input.value) - 1));
-        input.addEventListener('change', () => updateQty(parseInt(input.value) || 1));
+        input.addEventListener('change', () => {
+    let value = parseInt(input.value) || 1;
+    updateQty(value);
+});
     });
 
     // 🧾 Xử lý form thanh toán
@@ -233,6 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!selectedItems.length) return showError('Phải chọn sản phẩm mới áp dụng mã.');
         if (!code) return showError('Vui lòng nhập mã giảm giá.');
 
+        saveChecked(selectedItems.map(item => item.id)); // ✅ giữ trạng thái tick
+
         fetch('/cart/apply-voucher', {
             method: 'POST',
             headers: getHeaders(),
@@ -243,10 +293,64 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 const url = new URL(location.href);
                 url.searchParams.set('voucher_applied', '1');
-                location.href = url.toString(); // Reload trang để cập nhật
+                location.href = url.toString(); // Reload để cập nhật
             } else {
                 showError(data.message || 'Áp dụng mã thất bại.');
             }
         });
     });
+
+    // ✅ Nếu có tham số voucher_applied thì giữ checked
+    function showSuccessToast(message) {
+    const existing = document.getElementById('toast-success');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'toast-success';
+    toast.className = 'custom-toast';
+    toast.innerHTML = `
+        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span class="toast-message">${message}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="toast-close-icon" fill="none" stroke="currentColor"
+                 stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="toast-progress"></div>
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 4000);
+}
+// 🔒 Chỉ disable các thành phần, KHÔNG disable toàn bộ dòng (để nút xoá vẫn bấm được)
+document.querySelectorAll('tr[data-out-of-stock="1"]').forEach(row => {
+    row.classList.add('opacity-60', 'bg-gray-50'); // làm mờ dòng
+
+    const checkbox = row.querySelector('.item-checkbox');
+    const decBtn = row.querySelector('.btn-decrease');
+    const incBtn = row.querySelector('.btn-increase');
+    const qtyInput = row.querySelector('.quantity-input');
+
+    if (checkbox) {
+        checkbox.disabled = true;
+        checkbox.checked = false;
+    }
+
+    if (decBtn) decBtn.disabled = true;
+    if (incBtn) incBtn.disabled = true;
+    if (qtyInput) {
+        qtyInput.disabled = true;
+        qtyInput.style.cursor = 'not-allowed';
+    }
+
+});
+
+
 });

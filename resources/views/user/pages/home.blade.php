@@ -49,34 +49,57 @@
 
                 <div class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 pt-6 gap-6">
     @forelse($products as $product)
-        @php $variant = $product->variants->first(); @endphp
+                    @php
+                        $variant = $product->variants->first();
+                        $status = $variant?->status;
+
+                        $isOutOfStock = $variant && (
+                            ($status && $status->code === 'out_of_stock' && $status->type === 'product_variant')
+                            || $variant->quantity == 0
+                        );
+                    @endphp
         <div class="group">
             <div class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
                 <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}" class="group-hover:scale-110 duration-500 w-full h-64 object-cover" alt="{{ $product->name }}">
+
                 <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
-                   @if($variant)
-    <form action="{{ route('cart.add') }}" method="POST" class="w-full">
-        @csrf
-        <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
-        <button type="submit" class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md">
-            Thêm Vào Giỏ
-        </button>
-    </form>
-@else
-    <span class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-300 text-gray-700 w-full rounded-md cursor-not-allowed">Liên hệ</span>
-@endif
+                    @if($variant)
+                        @if($isOutOfStock)
+                            <button disabled
+                                class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-300 text-gray-700 w-full rounded-md cursor-not-allowed">
+                                Hết Hàng
+                            </button>
+                        @else
+                            <form action="{{ route('cart.add') }}" method="POST" class="w-full">
+                                @csrf
+                                <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                <button type="submit"
+                                    class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md">
+                                    Thêm Vào Giỏ
+                                </button>
+                            </form>
+                        @endif
+                    @else
+                        <span class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-300 text-gray-700 w-full rounded-md cursor-not-allowed">
+                            Liên hệ
+                        </span>
+                    @endif
                 </div>
+
+                <!-- Nút yêu thích, xem nhanh, bookmark -->
                 <ul class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
                     <li><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="heart" class="size-4"></i></a></li>
                     <li class="mt-1"><a href="#" class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="eye" class="size-4"></i></a></li>
                     <li class="mt-1"><a href="javascript:void(0)" class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i data-feather="bookmark" class="size-4"></i></a></li>
                 </ul>
+
                 @if($variant && $variant->compare_price && $variant->compare_price > $variant->price)
-                <ul class="list-none absolute top-[10px] start-4">
-                    <li><span class="bg-orange-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded h-5">-{{ round(100 - ($variant->price / $variant->compare_price * 100)) }}% Giảm</span></li>
-                </ul>
+                    <ul class="list-none absolute top-[10px] start-4">
+                        <li><span class="bg-orange-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded h-5">-{{ round(100 - ($variant->price / $variant->compare_price * 100)) }}% Giảm</span></li>
+                    </ul>
                 @endif
             </div>
+
             <div class="mt-4">
                 <a href="#" class="hover:text-orange-500 text-lg font-medium">{{ $product->name }}</a>
                 <div class="flex justify-between items-center mt-1">
@@ -104,6 +127,7 @@
         <div class="col-span-4 text-center text-slate-400">Không có sản phẩm nào.</div>
     @endforelse
 </div>
+
                                     <li class="inline"><i class="mdi mdi-star"></i></li>
                                 </ul>
                             </div>

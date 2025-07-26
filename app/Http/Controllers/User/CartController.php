@@ -63,18 +63,36 @@ class CartController extends Controller
         return back()->with('success', 'Đã thêm sản phẩm vào giỏ.');
     }
 
-    
+
     public function updateQuantity(Request $request, $itemId)
     {
         $qty = max((int) $request->input('quantity', 1), 1);
 
         if (Auth::check()) {
             $item = CartItem::find($itemId);
-            if (!$item || !$item->productVariant || $qty > $item->productVariant->quantity)
+            $variant = $item?->productVariant;
+
+            if (!$item || !$variant) {
                 return response()->json(['success' => false, 'message' => 'Không hợp lệ.'], 400);
+            }
+
+            // Giới hạn số lượng không vượt quá tồn kho
+            if ($qty > $variant->quantity) {
+                $qty = $variant->quantity;
+            }
 
             $item->quantity = $qty;
             $item->save();
+
+            $inStockStatus = \App\Models\Status::where('type', 'product_variant')
+                ->where('code', 'in_stock')
+                ->first();
+
+            if ($variant->quantity > 0 && $variant->status_id != $inStockStatus?->id) {
+                $variant->status_id = $inStockStatus->id;
+                $variant->save();
+            }
+
             $this->updateTotalPrice($item->cart);
 
             $voucher = session('voucher');
@@ -86,6 +104,7 @@ class CartController extends Controller
 
             return response()->json([
                 'success' => true,
+                'message' => 'Cập nhật số lượng thành công.',
                 'item_total' => number_format($qty * $item->price, 0, ',', '.') . '₫',
                 'cart_total' => number_format($item->cart->total_price, 0, ',', '.') . '₫',
                 'discount_value' => number_format($discount, 0, ',', '.') . '₫',
@@ -93,14 +112,30 @@ class CartController extends Controller
             ]);
         }
 
+        // ❌ Nếu chưa đăng nhập
         $cart = Session::get('cart', []);
-        if (!isset($cart[$itemId])) return response()->json(['success' => false, 'message' => 'Không tìm thấy sản phẩm.']);
+        if (!isset($cart[$itemId])) {
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy sản phẩm.']);
+        }
 
         $variant = ProductVariant::find($itemId);
-        if (!$variant || $qty > $variant->quantity) return response()->json(['success' => false, 'message' => 'Vượt quá tồn kho.']);
+        if (!$variant) {
+            return response()->json(['success' => false, 'message' => 'Sản phẩm không tồn tại.']);
+        }
+
+        // Giới hạn số lượng nếu vượt quá tồn kho
+        if ($qty > $variant->quantity) {
+            $qty = $variant->quantity;
+        }
 
         $cart[$itemId]['quantity'] = $qty;
         Session::put('cart', $cart);
+
+        // ✅ Nếu hết hàng, cập nhật trạng thái
+        if ($variant->quantity <= 0 && $variant->status_id != 12) {
+            $variant->status_id = 12;
+            $variant->save();
+        }
 
         $total = collect($cart)->reduce(fn($sum, $i) => $sum + $i['price'] * $i['quantity'], 0);
         $discount = $this->calculateVoucherDiscount($total, session('voucher'));
@@ -108,12 +143,14 @@ class CartController extends Controller
 
         return response()->json([
             'success' => true,
+            'message' => 'Cập nhật số lượng thành công.',
             'item_total' => number_format($qty * $cart[$itemId]['price'], 0, ',', '.') . '₫',
             'cart_total' => number_format($total, 0, ',', '.') . '₫',
             'discount_value' => number_format($discount, 0, ',', '.') . '₫',
             'final_total' => number_format($final, 0, ',', '.') . '₫'
         ]);
     }
+
     // Chọn sản phẩm để thanh toán
     public function checkoutSelected(Request $request)
     {
@@ -217,11 +254,21 @@ class CartController extends Controller
         $voucherCode = $request->voucher_code;
         $items = $request->input('items', []);
 
-        $voucher = Voucher::where('code', $voucherCode)
+        // ⚠️ Tìm mã giảm giá, kiểm tra hạn, số lượng và trạng thái
+        $voucher = Voucher::with('status')
+            ->where('code', $voucherCode)
             ->whereDate('expiry_date', '>=', now())
-            ->where('quantity', '>', 0)->first();
-
-        if (!$voucher || empty($items)) return response()->json(['success' => false, 'message' => 'Mã hoặc sản phẩm không hợp lệ.']);
+            ->where('quantity', '>', 0)
+            ->whereHas('status', fn($q) => $q->where('code', 'active'))
+            ->first();
+        // ✅ Thêm thông báo success vào flash session
+        session()->flash('success', 'Áp dụng mã thành công.');
+        if (!$voucher || empty($items)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mã hoặc sản phẩm không hợp lệ.'
+            ]);
+        }
 
         $total = 0;
         $selectedIds = [];
@@ -233,7 +280,7 @@ class CartController extends Controller
             if (!$id) continue;
 
             if (Auth::check()) {
-                $cartItem = CartItem::whereHas('cart', fn($q) => $q->where('user_id', Auth::id()))
+                $cartItem = \App\Models\CartItem::whereHas('cart', fn($q) => $q->where('user_id', Auth::id()))
                     ->where('product_variant_id', $id)->first();
                 if ($cartItem) {
                     $total += $cartItem->price * $qty;
@@ -248,10 +295,20 @@ class CartController extends Controller
             }
         }
 
-        if ($total <= 0) return response()->json(['success' => false, 'message' => 'Tổng không hợp lệ.']);
+        if ($total <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tổng tiền sản phẩm không hợp lệ.'
+            ]);
+        }
 
-        $discount = $this->calculateVoucherDiscount($total, ['type' => $voucher->discount_type, 'discount_value' => $voucher->discount_value]);
+        // ✅ Tính giảm giá
+        $discount = $this->calculateVoucherDiscount($total, [
+            'type' => $voucher->discount_type,
+            'discount_value' => $voucher->discount_value
+        ]);
 
+        // 💾 Lưu session
         session([
             'voucher' => [
                 'code' => $voucher->code,
@@ -263,8 +320,15 @@ class CartController extends Controller
             'voucher_selected_ids' => $selectedIds
         ]);
 
-        return response()->json(['success' => true, 'discount' => number_format($discount, 0, ',', '.') . '₫']);
+        return response()->json([
+            'success' => true,
+            'discount_value' => '-' . number_format($discount, 0, ',', '.') . '₫',
+            'discount_raw' => $discount,
+            'final_total' => $total - $discount,
+            'voucher_status' => $voucher->status?->code ?? null
+        ]);
     }
+
     // Cập nhật lại mã giảm giá sau khi thay đổi số lượng
     public function updateVoucher(Request $request)
     {
@@ -315,7 +379,7 @@ class CartController extends Controller
 
         return min($discount, $total);
     }
-     // Cập nhật tổng tiền cho giỏ hàng
+    // Cập nhật tổng tiền cho giỏ hàng
     private function updateTotalPrice(Cart $cart)
     {
         $cart->update(['total_price' => $cart->items->sum(fn($i) => $i->quantity * $i->price)]);

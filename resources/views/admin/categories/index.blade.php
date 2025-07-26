@@ -50,24 +50,25 @@
                     <td class="px-6 py-3 text-sm">{{ $category->id }}</td>
                     <td class="px-6 py-3 text-sm font-medium text-gray-800">{{ $category->name }}</td>
                     <td class="px-6 py-3 text-sm text-center">
-                      <form action="{{ route('admin.categories.toggleStatus', $category->id) }}" method="POST">
-                        @csrf 
-                        @method('PUT')
-                        <button type="submit"
-                          class="px-2.5 py-1.4 text-xs rounded-1.8 font-bold uppercase leading-none text-white
-                          {{ $category->status ? 'bg-gradient-to-tl from-emerald-500 to-teal-400' : 'bg-gradient-to-tl from-slate-600 to-slate-300' }}">
-                          {{ $category->status ? 'Hiển thị' : 'Ẩn' }}
-                        </button>
-                      </form>
-                    </td>
+  <form action="{{ route('admin.categories.toggleStatus', $category->id) }}" method="POST">
+    @csrf 
+    @method('PUT')
+
+    @php
+      $statusCode = $category->status->code ?? 'inactive';
+      $isActive = $statusCode === 'active';
+    @endphp
+
+    <button type="submit"
+      class="px-2.5 py-1.4 text-xs rounded-1.8 font-bold uppercase leading-none text-white
+      {{ $isActive ? 'bg-gradient-to-tl from-emerald-500 to-teal-400' : 'bg-gradient-to-tl from-slate-600 to-slate-300' }}">
+      {{ $isActive ? 'Hiển thị' : 'Ẩn' }}
+    </button>
+  </form>
+</td>
                     <td class="px-6 py-3 text-center text-sm text-slate-500">{{ $category->created_at->format('d/m/Y') }}</td>
                     <td class="px-6 py-3 text-sm">
                       <a href="{{ route('admin.categories.edit', $category->id) }}" class="text-blue-600 hover:underline mr-2">Sửa</a>
-                      <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" style="display:inline-block;">
-                        @csrf 
-                        @method('DELETE')
-                        <button type="submit" onclick="return confirm('Xác nhận xoá?')" class="text-red-500 hover:underline">Xoá</button>
-                      </form>
                     </td>
                   </tr>
                 @empty
