@@ -1,8 +1,9 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Quản lý người dùng')
+
 @section('content')
 <script src="https://cdn.tailwindcss.com"></script>
-    <h1 class="text-2xl font-bold mb-6">Quản lý người dùng</h1>
     <div class="bg-white rounded-xl shadow-md p-4 mb-6 w-full max-w-5xl">
         <form method="GET" class="flex flex-wrap gap-2 items-end">
             <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm kiếm tên, email, SĐT..." class="border border-gray-200 rounded-lg px-3 py-2 w-[160px] focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition text-sm" />

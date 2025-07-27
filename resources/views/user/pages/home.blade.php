@@ -7,39 +7,7 @@
 @section('content')
     <!-- Bắt đầu -->
         <section class="relative md:py-24 py-16">
-            <div class="container relative">
-                <div class="grid grid-cols-1 justify-center text-center mb-6">
-                    <h5 class="font-semibold text-3xl leading-normal mb-4">Khám Phá Các Bộ Sưu Tập</h5>
-                    <p class="text-slate-400 max-w-xl mx-auto">Mua sắm những sản phẩm mới nhất từ các bộ sưu tập được yêu thích nhất</p>
-                </div><!--end grid-->
-
-                <div class="grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 pt-6 gap-6">
-                    <a href="#" class="text-center hover:text-orange-500">
-                        <img src="{{ asset('assets/user/images/categories/mens-ware.jpg')}}" class="rounded-full shadow-sm dark:shadow-gray-800" alt="">
-                        <span class="text-xl font-medium mt-3 block">Thời Trang Nam</span>
-                    </a>
-
-                    <a href="#" class="text-center hover:text-orange-500">
-                        <img src="{{ asset('assets/user/images/categories/ladies-ware.jpg')}}" class="rounded-full shadow-sm dark:shadow-gray-800" alt="">
-                        <span class="text-xl font-medium mt-3 block">Thời Trang Nữ</span>
-                    </a>
-
-                    <a href="#" class="text-center hover:text-orange-500">
-                        <img src="{{ asset('assets/user/images/categories/kids-ware.jpg')}}" class="rounded-full shadow-sm dark:shadow-gray-800" alt="">
-                        <span class="text-xl font-medium mt-3 block">Thời Trang Trẻ Em</span>
-                    </a>
-
-                    <a href="#" class="text-center hover:text-orange-500">
-                        <img src="{{ asset('assets/user/images/categories/smart-watch.jpg')}}" class="rounded-full shadow-sm dark:shadow-gray-800" alt="">
-                        <span class="text-xl font-medium mt-3 block">Đồng Hồ Thông Minh</span>
-                    </a>
-
-                    <a href="#" class="text-center hover:text-orange-500">
-                        <img src="{{ asset('assets/user/images/categories/sunglasses.jpg')}}" class="rounded-full shadow-sm dark:shadow-gray-800" alt="">
-                        <span class="text-xl font-medium mt-3 block">Kính Râm</span>
-                    </a>
-                </div><!--end grid-->
-            </div><!--end container-->
+    {{-- silde show --}}
 
             <div class="container relative md:mt-24 mt-16">
                 <div class="grid grid-cols-1 justify-center text-center mb-6">
@@ -230,6 +198,40 @@
                         <a href="shop-grid.html" class="text-slate-400 hover:text-orange-500">Xem Thêm Sản Phẩm <i class="mdi mdi-arrow-right"></i></a>
                     </div>
                 </div>
+            </div><!--end container-->
+
+                  <div class="container relative">
+                <div class="grid grid-cols-1 justify-center text-center  mb-6">
+                    <h5 class="font-semibold text-3xl leading-normal  mb-4">Khám Phá Các Bộ Sưu Tập</h5>
+                    <p class="text-slate-400 max-w-xl mx-auto">Mua sắm những sản phẩm mới nhất từ các bộ sưu tập được yêu thích nhất</p>
+                </div><!--end grid-->
+
+                <div class="grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 pt-6 gap-6">
+                    <a href="#" class="text-center hover:text-orange-500">
+                        <img src="{{ asset('assets/user/images/categories/mens-ware.jpg')}}" class="rounded-full shadow-sm dark:shadow-gray-800" alt="">
+                        <span class="text-xl font-medium mt-3 block">Thời Trang Nam</span>
+                    </a>
+
+                    <a href="#" class="text-center hover:text-orange-500">
+                        <img src="{{ asset('assets/user/images/categories/ladies-ware.jpg')}}" class="rounded-full shadow-sm dark:shadow-gray-800" alt="">
+                        <span class="text-xl font-medium mt-3 block">Thời Trang Nữ</span>
+                    </a>
+
+                    <a href="#" class="text-center hover:text-orange-500">
+                        <img src="{{ asset('assets/user/images/categories/kids-ware.jpg')}}" class="rounded-full shadow-sm dark:shadow-gray-800" alt="">
+                        <span class="text-xl font-medium mt-3 block">Thời Trang Trẻ Em</span>
+                    </a>
+
+                    <a href="#" class="text-center hover:text-orange-500">
+                        <img src="{{ asset('assets/user/images/categories/smart-watch.jpg')}}" class="rounded-full shadow-sm dark:shadow-gray-800" alt="">
+                        <span class="text-xl font-medium mt-3 block">Đồng Hồ Thông Minh</span>
+                    </a>
+
+                    <a href="#" class="text-center hover:text-orange-500">
+                        <img src="{{ asset('assets/user/images/categories/sunglasses.jpg')}}" class="rounded-full shadow-sm dark:shadow-gray-800" alt="">
+                        <span class="text-xl font-medium mt-3 block">Kính Râm</span>
+                    </a>
+                </div><!--end grid-->
             </div><!--end container-->
         </section><!--end section-->
 @endsection
