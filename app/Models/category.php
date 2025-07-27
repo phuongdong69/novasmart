@@ -10,5 +10,10 @@ class Category extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'status'];
+    protected $fillable = ['name', 'status_id'];
+
+    public function status()
+{
+    return $this->belongsTo(\App\Models\Status::class, 'status_id');
+}
 }

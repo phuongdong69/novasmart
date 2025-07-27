@@ -20,16 +20,17 @@ class CategoryRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
-        return [
-            'name' => 'required|string|max:255',
-            'status' => 'boolean',
-        ];
-    }
+{
+    return [
+        'name' => 'required|string|max:255|unique:categories,name',
+        'status' => 'boolean',
+    ];
+}
     public function messages()
 {
     return [
         'name.required' => 'Vui lòng nhập tên danh mục.',
+        'name.unique' => 'Tên danh mục đã tồn tại.',
     ];
 }
 }

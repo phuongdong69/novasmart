@@ -15,7 +15,6 @@ return new class extends Migration
         $table->id();
         $table->foreignId('status_id')->nullable()->constrained('statuses')->after('id');
         $table->string('name', 255)->nullable();
-        $table->boolean('status')->default(true);
         $table->timestamps();
         $table->softDeletes();
     });

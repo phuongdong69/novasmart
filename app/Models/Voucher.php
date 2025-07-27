@@ -11,11 +11,17 @@ class Voucher extends Model
 
     protected $fillable = [
         'code',
+        'status_id',
         'discount_type',
         'discount_value',
         'expiry_date',
         'quantity',
     ];
+    
+    public function status()
+{
+    return $this->belongsTo(\App\Models\Status::class, 'status_id');
+}
 }
 
 
