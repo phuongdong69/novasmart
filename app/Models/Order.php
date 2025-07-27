@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,18 +9,19 @@ class Order extends Model
 {
     use HasFactory;
 
-   protected $fillable = [
-    'user_id',
-    'voucher_id', 
-    'payment_id',
-    'status_id',
-    'name',
-    'phoneNumber',
-    'email',
-    'address',
-    'total_price',
-    'order_code',
-];
+    protected $fillable = [
+        'user_id',
+        'voucher_id',
+        'payment_id',
+        'status_id',
+        'name',
+        'phoneNumber',
+        'email',
+        'address',
+        'total_price',
+        'order_code',
+        'cancel_reason',
+    ];
 
     public function user()
     {
@@ -44,6 +46,10 @@ class Order extends Model
     public function statusLogs()
     {
         return $this->morphMany(StatusLog::class, 'loggable');
+    }
+    public function cancellation()
+    {
+        return $this->hasOne(OrderCancellation::class);
     }
     public function updateStatus($status_id, $user_id = null, $note = null)
     {
