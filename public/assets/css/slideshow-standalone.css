@@ -1,0 +1,151 @@
+/* Slideshow Standalone CSS - No conflicts */
+.slideshow-standalone {
+    position: relative;
+    width: 100%;
+    height: 384px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .slideshow-standalone {
+        height: 500px;
+    }
+}
+
+.slideshow-standalone .slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    top: 0;
+    left: 0;
+}
+
+.slideshow-standalone .slide.active {
+    opacity: 1;
+}
+
+.slideshow-standalone .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.slideshow-standalone .slide-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+    padding: 24px;
+    color: white;
+}
+
+.slideshow-standalone .slide-content h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    line-height: 1.2;
+}
+
+.slideshow-standalone .slide-content p {
+    font-size: 14px;
+    margin: 0 0 16px 0;
+    line-height: 1.5;
+}
+
+.slideshow-standalone .slide-content a {
+    display: inline-block;
+    background-color: #f97316;
+    color: white;
+    padding: 8px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.slideshow-standalone .slide-content a:hover {
+    background-color: #ea580c;
+}
+
+/* Navigation arrows */
+.slideshow-standalone .prev,
+.slideshow-standalone .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 16px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    background-color: rgba(0,0,0,0.3);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    user-select: none;
+    border-radius: 6px;
+}
+
+.slideshow-standalone .prev {
+    left: 16px;
+}
+
+.slideshow-standalone .next {
+    right: 16px;
+}
+
+.slideshow-standalone .prev:hover,
+.slideshow-standalone .next:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+/* Navigation dots */
+.slideshow-standalone .dots-container {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.slideshow-standalone .dot {
+    cursor: pointer;
+    height: 12px;
+    width: 12px;
+    background-color: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
+}
+
+.slideshow-standalone .dot.active,
+.slideshow-standalone .dot:hover {
+    background-color: white;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+    .slideshow-standalone .slide-content h2 {
+        font-size: 36px;
+    }
+    
+    .slideshow-standalone .slide-content p {
+        font-size: 18px;
+    }
+}
+
+/* Animation */
+.slideshow-standalone .fade {
+    animation-name: slideshow-fade;
+    animation-duration: 1.5s;
+}
+
+@keyframes slideshow-fade {
+    from {opacity: 0.4} 
+    to {opacity: 1}
+} 

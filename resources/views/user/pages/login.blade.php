@@ -13,9 +13,12 @@
 
                             <div class="p-8 lg:px-20">
                                 <div class="text-center">
-                                    <a href="index.html">
-                                        <img src="{{ asset('assets/user/images/logonova.jpg') }}" class="mx-auto block" alt="NovaSmart Logo" style="max-height:48px; width:auto; border-radius:50%; object-fit:cover;"/>
-                                        <img src="assets/images/logo-light.png" class="mx-auto hidden dark:block" alt="">
+                                    <a href="/" class="inline-flex items-center gap-3 hover:opacity-80 transition-opacity duration-300">
+                                        <img src="{{ asset('assets/user/images/logonova.jpg') }}" class="block" alt="NovaSmart Logo" style="max-height:48px; width:auto; border-radius:50%; object-fit:cover;"/>
+                                        <div class="flex flex-col">
+                                            <span class="text-2xl font-bold text-slate-800 dark:text-white leading-tight">NovaSmart</span>
+                                            <span class="text-xs text-slate-500 dark:text-slate-400 font-medium -mt-1">Smart Technology</span>
+                                        </div>
                                     </a>
                                 </div>
 

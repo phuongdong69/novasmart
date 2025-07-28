@@ -35,7 +35,7 @@
                             <li>
                                 <label class="flex items-center">
                                     <input type="checkbox" name="brand[]" value="{{ $brand->name }}"
-                                        {{ in_array($brand->name, request('brand', [])) ? 'checked' : '' }}
+                                        {{ (is_array(request('brand')) && in_array($brand->name, request('brand'))) || request('brand') == $brand->name ? 'checked' : '' }}
                                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 mr-2">
                                     {{ $brand->name }}
                                 </label>

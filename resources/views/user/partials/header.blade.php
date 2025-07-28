@@ -10,8 +10,12 @@
 <nav id="topnav" class="defaultscroll is-sticky tagline-height">
     <div class="container relative flex items-center justify-between">
         <!-- Logo container-->
-        <a class="logo" href="/">
+        <a class="logo flex items-center gap-3 hover:opacity-80 transition-opacity duration-300" href="/">
             <img src="{{ asset('assets/user/images/logonova.jpg') }}" alt="NovaSmart Logo" style="max-height:48px; width:auto; display:block; border-radius:50%; object-fit:cover;"/>
+            <div class="flex flex-col">
+                <span class="text-2xl font-bold text-slate-800 dark:text-white leading-tight">NovaSmart</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium -mt-1">Uy tín chất lượng</span>
+            </div>
         </a>
         <!-- End Logo container-->
         <div class="flex-1 flex items-center justify-center">
@@ -19,46 +23,7 @@
                 <!-- Navigation Menu-->
                 <ul class="navigation-menu">
 
-                    <li class="has-submenu parent-parent-menu-item">
-                        <a href="javascript:void(0)">Sản phẩm</a><span class="menu-arrow"></span>
-
-                        <ul class="submenu megamenu">
-
-                            <li>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-
-                            <li>
-                                <ul>
-                                    
-                                </ul>
-                            </li>
-
-                            <li>
-                                <ul>
-                                    <li class="megamenu-head">Danh mục sản phẩm</li>
-                                    <li><a href="#!" class="sub-menu-item">Iphone </a></li>
-                                    <li><a href="#!" class="sub-menu-item">Ipad</a></li>
-                                    <li><a href="#!" class="sub-menu-item">Huaway</a></li>
-                                    <li><a href="#!" class="sub-menu-item">Mac book</a></li>
-                                   
-                                </ul>
-                            </li>
-
-                            <li>
-                                <ul>
-                                    <li class="megamenu-head"><img src="{{ asset('assets/user/images/cta.png') }}"
-                                            alt=""></li>
-
-                                    <li class="text-center"><a href="{{ route('products.list') }}"
-                                            class="py-2 px-5 inline-block font-medium tracking-wide align-middle duration-500 text-base text-center bg-orange-500/10 text-orange-500 rounded-md me-2 mt-2"><i
-                                                class="mdi mdi-cart-outline"></i> Shop Now</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
+                    @include('user.partials.mega-menu')
 
                     <li class="has-submenu parent-parent-menu-item"><a href="javascript:void(0)"> Cửa hàng </a><span
                             class="menu-arrow"></span>
