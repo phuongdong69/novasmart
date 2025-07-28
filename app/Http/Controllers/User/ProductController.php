@@ -31,9 +31,9 @@ class ProductController extends Controller
 
         // Lọc theo thương hiệu
         if ($request->filled('brand')) {
-            $brands = $request->brand;
-            $query->whereHas('product.brand', function (Builder $q) use ($brands) {
-                $q->whereIn('name', $brands);
+            $brand = $request->brand;
+            $query->whereHas('product.brand', function (Builder $q) use ($brand) {
+                $q->where('name', 'like', '%' . $brand . '%');
             });
         }
 

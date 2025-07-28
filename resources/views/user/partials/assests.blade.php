@@ -8,6 +8,40 @@
     .navigation-menu > li > a {
         font-family: 'Open Sans', Arial, Helvetica, Tahoma, Verdana, sans-serif !important;
     }
+    
+    /* Logo styling */
+    .logo {
+        text-decoration: none !important;
+    }
+    
+    .logo:hover {
+        text-decoration: none !important;
+    }
+    
+    /* Responsive logo */
+    @media (max-width: 768px) {
+        .logo .text-2xl {
+            font-size: 1.25rem !important;
+        }
+        .logo .text-xs {
+            font-size: 0.625rem !important;
+        }
+        .logo .gap-3 {
+            gap: 0.5rem !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .logo .text-2xl {
+            font-size: 1rem !important;
+        }
+        .logo .text-xs {
+            font-size: 0.5rem !important;
+        }
+        .logo .gap-3 {
+            gap: 0.25rem !important;
+        }
+    }
 </style>
 
 <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">

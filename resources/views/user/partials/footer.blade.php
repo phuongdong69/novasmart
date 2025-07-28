@@ -6,72 +6,98 @@
                 <div class="py-[60px] px-0">
                     <div class="grid md:grid-cols-12 grid-cols-1 gap-6">
                         <div class="lg:col-span-3 md:col-span-12">
-                            <a class="logo" href="/">
+                            <a class="logo flex items-center gap-3 hover:opacity-80 transition-opacity duration-300" href="/">
                                 <img src="{{ asset('assets/user/images/logonova.jpg') }}" alt="NovaSmart Logo" style="max-height:48px; width:auto; display:block; border-radius:50%; object-fit:cover;"/>
+                                <div class="flex flex-col">
+                                    <span class="text-2xl font-bold text-white leading-tight">NovaSmart</span>
+                                    <span class="text-xs text-gray-400 font-medium -mt-1">Uy tín chất lượng</span>
+                                </div>
                             </a>
-                            <p class="mt-6 text-gray-300">Nâng tầm phong cách với các set đồ được chọn lọc. Hãy tự tin và thể hiện cá tính riêng của bạn.</p>
+                            <p class="mt-6 text-gray-300">NovaSmart - Đối tác tin cậy của bạn trong lĩnh vực công nghệ. Chúng tôi cung cấp các sản phẩm điện tử chất lượng cao với giá cả hợp lý và dịch vụ hậu mãi tận tâm.</p>
                             <ul class="list-none mt-6">
-                                <li class="inline"><a href="#" class="..."><i data-feather="dribbble" ... title="dribbble"></i></a></li>
-                                <li class="inline"><a href="#" class="..."><i data-feather="linkedin" ... title="Linkedin"></i></a></li>
-                                <li class="inline"><a href="#" class="..."><i data-feather="facebook" ... title="Facebook"></i></a></li>
-                                <li class="inline"><a href="#" class="..."><i data-feather="instagram" ... title="Instagram"></i></a></li>
-                                <li class="inline"><a href="#" class="..."><i data-feather="twitter" ... title="Twitter"></i></a></li>
-                                <li class="inline"><a href="mailto:support@shreethemes.in" class="..."><i data-feather="mail" ... title="Email"></i></a></li>
+                                <li class="inline"><a href="#" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="facebook" class="size-4"></i></a></li>
+                                <li class="inline"><a href="#" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="instagram" class="size-4"></i></a></li>
+                                <li class="inline"><a href="#" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="twitter" class="size-4"></i></a></li>
+                                <li class="inline"><a href="#" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="youtube" class="size-4"></i></a></li>
+                                <li class="inline"><a href="mailto:contact@novasmart.com" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="mail" class="size-4"></i></a></li>
                             </ul>
                         </div>
 
                         <div class="lg:col-span-6 md:col-span-12">
-                            <h5 class="tracking-[1px] text-gray-100 font-semibold">Mua sắm & Thời trang</h5>
+                            <h5 class="tracking-[1px] text-gray-100 font-semibold">Danh mục sản phẩm</h5>
 
                             <div class="grid md:grid-cols-12 grid-cols-1">
                                 <div class="md:col-span-4">
                                     <ul class="list-none footer-list mt-6">
-                                        <li><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Nam</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Áo khoác & Áo choàng</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Quần jeans</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Đồ mặc nhà</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Áo polo</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Áo sơ mi</a></li>
+                                        <li><a href="{{ route('products.list') }}?category=laptop" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Laptop</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?category=mobile" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Điện thoại</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?category=tablet" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Máy tính bảng</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?category=accessory" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Phụ kiện</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?category=smartwatch" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Đồng hồ thông minh</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?category=audio" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Âm thanh</a></li>
                                     </ul>
                                 </div>
 
                                 <div class="md:col-span-4">
                                     <ul class="list-none footer-list mt-6">
-                                        <li><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Quần short</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Đồ bơi & Bộ vest</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Áo thun</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Bộ thể thao</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Quần dài</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Áo sơ mi</a></li>
+                                        <li><a href="{{ route('products.list') }}?brand=Apple" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Apple</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?brand=Samsung" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Samsung</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?brand=Xiaomi" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Xiaomi</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?brand=Dell" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Dell</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?brand=HP" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> HP</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?brand=Lenovo" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Lenovo</a></li>
                                     </ul>
                                 </div>
 
                                 <div class="md:col-span-4">
                                     <ul class="list-none footer-list mt-6">
-                                        <li><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Tài khoản của tôi</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Lịch sử đơn hàng</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Danh sách yêu thích</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Bản tin</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Cộng tác viên</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="..."><i class="mdi mdi-chevron-right"></i> Trả hàng</a></li>
+                                        <li><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Tài khoản của tôi</a></li>
+                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Lịch sử đơn hàng</a></li>
+                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Sản phẩm yêu thích</a></li>
+                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Bảo hành & Sửa chữa</a></li>
+                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Hướng dẫn sử dụng</a></li>
+                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Đổi trả & Hoàn tiền</a></li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
 
                         <div class="lg:col-span-3 md:col-span-4">
-                            <h5 class="tracking-[1px] text-gray-100 font-semibold">Đăng ký nhận tin</h5>
-                            <p class="mt-6">Đăng ký để nhận các mẹo và ưu đãi mới nhất qua email.</p>
-                            <form>
+                            <h5 class="tracking-[1px] text-gray-100 font-semibold">Liên hệ & Hỗ trợ</h5>
+                            <div class="mt-6 space-y-4">
+                                <div class="flex items-start">
+                                    <i class="mdi mdi-map-marker text-orange-500 text-lg mt-1 me-3"></i>
+                                    <div>
+                                        <p class="text-gray-300 text-sm">13 P. Trịnh Văn Bô, Xuân Phương, Nam Từ Liêm, Hà Nội</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="mdi mdi-phone text-orange-500 text-lg mt-1 me-3"></i>
+                                    <div>
+                                        <p class="text-gray-300 text-sm">0583 12 2003</p>
+                                        <p class="text-gray-300 text-sm">08:00 - 22:00 (T2-CN)</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="mdi mdi-email text-orange-500 text-lg mt-1 me-3"></i>
+                                    <div>
+                                        <p class="text-gray-300 text-sm">yepiamlong@gmail.com</p>
+                                        <p class="text-gray-300 text-sm">yepiamlong@gmail.com</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h5 class="tracking-[1px] text-gray-100 font-semibold mt-6">Đăng ký nhận tin</h5>
+                            <p class="mt-3 text-sm text-gray-300">Nhận thông tin về sản phẩm mới và khuyến mãi đặc biệt</p>
+                            <form class="mt-4">
                                 <div class="grid grid-cols-1">
-                                    <div class="my-3">
-                                        <label class="form-label">Nhập email của bạn <span class="text-red-600">*</span></label>
-                                        <div class="form-icon relative mt-2">
-                                            <i data-feather="mail" class="size-4 absolute top-3 start-4"></i>
-                                            <input type="email" class="ps-12 rounded w-full py-2 px-3 h-10 bg-gray-800 border-0 text-gray-100 focus:shadow-none focus:ring-0 placeholder:text-gray-200 outline-none" placeholder="Email" name="email" required="">
+                                    <div class="mb-3">
+                                        <div class="form-icon relative">
+                                            <i data-feather="mail" class="size-4 absolute top-3 start-3 text-gray-400"></i>
+                                            <input type="email" class="ps-10 rounded w-full py-2 px-3 h-10 bg-gray-800 border border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-0 placeholder:text-gray-400 outline-none text-sm" placeholder="" name="email" required="">
                                         </div>
                                     </div>
-                                    <button type="submit" id="submitsubscribe" name="send" class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-orange-500 text-white rounded-md">Đăng ký</button>
+                                    <button type="submit" class="py-2 px-4 inline-block font-medium tracking-wide align-middle duration-500 text-sm text-center bg-orange-500 hover:bg-orange-600 text-white rounded-md transition-all duration-500">Đăng ký</button>
                                 </div>
                             </form>
                         </div>
@@ -83,25 +109,25 @@
         <!-- Chính sách -->
         <div class="grid grid-cols-1">
             <div class="py-[30px] px-0 border-t border-slate-800 dark:border-slate-700">
-                <div class="grid lg:grid-cols-4 md:grid-cols-2">
+                <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-4">
                     <div class="flex items-center lg:justify-center">
-                        <i class="mdi mdi-truck-check-outline align-middle text-lg mb-0 me-2"></i>
-                        <h6 class="mb-0 font-medium">Giao hàng miễn phí</h6>
+                        <i class="mdi mdi-truck-check-outline align-middle text-lg mb-0 me-2 text-orange-500"></i>
+                        <h6 class="mb-0 font-medium text-gray-200">Giao hàng miễn phí</h6>
                     </div>
 
                     <div class="flex items-center lg:justify-center">
-                        <i class="mdi mdi-archive align-middle text-lg mb-0 me-2"></i>
-                        <h6 class="mb-0 font-medium">Giao hàng không tiếp xúc</h6>
+                        <i class="mdi mdi-shield-check align-middle text-lg mb-0 me-2 text-orange-500"></i>
+                        <h6 class="mb-0 font-medium text-gray-200">Bảo hành chính hãng</h6>
                     </div>
 
                     <div class="flex items-center lg:justify-center">
-                        <i class="mdi mdi-cash-multiple align-middle text-lg mb-0 me-2"></i>
-                        <h6 class="mb-0 font-medium">Hoàn tiền nếu không hài lòng</h6>
+                        <i class="mdi mdi-cash-multiple align-middle text-lg mb-0 me-2 text-orange-500"></i>
+                        <h6 class="mb-0 font-medium text-gray-200">Trả góp 0% lãi suất</h6>
                     </div>
 
                     <div class="flex items-center lg:justify-center">
-                        <i class="mdi mdi-shield-check align-middle text-lg mb-0 me-2"></i>
-                        <h6 class="mb-0 font-medium">Thanh toán an toàn</h6>
+                        <i class="mdi mdi-headset align-middle text-lg mb-0 me-2 text-orange-500"></i>
+                        <h6 class="mb-0 font-medium text-gray-200">Hỗ trợ 24/7</h6>
                     </div>
                 </div>
             </div>
@@ -113,15 +139,15 @@
         <div class="container relative text-center">
             <div class="grid md:grid-cols-2 items-center">
                 <div class="md:text-start text-center">
-                    <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> Dev Nova cùng với <i class="mdi mdi-heart text-red-600"></i> FPT <a href="##" target="_blank" class="text-reset">Poly</a>.</p>
+                    <p class="mb-0 text-gray-400">© <script>document.write(new Date().getFullYear())</script> NovaSmart. Tất cả quyền được bảo lưu.</p>
                 </div>
 
                 <ul class="list-none md:text-end text-center mt-6 md:mt-0">
-                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/american-express.jpg')}}" class="max-h-6 rounded inline" title="American Express" alt=""></a></li>
-                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/discover.jpg')}}" class="max-h-6 rounded inline" title="Discover" alt=""></a></li>
-                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/mastercard.jpg')}}" class="max-h-6 rounded inline" title="Master Card" alt=""></a></li>
-                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/paypal.jpg')}}" class="max-h-6 rounded inline" title="Paypal" alt=""></a></li>
-                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/visa.jpg')}}" class="max-h-6 rounded inline" title="Visa" alt=""></a></li>
+                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/visa.jpg')}}" class="max-h-6 rounded inline me-2" title="Visa" alt=""></a></li>
+                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/mastercard.jpg')}}" class="max-h-6 rounded inline me-2" title="Master Card" alt=""></a></li>
+                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/paypal.jpg')}}" class="max-h-6 rounded inline me-2" title="Paypal" alt=""></a></li>
+                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/momo.jpg')}}" class="max-h-6 rounded inline me-2" title="MoMo" alt=""></a></li>
+                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/zalopay.jpg')}}" class="max-h-6 rounded inline me-2" title="ZaloPay" alt=""></a></li>
                 </ul>
             </div>
         </div>

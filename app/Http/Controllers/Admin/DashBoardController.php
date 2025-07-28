@@ -124,7 +124,7 @@ class DashBoardController extends Controller
             'topProductLabels', 'topProductValues',
             'orderStatusLabels', 'orderStatusValues',
             'newCustomers', 'totalOrders', 'profit'
-        ));
+        ))->with('title', 'Dashboard');
     }
 }
 

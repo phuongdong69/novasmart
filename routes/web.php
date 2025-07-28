@@ -19,10 +19,12 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\SlideshowController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\User\OrderrController;
+use App\Http\Controllers\ShopController;
 
 
 /*
@@ -40,6 +42,12 @@ use App\Http\Controllers\User\ProductController as UserProductController;
 
 Route::get('/products', [UserProductController::class, 'index'])->name('products.list');
 Route::get('/products/{id}', [UserProductController::class, 'show'])->name('products.show');
+
+// Shop routes for menu dropdown
+Route::get('/shop/menu-data', [ShopController::class, 'getMenuData'])->name('shop.menu-data');
+Route::get('/shop/brand/{brand}', [ShopController::class, 'productsByBrand'])->name('shop.brand');
+Route::get('/shop/category/{category}', [ShopController::class, 'productsByCategory'])->name('shop.category');
+Route::get('/shop/products', [ShopController::class, 'allProducts'])->name('shop.products');
 
 /*
 |--------------------------------------------------------------------------
@@ -160,6 +168,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('brands', BrandController::class);
     Route::resource('orders', OrderController::class);
     Route::put('products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
+    
+    //slideshows
+    Route::resource('slideshows', SlideshowController::class);
 });
 
 /*
