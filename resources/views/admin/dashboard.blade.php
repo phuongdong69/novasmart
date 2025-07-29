@@ -5,6 +5,17 @@
 @section('content')
 <div class="max-w-7xl mx-auto py-8">
     <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+    <form method="GET" class="mb-8 flex flex-wrap gap-4 items-end">
+        <div>
+            <label for="start_date" class="block text-sm font-medium text-gray-700">Từ ngày</label>
+            <input type="date" id="start_date" name="start_date" value="{{ request('start_date', \Carbon\Carbon::yesterday()->format('Y-m-d')) }}" class="border rounded px-3 py-2">
+        </div>
+        <div>
+            <label for="end_date" class="block text-sm font-medium text-gray-700">Đến ngày</label>
+            <input type="date" id="end_date" name="end_date" value="{{ request('end_date', \Carbon\Carbon::today()->format('Y-m-d')) }}" class="border rounded px-3 py-2">
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded font-semibold">Tìm</button>
+    </form>
     <div class="w-full rounded-2xl mb-10 p-10 shadow-xl" style="background: linear-gradient(90deg, #4f8cff 0%, #38cfff 100%); color: #fff;">
         <h1 class="text-xl font-extrabold mb-2 text-white ml-2 text-left">Tổng quan hiệu suất kinh doanh</h1>
         <div class="flex flex-row flex-nowrap gap-16 items-center justify-start overflow-x-auto">
@@ -126,17 +137,6 @@
         </div>
     </div>
     <h2 class="text-xl font-bold mb-4">Bảng thống kê chi tiết</h2>
-    <form method="GET" class="mb-6 flex flex-wrap gap-4 items-end">
-        <div>
-            <label for="start_date" class="block text-sm font-medium text-gray-700">Từ ngày</label>
-            <input type="date" id="start_date" name="start_date" value="{{ date('Y-m-d', strtotime($start)) }}" class="border rounded px-3 py-2">
-        </div>
-        <div>
-            <label for="end_date" class="block text-sm font-medium text-gray-700">Đến ngày</label>
-            <input type="date" id="end_date" name="end_date" value="{{ date('Y-m-d', strtotime($end)) }}" class="border rounded px-3 py-2">
-        </div>
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded font-semibold">Lọc</button>
-    </form>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
         <div class="bg-white shadow rounded-lg p-6 flex flex-col items-center justify-center">
             <div class="text-lg font-semibold mb-2">Tổng doanh thu</div>

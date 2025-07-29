@@ -14,16 +14,15 @@ use Illuminate\Support\Facades\DB;
 class DashBoardController extends Controller
 {
     public function index(Request $request) {
-        // Lấy ngày bắt đầu/kết thúc từ request hoặc mặc định là hôm qua
+        // Lấy ngày bắt đầu/kết thúc từ request hoặc mặc định là hôm qua đến hôm nay
         $start = $request->input('start_date');
         $end = $request->input('end_date');
         if (!$start || !$end) {
-            $yesterday = Carbon::yesterday();
-            $start = $yesterday->copy()->startOfDay()->toDateTimeString();
-            $end = $yesterday->copy()->endOfDay()->toDateTimeString();
+            $start = \Carbon\Carbon::yesterday()->startOfDay()->toDateTimeString();
+            $end = \Carbon\Carbon::today()->endOfDay()->toDateTimeString();
         } else {
-            $start = Carbon::parse($start)->startOfDay()->toDateTimeString();
-            $end = Carbon::parse($end)->endOfDay()->toDateTimeString();
+            $start = \Carbon\Carbon::parse($start)->startOfDay()->toDateTimeString();
+            $end = \Carbon\Carbon::parse($end)->endOfDay()->toDateTimeString();
         }
 
         // Tổng doanh thu
