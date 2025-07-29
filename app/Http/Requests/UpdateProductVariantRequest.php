@@ -27,7 +27,6 @@ class UpdateProductVariantRequest extends FormRequest
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:0',
             'status_id' => 'required|exists:statuses,id',
-            'status' => 'nullable|string|max:50',
         ];
     }
 }
