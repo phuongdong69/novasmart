@@ -6,5 +6,13 @@
 <body>
     @include('admin.pages.body')
 
+    <script>
+    function showStatusLogModal() {
+        document.getElementById('statusLogModal').classList.remove('hidden');
+    }
+    function hideStatusLogModal() {
+        document.getElementById('statusLogModal').classList.add('hidden');
+    }
+    </script>
 </body>
 </html>

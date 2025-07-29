@@ -15,7 +15,7 @@ class ProductVariantController extends Controller
      */
     public function index()
     {
-        $productVariants = ProductVariant::with('product')->latest()->paginate(10);
+        $productVariants = ProductVariant::with(['product', 'status'])->latest()->paginate(10);
         return view('admin.product_variants.index', ['productVariants' => $productVariants]);
     }
 
@@ -67,6 +67,9 @@ class ProductVariantController extends Controller
     public function update(UpdateProductVariantRequest $request, ProductVariant $productVariant)
     {
         $productVariant->update($request->validated());
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'status' => $productVariant->status]);
+        }
         return redirect()->route('admin.product_variants.index')->with('success', 'Cập nhật biến thể thành công.');
     }
 

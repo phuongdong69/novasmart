@@ -11,11 +11,19 @@
                     {{-- Tiêu đề + Nút thêm mới --}}
                     <div
                         class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex justify-between items-center">
-                        <h6 class="dark:text-white text-lg font-semibold">Danh sách biến thể</h6>
-                        <a href="{{ route('admin.product_variants.create') }}"
-                            class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
-                            + Thêm mới
-                        </a>
+                        <div>
+                            <h6 class="dark:text-white text-lg font-semibold">Danh sách biến thể</h6>
+                            <p class="text-sm text-gray-500 mt-1">Quản lý các biến thể sản phẩm</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('admin.product_variants.create') }}"
+                                class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-semibold py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 group">
+                                <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Thêm biến thể mới
+                            </a>
+                        </div>
                     </div>
 
                     {{-- Thanh tìm kiếm --}}
