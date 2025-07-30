@@ -138,6 +138,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         'update' => 'vouchers.update',
         'destroy' => 'vouchers.destroy',
     ]);
+    
+    // Voucher API routes
+    Route::post('/vouchers/validate', [VoucherController::class, 'validateVoucher'])->name('vouchers.validate');
+    Route::post('/vouchers/apply', [VoucherController::class, 'applyVoucher'])->name('vouchers.apply');
+    
+    // Voucher Usages (integrated into vouchers)
+    Route::get('/vouchers/usages', [VoucherController::class, 'allUsages'])->name('vouchers.all_usages');
+    Route::get('/vouchers/{voucher}/usages', [VoucherController::class, 'usages'])->name('vouchers.usages');
     //productAdd commentMore actions
     Route::resource('products', ProductController::class);
     //attribute
