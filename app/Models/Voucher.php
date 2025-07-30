@@ -12,6 +12,7 @@ class Voucher extends Model
 
     protected $fillable = [
         'status_id',
+        'status_code',
         'code',
         'type',
         'value',
@@ -37,6 +38,27 @@ class Voucher extends Model
     public function status()
 {
         return $this->belongsTo(Status::class, 'status_id');
+    }
+
+    /**
+     * Lấy trạng thái theo status_code
+     */
+    public function getStatusByCode()
+    {
+        return Status::findByCodeAndType($this->status_code, 'voucher');
+    }
+
+    /**
+     * Cập nhật trạng thái theo code
+     */
+    public function updateStatusByCode($statusCode)
+    {
+        $status = Status::findByCodeAndType($statusCode, 'voucher');
+        if ($status) {
+            $this->status_id = $status->id;
+            $this->status_code = $statusCode;
+            $this->save();
+        }
     }
 
     public function user()
@@ -156,6 +178,22 @@ class Voucher extends Model
     {
         $this->decrement('used');
 }
+
+    /**
+     * Lấy badge/trạng thái hiển thị từ status_code (bảng statuses)
+     */
+    public function getStatusDisplay()
+    {
+        $now = \Carbon\Carbon::now();
+        if ($now < $this->start_date) {
+            return '<span class="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">Chưa gia hạn</span>';
+        }
+        $status = $this->getStatusByCode();
+        if ($status) {
+            return $status->getDisplayAttribute();
+        }
+        return '<span class="px-2 py-1 text-xs rounded bg-gray-100 text-gray-800">Không xác định</span>';
+    }
 }
 
 

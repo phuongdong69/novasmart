@@ -17,7 +17,8 @@ class VoucherController extends Controller
 
     public function create()
     {
-        return view('admin.vouchers.create');
+        $statuses = \App\Models\Status::getByType('voucher');
+        return view('admin.vouchers.create', compact('statuses'));
     }
 
     public function store(Request $request)
@@ -62,13 +63,22 @@ class VoucherController extends Controller
         $data = $request->all();
         // Xử lý checkbox is_public - chỉ true khi được check
         $data['is_public'] = $request->has('is_public');
-        $data['status_id'] = 17; // Voucher status: Hoạt động
-        
         // Xử lý user_id nếu là empty string
         if (empty($data['user_id'])) {
             $data['user_id'] = null;
         }
-
+        // Lấy status theo code
+        if (!empty($data['status_code'])) {
+            $status = \App\Models\Status::findByCodeAndType($data['status_code'], 'voucher');
+            if ($status) {
+                $data['status_id'] = $status->id;
+            }
+        } else {
+            // Mặc định Hoạt động
+            $status = \App\Models\Status::where('type', 'voucher')->where('code', 'active')->first();
+            $data['status_id'] = $status?->id;
+            $data['status_code'] = $status?->code;
+        }
         Voucher::create($data);
         return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được tạo thành công.');
     }
@@ -81,7 +91,8 @@ class VoucherController extends Controller
 
     public function edit(Voucher $voucher)
     {
-        return view('admin.vouchers.edit', compact('voucher'));
+        $statuses = \App\Models\Status::getByType('voucher');
+        return view('admin.vouchers.edit', compact('voucher', 'statuses'));
     }
 
     public function update(Request $request, Voucher $voucher)
@@ -133,6 +144,14 @@ class VoucherController extends Controller
         // Xử lý user_id nếu là empty string
         if (empty($data['user_id'])) {
             $data['user_id'] = null;
+        }
+
+        // Lấy status theo code
+        if (!empty($data['status_code'])) {
+            $status = \App\Models\Status::findByCodeAndType($data['status_code'], 'voucher');
+            if ($status) {
+                $data['status_id'] = $status->id;
+            }
         }
 
         // Debug: Log processed data

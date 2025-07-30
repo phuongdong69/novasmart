@@ -75,6 +75,15 @@
                 </select>
             </div>
 
+            <div>
+                <label for="status_code" class="block font-medium mb-1">Trạng thái *</label>
+                <select name="status_code" id="status_code" class="w-full border rounded px-3 py-2" required>
+                    @foreach($statuses as $status)
+                        <option value="{{ $status->code }}" {{ $voucher->status_code == $status->code ? 'selected' : '' }}>{{ $status->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="flex items-center">
                 <input type="checkbox" name="is_public" id="is_public" class="mr-2" {{ $voucher->is_public ? 'checked' : '' }}>
                 <label for="is_public" class="font-medium">Voucher công khai</label>

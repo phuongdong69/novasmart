@@ -66,7 +66,7 @@
                             <form action="{{ route('admin.users.update_status', $user->id) }}" method="POST" class="inline">
                                 @csrf
                                 <select name="status_id" onchange="this.form.submit()" class="border rounded px-2 py-1">
-                                    @foreach(\App\Models\Status::where('type', 'user')->where('is_active', 1)->orderBy('priority')->get() as $status)
+                                    @foreach(\App\Models\Status::where('type', 'user')->where('is_active', 1)->orderBy('sort_order')->get() as $status)
                                         <option value="{{ $status->id }}" @if($user->status_id == $status->id) selected @endif>{{ $status->name }}</option>
                                     @endforeach
                                 </select>

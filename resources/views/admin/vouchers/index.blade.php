@@ -6,7 +6,7 @@
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">Danh sách Voucher</h2>
         <div class="flex gap-2">
-            <a href="{{ route('admin.vouchers.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Thêm Voucher mới</a>
+        <a href="{{ route('admin.vouchers.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Thêm Voucher mới</a>
         </div>
     </div>
     @if(session('success'))
@@ -30,7 +30,7 @@
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-                @foreach($vouchers as $voucher)
+        @foreach($vouchers as $voucher)
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">{{ $voucher->code }}</div>
@@ -64,14 +64,12 @@
                             </div>
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs rounded {{ $voucher->getStatusClass() }}">
-                                {{ $voucher->getStatusText() }}
-                            </span>
+                            {!! $voucher->getStatusDisplay() !!}
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-900">
                                 {{ $voucher->is_public ? 'Có' : 'Không' }}
-                            </div>
+                </div>
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex gap-2">
@@ -80,20 +78,20 @@
                                 <a href="{{ route('admin.vouchers.show', $voucher->id) }}" 
                                    class="text-green-600 hover:text-green-900">Chi tiết</a>
                                 <form action="{{ route('admin.vouchers.destroy', $voucher->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
+                        @csrf
+                        @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:text-red-900"
                                             onclick="return confirm('Bạn có chắc chắn muốn xóa voucher này?')">
                                         Xóa
                                     </button>
-                                </form>
-                            </div>
+                    </form>
+                </div>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-        </div>
+            </div>
     </div>
 </div>
 @endsection

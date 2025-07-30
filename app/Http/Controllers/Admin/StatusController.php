@@ -10,7 +10,7 @@ class StatusController extends Controller
 {
     public function index()
     {
-        $statuses = Status::orderBy('type')->orderBy('priority')->get();
+        $statuses = Status::orderBy('type')->orderBy('sort_order')->get();
         return view('admin.statuses.index', compact('statuses'));
     }
 
@@ -26,7 +26,7 @@ class StatusController extends Controller
             'code' => 'required|string|unique:statuses,code',
             'type' => 'required|string',
             'color' => 'required|string',
-            'priority' => 'required|integer',
+            'sort_order' => 'required|integer',
             'is_active' => 'boolean',
             'description' => 'nullable|string',
         ]);
@@ -46,7 +46,7 @@ class StatusController extends Controller
             'code' => 'required|string|unique:statuses,code,' . $status->id,
             'type' => 'required|string',
             'color' => 'required|string',
-            'priority' => 'required|integer',
+            'sort_order' => 'required|integer',
             'is_active' => 'boolean',
             'description' => 'nullable|string',
         ]);

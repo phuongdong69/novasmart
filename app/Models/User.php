@@ -19,6 +19,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'status_id',
+        'status_code',
         'role_id',
         'name',
         'email',
@@ -58,6 +59,33 @@ class User extends Authenticatable
     public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class, 'status_id');
+    }
+
+    /**
+     * Lấy trạng thái theo status_code
+     */
+    public function getStatusByCode()
+    {
+        return Status::findByCodeAndType($this->status_code, 'user');
+    }
+
+    /**
+     * Cập nhật trạng thái theo code
+     */
+    public function updateStatusByCode($statusCode, $user_id = null, $note = null)
+    {
+        $status = Status::findByCodeAndType($statusCode, 'user');
+        if ($status) {
+            $this->status_id = $status->id;
+            $this->status_code = $statusCode;
+            $this->save();
+
+            $this->statusLogs()->create([
+                'status_id' => $status->id,
+                'user_id'   => $user_id,
+                'note'      => $note,
+            ]);
+        }
     }
 
     /**

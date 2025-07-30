@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 @section('content')
-
+<script src="https://cdn.tailwindcss.com"></script>
 <div class="container mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4">Sửa trạng thái</h1>
     <form action="{{ route('admin.statuses.update', $status) }}" method="POST" class="space-y-4">
@@ -24,7 +24,7 @@
         </div>
         <div>
             <label class="block">Thứ tự ưu tiên</label>
-            <input type="number" name="priority" class="border rounded w-full px-2 py-1" value="{{ $status->priority }}">
+            <input type="number" name="sort_order" class="border rounded w-full px-2 py-1" value="{{ $status->sort_order }}">
         </div>
         <div>
             <label class="block">Kích hoạt</label>

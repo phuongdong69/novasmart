@@ -59,7 +59,7 @@
                     
                     <td class="px-6 py-3 text-sm text-center">
                       @php
-                        $orderStatuses = \App\Models\Status::where('type', 'order')->where('is_active', 1)->orderBy('priority')->get();
+                        $orderStatuses = \App\Models\Status::where('type', 'order')->where('is_active', 1)->orderBy('sort_order')->get();
                         $currentStatus = $order->orderStatus;
                         $currentStatusIndex = $currentStatus
                           ? $orderStatuses->search(function ($status) use ($currentStatus) {

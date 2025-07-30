@@ -10,18 +10,18 @@ class Status extends Model
     use HasFactory;
 
     protected $fillable = [
-    'name',
-    'code', 
-    'type',
-    'color',
-    'priority',
-    'is_active',
-    'description'
-];
+        'name',
+        'code', 
+        'type',
+        'color',
+        'sort_order',
+        'is_active',
+        'description'
+    ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'priority' => 'integer'
+        'sort_order' => 'integer'
     ];
 
     // Relationship with products
@@ -47,8 +47,62 @@ class Status extends Model
     {
         return $query->where('is_active', true);
     }
+
+    // Scope to get statuses by type
+    public function scopeByType($query, $type)
+    {
+        return $query->where('type', $type);
+    }
+
+    // Scope to get statuses ordered by sort_order
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('sort_order');
+    }
+
+    // Get status by code and type
+    public static function findByCodeAndType($code, $type)
+    {
+        return static::where('code', $code)->where('type', $type)->first();
+    }
+
+    // Get all statuses for a specific type
+    public static function getByType($type)
+    {
+        return static::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('sort_order')
+                    ->get();
+    }
+
+    // Get status options for select dropdown
+    public static function getOptionsByType($type)
+    {
+        return static::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('sort_order')
+                    ->pluck('name', 'code')
+                    ->toArray();
+    }
+
+    // Get status with color for display
+    public function getDisplayAttribute()
+    {
+        return '<span class="px-2 py-1 text-xs rounded" style="background:' . ($this->color ?: '#eee') . ';color:#222;" title="' . e($this->description) . '">' . e($this->name) . '</span>';
+    }
+
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function vouchers()
+    {
+        return $this->hasMany(Voucher::class, 'status_id');
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'status_id');
     }
 }

@@ -11,7 +11,7 @@
                 @php
                     $orderStatuses = \App\Models\Status::where('type', 'order')
                         ->where('is_active', 1)
-                        ->orderBy('priority')
+                        ->orderBy('sort_order')
                         ->get();
                     $currentStatus = $order->orderStatus;
                     $isDelivered =
