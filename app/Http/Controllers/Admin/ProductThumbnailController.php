@@ -4,62 +4,66 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProductThumbnail;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProductThumbnailController extends Controller
 {
     public function index()
     {
-        $thumbnails = ProductThumbnail::all();
+        $thumbnails = ProductThumbnail::with('product')->orderBy('priority')->get();
         return view('admin.product_thumbnail.index', compact('thumbnails'));
     }
 
     public function create()
     {
-        return view('admin.product_thumbnail.create');
+        $products = Product::all();
+        return view('admin.product_thumbnail.create', compact('products'));
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'product_id' => 'required|integer',
-            'url' => 'required|image',
-            'is_primary' => 'required|boolean',
-            'sort_order' => 'nullable|integer',
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'image_path' => 'required|string|max:255',
+            'alt_text' => 'nullable|string|max:255',
+            'priority' => 'nullable|integer',
+            'is_active' => 'boolean'
         ]);
-        if ($request->hasFile('url')) {
-            $data['url'] = $request->file('url')->store('uploads/products/thumbnails', 'public');
-        }
-        ProductThumbnail::create($data);
-        return redirect()->route('admin.product_thumbnail.index')->with('success', 'Thêm ảnh thành công!');
+
+        ProductThumbnail::create($request->all());
+
+        return redirect()->route('admin.product-thumbnails.index')
+            ->with('success', 'Product thumbnail created successfully.');
     }
 
-    public function edit($id)
+    public function edit(ProductThumbnail $productThumbnail)
     {
-        $thumbnail = ProductThumbnail::findOrFail($id);
-        return view('admin.product_thumbnail.edit', compact('thumbnail'));
+        $products = Product::all();
+        return view('admin.product_thumbnail.edit', compact('productThumbnail', 'products'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, ProductThumbnail $productThumbnail)
     {
-        $data = $request->validate([
-            'product_id' => 'required|integer',
-            'url' => 'nullable|image',
-            'is_primary' => 'required|boolean',
-            'sort_order' => 'nullable|integer',
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'image_path' => 'required|string|max:255',
+            'alt_text' => 'nullable|string|max:255',
+            'priority' => 'nullable|integer',
+            'is_active' => 'boolean'
         ]);
-        $thumbnail = ProductThumbnail::findOrFail($id);
-        if ($request->hasFile('url')) {
-            // Xóa ảnh cũ nếu có
-            if ($thumbnail->url && Storage::disk('public')->exists($thumbnail->url)) {
-                Storage::disk('public')->delete($thumbnail->url);
-            }
-            $data['url'] = $request->file('url')->store('uploads/products/thumbnails', 'public');
-        } else {
-            unset($data['url']);
-        }
-        $thumbnail->update($data);
-        return redirect()->route('admin.product_thumbnail.index')->with('success', 'Cập nhật ảnh thành công!');
+
+        $productThumbnail->update($request->all());
+
+        return redirect()->route('admin.product-thumbnails.index')
+            ->with('success', 'Product thumbnail updated successfully.');
+    }
+
+    public function destroy(ProductThumbnail $productThumbnail)
+    {
+        $productThumbnail->delete();
+
+        return redirect()->route('admin.product-thumbnails.index')
+            ->with('success', 'Product thumbnail deleted successfully.');
     }
 } 

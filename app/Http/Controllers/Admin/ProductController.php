@@ -87,9 +87,9 @@ class ProductController extends Controller
         if ($request->hasFile('thumbnail_primary')) {
             $path = $request->file('thumbnail_primary')->store('uploads/products/thumbnails', 'public');
             $product->thumbnails()->create([
-                'url' => $path,
+                'image_path' => $path,
                 'is_primary' => 1,
-                'sort_order' => 0,
+                'priority' => 0,
             ]);
         }
         // Xử lý ảnh phụ (thumbnails[])
@@ -97,9 +97,9 @@ class ProductController extends Controller
             foreach ($request->file('thumbnails') as $file) {
                 $path = $file->store('uploads/products/thumbnails', 'public');
                 $product->thumbnails()->create([
-                    'url' => $path,
+                    'image_path' => $path,
                     'is_primary' => 0,
-                    'sort_order' => 0,
+                    'priority' => 0,
                 ]);
             }
         }

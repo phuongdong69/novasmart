@@ -85,6 +85,11 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    // Redirect /admin to /admin/dashboard
+    Route::get('/', function() {
+        return redirect()->route('admin.dashboard');
+    })->name('index');
+    
     // Dashboard
     Route::get('/dashboard', [DashBoardController::class, 'index'])->name('dashboard');
     
@@ -188,13 +193,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     ]);
 
     // Product Thumbnails
-    Route::resource('product-thumbnails', ProductThumbnailController::class)->only(['index', 'create', 'store', 'edit', 'update'])->names([
-        'index' => 'product_thumbnail.index',
-        'create' => 'product_thumbnail.create',
-        'store' => 'product_thumbnail.store',
-        'edit' => 'product_thumbnail.edit',
-        'update' => 'product_thumbnail.update',
-    ]);
+    Route::resource('product-thumbnails', ProductThumbnailController::class);
 
     // Vouchers
     Route::resource('vouchers', VoucherController::class)->names([
