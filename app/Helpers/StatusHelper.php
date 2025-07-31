@@ -3,180 +3,258 @@
 namespace App\Helpers;
 
 use App\Models\Status;
-use App\Services\StatusService;
+use Illuminate\Support\Collection;
 
 class StatusHelper
 {
     /**
-     * Hiển thị status badge với màu sắc
+     * Get all statuses ordered by type and priority
      */
-    public static function displayStatusBadge($statusCode, $type, $showIcon = false): string
+    public static function getAllStatuses(): Collection
     {
-        $status = StatusService::getStatusByCode($statusCode, $type);
+        return Status::orderBy('type')
+                    ->orderBy('priority')
+                    ->get();
+    }
+
+    /**
+     * Get statuses by type
+     */
+    public static function getStatusesByType(string $type): Collection
+    {
+        return Status::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('priority')
+                    ->get();
+    }
+
+    /**
+     * Get status by code and type
+     */
+    public static function getStatusByCodeAndType(string $code, string $type): ?Status
+    {
+        return Status::where('code', $code)
+                    ->where('type', $type)
+                    ->first();
+    }
+
+    /**
+     * Get status options for select dropdown
+     */
+    public static function getStatusOptionsByType(string $type): array
+    {
+        return Status::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('priority')
+                    ->pluck('name', 'code')
+                    ->toArray();
+    }
+
+    /**
+     * Get status options with ID as key
+     */
+    public static function getStatusOptionsWithIdByType(string $type): array
+    {
+        return Status::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('priority')
+                    ->pluck('name', 'id')
+                    ->toArray();
+    }
+
+    /**
+     * Get next status in sequence
+     */
+    public static function getNextStatus(Status $currentStatus): ?Status
+    {
+        return Status::where('type', $currentStatus->type)
+                    ->where('priority', '>', $currentStatus->priority)
+                    ->orderBy('priority')
+                    ->first();
+    }
+
+    /**
+     * Get previous status in sequence
+     */
+    public static function getPreviousStatus(Status $currentStatus): ?Status
+    {
+        return Status::where('type', $currentStatus->type)
+                    ->where('priority', '<', $currentStatus->priority)
+                    ->orderBy('priority', 'desc')
+                    ->first();
+    }
+
+    /**
+     * Get first status by type
+     */
+    public static function getFirstStatusByType(string $type): ?Status
+    {
+        return Status::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('priority')
+                    ->first();
+    }
+
+    /**
+     * Get last status by type
+     */
+    public static function getLastStatusByType(string $type): ?Status
+    {
+        return Status::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('priority', 'desc')
+                    ->first();
+    }
+
+    /**
+     * Check if status is the first in sequence
+     */
+    public static function isFirstStatus(Status $status): bool
+    {
+        $firstStatus = self::getFirstStatusByType($status->type);
+        return $firstStatus && $firstStatus->id === $status->id;
+    }
+
+    /**
+     * Check if status is the last in sequence
+     */
+    public static function isLastStatus(Status $status): bool
+    {
+        $lastStatus = self::getLastStatusByType($status->type);
+        return $lastStatus && $lastStatus->id === $status->id;
+    }
+
+    /**
+     * Get status display with color
+     */
+    public static function getStatusDisplay(Status $status): string
+    {
+        return '<span class="px-2 py-1 text-xs rounded" style="background:' . ($status->color ?: '#eee') . ';color:#222;" title="' . e($status->description) . '">' . e($status->name) . '</span>';
+    }
+
+    /**
+     * Get status types
+     */
+    public static function getStatusTypes(): array
+    {
+        return Status::distinct()
+                    ->pluck('type')
+                    ->toArray();
+    }
+
+    /**
+     * Update model status
+     */
+    public static function updateModelStatus($model, string $statusCode, string $type, $userId = null, $note = null): bool
+    {
+        $status = self::getStatusByCodeAndType($statusCode, $type);
         
         if (!$status) {
-            return '<span class="px-2 py-1 text-xs rounded bg-gray-100 text-gray-800">N/A</span>';
+            return false;
         }
 
-        $icon = $showIcon ? self::getStatusIcon($statusCode, $type) : '';
-        
-        return sprintf(
-            '<span class="px-2 py-1 text-xs rounded" style="background-color: %s; color: white;">%s %s</span>',
-            $status->color,
-            $icon,
-            $status->name
-        );
+        // Update status_id and status_code
+        $model->status_id = $status->id;
+        $model->status_code = $statusCode;
+        $model->save();
+
+        // Log if model has statusLogs method
+        if (method_exists($model, 'statusLogs')) {
+            $model->statusLogs()->create([
+                'status_id' => $status->id,
+                'user_id' => $userId,
+                'note' => $note,
+            ]);
+        }
+
+        return true;
     }
 
     /**
-     * Hiển thị status text đơn giản
+     * Get status display info
      */
-    public static function displayStatusText($statusCode, $type): string
+    public static function getStatusDisplayInfo(string $code, string $type): ?array
     {
-        $status = StatusService::getStatusByCode($statusCode, $type);
-        return $status ? $status->name : 'N/A';
-    }
-
-    /**
-     * Lấy icon cho status
-     */
-    public static function getStatusIcon($statusCode, $type): string
-    {
-        $icons = [
-            'order' => [
-                'pending' => '⏳',
-                'processing' => '⚙️',
-                'shipped' => '🚚',
-                'completed' => '✅',
-                'cancelled' => '❌',
-            ],
-            'user' => [
-                'active' => '✅',
-                'suspended' => '🔒',
-                'pending_verification' => '📧',
-            ],
-            'product' => [
-                'draft' => '📝',
-                'published' => '📢',
-                'in_stock' => '📦',
-                'out_of_stock' => '🚫',
-            ],
-            'voucher' => [
-                'draft' => '📝',
-                'active' => '✅',
-                'inactive' => '⏸️',
-                'expired' => '⏰',
-            ],
-        ];
-
-        return $icons[$type][$statusCode] ?? '';
-    }
-
-    /**
-     * Lấy CSS class cho status
-     */
-    public static function getStatusClass($statusCode, $type): string
-    {
-        $status = StatusService::getStatusByCode($statusCode, $type);
-        
+        $status = self::getStatusByCodeAndType($code, $type);
         if (!$status) {
-            return 'bg-gray-100 text-gray-800';
+            return null;
         }
 
-        // Chuyển đổi màu hex sang Tailwind classes
-        $colorMap = [
-            '#38c172' => 'bg-green-100 text-green-800',
-            '#e3342f' => 'bg-red-100 text-red-800',
-            '#f59e42' => 'bg-yellow-100 text-yellow-800',
-            '#3490dc' => 'bg-blue-100 text-blue-800',
-            '#6c757d' => 'bg-gray-100 text-gray-800',
-        ];
-
-        return $colorMap[$status->color] ?? 'bg-gray-100 text-gray-800';
-    }
-
-    /**
-     * Lấy options cho select dropdown
-     */
-    public static function getStatusOptions($type): array
-    {
-        return StatusService::getStatusOptions($type);
-    }
-
-    /**
-     * Kiểm tra status có hợp lệ không
-     */
-    public static function isValidStatus($statusCode, $type): bool
-    {
-        return StatusService::isValidStatus($statusCode, $type);
-    }
-
-    /**
-     * Lấy status mặc định cho type
-     */
-    public static function getDefaultStatus($type): ?Status
-    {
-        return StatusService::getDefaultStatus($type);
-    }
-
-    /**
-     * Hiển thị status với tooltip
-     */
-    public static function displayStatusWithTooltip($statusCode, $type): string
-    {
-        $status = StatusService::getStatusByCode($statusCode, $type);
-        
-        if (!$status) {
-            return '<span class="px-2 py-1 text-xs rounded bg-gray-100 text-gray-800" title="Không xác định">N/A</span>';
-        }
-
-        return sprintf(
-            '<span class="px-2 py-1 text-xs rounded cursor-help" style="background-color: %s; color: white;" title="%s">%s</span>',
-            $status->color,
-            $status->description,
-            $status->name
-        );
-    }
-
-    /**
-     * Lấy workflow cho type
-     */
-    public static function getWorkflow($type): array
-    {
-        $workflow = StatusService::getStatusWorkflow($type);
-        return $workflow->map(function ($status) {
             return [
+            'id' => $status->id,
+            'name' => $status->name,
                 'code' => $status->code,
-                'name' => $status->name,
                 'color' => $status->color,
-                'sort_order' => $status->sort_order,
-            ];
-        })->toArray();
+            'priority' => $status->priority,
+            'description' => $status->description,
+            'display' => self::getStatusDisplay($status)
+        ];
     }
 
     /**
-     * Lấy next status trong workflow
+     * Check if status is valid
      */
-    public static function getNextStatus($currentCode, $type): ?array
+    public static function isValidStatus(string $code, string $type): bool
     {
-        $nextStatus = StatusService::getNextStatus($currentCode, $type);
-        return $nextStatus ? [
-            'code' => $nextStatus->code,
-            'name' => $nextStatus->name,
-            'color' => $nextStatus->color,
-        ] : null;
+        $status = self::getStatusByCodeAndType($code, $type);
+        return $status && $status->is_active;
     }
 
     /**
-     * Lấy previous status trong workflow
+     * Get default status for type
      */
-    public static function getPreviousStatus($currentCode, $type): ?array
+    public static function getDefaultStatus(string $type): ?Status
     {
-        $prevStatus = StatusService::getPreviousStatus($currentCode, $type);
-        return $prevStatus ? [
-            'code' => $prevStatus->code,
-            'name' => $prevStatus->name,
-            'color' => $prevStatus->color,
-        ] : null;
+        return Status::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('priority')
+                    ->first();
+    }
+
+    /**
+     * Get available types
+     */
+    public static function getAvailableTypes(): array
+    {
+        return Status::distinct()
+                    ->pluck('type')
+                    ->filter()
+                    ->values()
+                    ->toArray();
+    }
+
+    /**
+     * Create new status
+     */
+    public static function createStatus(array $data): Status
+    {
+        return Status::create($data);
+    }
+
+    /**
+     * Update status
+     */
+    public static function updateStatus(Status $status, array $data): bool
+    {
+        return $status->update($data);
+    }
+
+    /**
+     * Delete status (soft delete)
+     */
+    public static function deleteStatus(Status $status): bool
+    {
+        return $status->update(['is_active' => false]);
+    }
+
+    /**
+     * Get status workflow
+     */
+    public static function getStatusWorkflow(string $type): Collection
+    {
+        return Status::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('priority')
+                    ->get();
     }
 } 

@@ -10,7 +10,7 @@ class StatusController extends Controller
 {
     public function index()
     {
-        $statuses = Status::orderBy('type')->orderBy('sort_order')->get();
+        $statuses = Status::orderBy('type')->orderBy('priority')->get();
         return view('admin.statuses.index', compact('statuses'));
     }
 
@@ -21,17 +21,20 @@ class StatusController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'code' => 'required|string|unique:statuses,code',
-            'type' => 'required|string',
-            'color' => 'required|string',
-            'sort_order' => 'required|integer',
-            'is_active' => 'boolean',
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:statuses,code',
+            'type' => 'required|string|max:50',
+            'color' => 'required|string|max:7',
+            'priority' => 'required|integer',
             'description' => 'nullable|string',
+            'is_active' => 'boolean'
         ]);
-        Status::create($data);
-        return redirect()->route('admin.statuses.index')->with('success', 'Tạo trạng thái thành công');
+
+        Status::create($request->all());
+
+        return redirect()->route('admin.statuses.index')
+            ->with('success', 'Status created successfully.');
     }
 
     public function edit(Status $status)
@@ -41,22 +44,27 @@ class StatusController extends Controller
 
     public function update(Request $request, Status $status)
     {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'code' => 'required|string|unique:statuses,code,' . $status->id,
-            'type' => 'required|string',
-            'color' => 'required|string',
-            'sort_order' => 'required|integer',
-            'is_active' => 'boolean',
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:statuses,code,' . $status->id,
+            'type' => 'required|string|max:50',
+            'color' => 'required|string|max:7',
+            'priority' => 'required|integer',
             'description' => 'nullable|string',
+            'is_active' => 'boolean'
         ]);
-        $status->update($data);
-        return redirect()->route('admin.statuses.index')->with('success', 'Cập nhật trạng thái thành công');
+
+        $status->update($request->all());
+
+        return redirect()->route('admin.statuses.index')
+            ->with('success', 'Status updated successfully.');
     }
 
     public function destroy(Status $status)
     {
         $status->delete();
-        return redirect()->route('admin.statuses.index')->with('success', 'Xóa trạng thái thành công');
+
+        return redirect()->route('admin.statuses.index')
+            ->with('success', 'Status deleted successfully.');
     }
 } 

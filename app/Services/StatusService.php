@@ -8,164 +8,137 @@ use Illuminate\Support\Collection;
 class StatusService
 {
     /**
-     * Lấy tất cả status theo type
+     * Get all statuses ordered by type and priority
      */
-    public static function getStatusesByType(string $type): Collection
+    public function getAllStatuses(): Collection
     {
-        return Status::getByType($type);
-    }
-
-    /**
-     * Lấy status theo code và type
-     */
-    public static function getStatusByCode(string $code, string $type): ?Status
-    {
-        return Status::findByCodeAndType($code, $type);
-    }
-
-    /**
-     * Lấy options cho select dropdown
-     */
-    public static function getStatusOptions(string $type): array
-    {
-        return Status::getOptionsByType($type);
-    }
-
-    /**
-     * Cập nhật status cho model
-     */
-    public static function updateModelStatus($model, string $statusCode, string $type, $userId = null, $note = null): bool
-    {
-        $status = self::getStatusByCode($statusCode, $type);
-        
-        if (!$status) {
-            return false;
-        }
-
-        // Cập nhật status_id và status_code
-        $model->status_id = $status->id;
-        $model->status_code = $statusCode;
-        $model->save();
-
-        // Ghi log nếu model có method statusLogs
-        if (method_exists($model, 'statusLogs')) {
-            $model->statusLogs()->create([
-                'status_id' => $status->id,
-                'user_id' => $userId,
-                'note' => $note,
-            ]);
-        }
-
-        return true;
-    }
-
-    /**
-     * Lấy display info của status
-     */
-    public static function getStatusDisplay(string $code, string $type): ?array
-    {
-        $status = self::getStatusByCode($code, $type);
-        return $status ? $status->display : null;
-    }
-
-    /**
-     * Kiểm tra status có hợp lệ không
-     */
-    public static function isValidStatus(string $code, string $type): bool
-    {
-        $status = self::getStatusByCode($code, $type);
-        return $status && $status->is_active;
-    }
-
-    /**
-     * Lấy status mặc định cho type
-     */
-    public static function getDefaultStatus(string $type): ?Status
-    {
-        return Status::where('type', $type)
-                    ->where('is_active', true)
-                    ->orderBy('sort_order')
-                    ->first();
-    }
-
-    /**
-     * Lấy tất cả types có sẵn
-     */
-    public static function getAvailableTypes(): array
-    {
-        return Status::distinct()
-                    ->pluck('type')
-                    ->filter()
-                    ->values()
-                    ->toArray();
-    }
-
-    /**
-     * Tạo status mới
-     */
-    public static function createStatus(array $data): Status
-    {
-        return Status::create($data);
-    }
-
-    /**
-     * Cập nhật status
-     */
-    public static function updateStatus(Status $status, array $data): bool
-    {
-        return $status->update($data);
-    }
-
-    /**
-     * Xóa status (soft delete)
-     */
-    public static function deleteStatus(Status $status): bool
-    {
-        return $status->update(['is_active' => false]);
-    }
-
-    /**
-     * Lấy status theo thứ tự workflow
-     */
-    public static function getStatusWorkflow(string $type): Collection
-    {
-        return Status::where('type', $type)
-                    ->where('is_active', true)
-                    ->orderBy('sort_order')
+        return Status::orderBy('type')
+                    ->orderBy('priority')
                     ->get();
     }
 
     /**
-     * Lấy next status trong workflow
+     * Get statuses by type
      */
-    public static function getNextStatus(string $currentCode, string $type): ?Status
+    public function getStatusesByType(string $type): Collection
     {
-        $currentStatus = self::getStatusByCode($currentCode, $type);
-        if (!$currentStatus) {
-            return null;
-        }
-
         return Status::where('type', $type)
                     ->where('is_active', true)
-                    ->where('sort_order', '>', $currentStatus->sort_order)
-                    ->orderBy('sort_order')
+                    ->orderBy('priority')
+                    ->get();
+    }
+
+    /**
+     * Get status by code and type
+     */
+    public function getStatusByCodeAndType(string $code, string $type): ?Status
+    {
+        return Status::where('code', $code)
+                    ->where('type', $type)
                     ->first();
     }
 
     /**
-     * Lấy previous status trong workflow
+     * Get status options for select dropdown
      */
-    public static function getPreviousStatus(string $currentCode, string $type): ?Status
+    public function getStatusOptionsByType(string $type): array
     {
-        $currentStatus = self::getStatusByCode($currentCode, $type);
-        if (!$currentStatus) {
-            return null;
-        }
-
         return Status::where('type', $type)
                     ->where('is_active', true)
-                    ->where('sort_order', '<', $currentStatus->sort_order)
-                    ->orderBy('sort_order', 'desc')
+                    ->orderBy('priority')
+                    ->pluck('name', 'code')
+                    ->toArray();
+    }
+
+    /**
+     * Get status options with ID as key
+     */
+    public function getStatusOptionsWithIdByType(string $type): array
+    {
+        return Status::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('priority')
+                    ->pluck('name', 'id')
+                    ->toArray();
+    }
+
+    /**
+     * Get next status in sequence
+     */
+    public function getNextStatus(Status $currentStatus): ?Status
+    {
+        return Status::where('type', $currentStatus->type)
+                    ->where('priority', '>', $currentStatus->priority)
+                    ->orderBy('priority')
                     ->first();
+    }
+
+    /**
+     * Get previous status in sequence
+     */
+    public function getPreviousStatus(Status $currentStatus): ?Status
+    {
+        return Status::where('type', $currentStatus->type)
+                    ->where('priority', '<', $currentStatus->priority)
+                    ->orderBy('priority', 'desc')
+                    ->first();
+    }
+
+    /**
+     * Get first status by type
+     */
+    public function getFirstStatusByType(string $type): ?Status
+    {
+        return Status::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('priority')
+                    ->first();
+    }
+
+    /**
+     * Get last status by type
+     */
+    public function getLastStatusByType(string $type): ?Status
+    {
+        return Status::where('type', $type)
+                    ->where('is_active', true)
+                    ->orderBy('priority', 'desc')
+                    ->first();
+    }
+
+    /**
+     * Check if status is the first in sequence
+     */
+    public function isFirstStatus(Status $status): bool
+    {
+        $firstStatus = $this->getFirstStatusByType($status->type);
+        return $firstStatus && $firstStatus->id === $status->id;
+    }
+
+    /**
+     * Check if status is the last in sequence
+     */
+    public function isLastStatus(Status $status): bool
+    {
+        $lastStatus = $this->getLastStatusByType($status->type);
+        return $lastStatus && $lastStatus->id === $status->id;
+    }
+
+    /**
+     * Get status display with color
+     */
+    public function getStatusDisplay(Status $status): string
+    {
+        return '<span class="px-2 py-1 text-xs rounded" style="background:' . ($status->color ?: '#eee') . ';color:#222;" title="' . e($status->description) . '">' . e($status->name) . '</span>';
+    }
+
+    /**
+     * Get status types
+     */
+    public function getStatusTypes(): array
+    {
+        return Status::distinct()
+                    ->pluck('type')
+                    ->toArray();
     }
 } 
