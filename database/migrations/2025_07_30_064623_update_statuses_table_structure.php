@@ -32,7 +32,7 @@ return new class extends Migration
                 ->where('id', $activeVoucher->id)
                 ->update([
                     'code' => 'active',
-                    'sort_order' => 1
+                    'priority' => 1
                 ]);
         }
 
@@ -46,7 +46,7 @@ return new class extends Migration
                 ->where('id', $inactiveVoucher->id)
                 ->update([
                     'code' => 'inactive',
-                    'sort_order' => 2
+                    'priority' => 2
                 ]);
         }
 
@@ -62,7 +62,7 @@ return new class extends Migration
                 'name' => 'Hết hạn',
                 'type' => 'voucher',
                 'color' => '#e3342f',
-                'sort_order' => 3,
+                'priority' => 3,
                 'is_active' => true,
                 'description' => 'Voucher đã hết hạn',
                 'created_at' => now(),
@@ -81,7 +81,7 @@ return new class extends Migration
                 'name' => 'Bản nháp',
                 'type' => 'voucher',
                 'color' => '#6c757d',
-                'sort_order' => 0,
+                'priority' => 0,
                 'is_active' => true,
                 'description' => 'Voucher chưa được kích hoạt',
                 'created_at' => now(),
@@ -101,7 +101,7 @@ return new class extends Migration
                 'name' => 'Bản nháp',
                 'type' => 'product',
                 'color' => '#6c757d',
-                'sort_order' => 0,
+                'priority' => 0,
                 'is_active' => true,
                 'description' => 'Sản phẩm chưa được xuất bản',
                 'created_at' => now(),
@@ -120,7 +120,7 @@ return new class extends Migration
                 'name' => 'Đã xuất bản',
                 'type' => 'product',
                 'color' => '#3490dc',
-                'sort_order' => 1,
+                'priority' => 1,
                 'is_active' => true,
                 'description' => 'Sản phẩm đã được xuất bản',
                 'created_at' => now(),
