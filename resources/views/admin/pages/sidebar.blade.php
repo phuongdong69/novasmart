@@ -22,8 +22,10 @@
 
     @php
         // Helper function để xác định trang hiện tại
-        function isCurrentRoute($routeName) {
-            return request()->routeIs($routeName);
+        if (!function_exists('isCurrentRoute')) {
+            function isCurrentRoute($routeName) {
+                return request()->routeIs($routeName);
+            }
         }
     @endphp
 
@@ -171,8 +173,8 @@
             </li>
 
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ isCurrentRoute('admin.product_thumbnail.*') ? 'bg-blue-500/13 dark:text-white dark:opacity-80' : 'dark:text-white dark:opacity-80' }} text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap rounded-lg px-4 transition-colors"
-                    href="{{ route('admin.product_thumbnail.index') }}">
+                <a class="py-2.7 {{ isCurrentRoute('admin.product-thumbnails.*') ? 'bg-blue-500/13 dark:text-white dark:opacity-80' : 'dark:text-white dark:opacity-80' }} text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap rounded-lg px-4 transition-colors"
+                    href="{{ route('admin.product-thumbnails.index') }}">
                     <div
                         class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
                         <i class="relative top-0 text-sm leading-normal text-pink-500 ni ni-image"></i>
