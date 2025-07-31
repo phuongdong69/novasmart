@@ -11,7 +11,7 @@
         {{-- Tiêu đề + Nút thêm mới --}}
         <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex justify-between items-center">
           <h3 class="dark:text-white text-lg font-semibold">Danh sách Product Thumbnails</h3>
-          <a href="{{ route('admin.product_thumbnail.create') }}"
+          <a href="{{ route('admin.product-thumbnails.create') }}"
             class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
             + Thêm mới
           </a>
@@ -19,7 +19,7 @@
 
         {{-- Thanh tìm kiếm --}}
         <div class="px-6 mt-4">
-          <form method="GET" action="{{ route('admin.product_thumbnail.index') }}" class="flex justify-end items-center gap-2">
+                      <form method="GET" action="{{ route('admin.product-thumbnails.index') }}" class="flex justify-end items-center gap-2">
             <input
               type="search"
               name="keyword"
@@ -76,11 +76,11 @@
                         </span>
                       @endif
                     </td>
-                    <td class="px-6 py-3 text-sm text-center text-slate-500">{{ $thumbnail->sort_order ?? 0 }}</td>
+                    <td class="px-6 py-3 text-sm text-center text-slate-500">{{ $thumbnail->priority ?? 0 }}</td>
                     <td class="px-6 py-3 text-sm">
                       <div class="flex items-center gap-2">
-                        <a href="{{ route('admin.product_thumbnail.edit', $thumbnail->id) }}" class="text-blue-600 hover:underline">Sửa</a>
-                        <form action="{{ route('admin.product_thumbnail.destroy', $thumbnail->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thumbnail này không?')">
+                        <a href="{{ route('admin.product-thumbnails.edit', $thumbnail) }}" class="text-blue-600 hover:underline">Sửa</a>
+                        <form action="{{ route('admin.product-thumbnails.destroy', $thumbnail) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thumbnail này không?')">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="text-red-600 hover:underline">Xóa</button>
