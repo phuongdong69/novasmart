@@ -58,6 +58,28 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
+    public function edit($id)
+    {
+        $order = Order::with(['orderStatus', 'user', 'voucher', 'payment', 'orderDetails.productVariant.product'])->findOrFail($id);
+        $statuses = \App\Models\Status::getByType('order');
+        return view('admin.orders.edit', compact('order', 'statuses'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $order = \App\Models\Order::findOrFail($id);
+        $data = $request->all();
+        // Xử lý status_code
+        if (!empty($data['status_code'])) {
+            $status = \App\Models\Status::findByCodeAndType($data['status_code'], 'order');
+            if ($status) {
+                $data['status_id'] = $status->id;
+            }
+        }
+        $order->update($data);
+        return redirect()->route('admin.orders.index')->with('success', 'Cập nhật đơn hàng thành công!');
+    }
+
     /**
      * Xóa đơn hàng
      */

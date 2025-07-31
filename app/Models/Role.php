@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User; 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\User;
 
 class Role extends Model
 {
@@ -18,9 +19,8 @@ class Role extends Model
     /**
      * Một role có nhiều user
      */
-    public function users()
+    public function users(): HasMany
     {
         return $this->hasMany(User::class, 'role_id', 'id');
-        // Cụ thể: User.role_id -> Role.id
     }
 }

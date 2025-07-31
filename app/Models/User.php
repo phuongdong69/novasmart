@@ -2,112 +2,84 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use App\Models\Role;
-use App\Models\Cart;
-use App\Models\Status;
-use App\Models\StatusLog;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'status_id',
-        'status_code',
-        'role_id',
         'name',
         'email',
         'password',
+        'role_id',
+        'status_code',
+        'gender',
+        'birthday',
         'phoneNumber',
         'address',
+        'image_user',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * Quan hệ: User thuộc về 1 Role
-     */
-    public function role(): BelongsTo
+    public function role()
     {
-        return $this->belongsTo(Role::class, 'role_id', 'id');
+        return $this->belongsTo(Role::class);
     }
 
-    /**
-     * Quan hệ: User có 1 giỏ hàng
-     */
-    public function cart(): HasOne
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
+
+    public function cart()
     {
         return $this->hasOne(Cart::class);
     }
 
-    /**
-     * Quan hệ: User thuộc về 1 trạng thái (nếu bạn có bảng statuses)
-     */
-    public function status(): BelongsTo
+    public function orders()
     {
-        return $this->belongsTo(Status::class, 'status_id');
+        return $this->hasMany(Order::class);
     }
 
-    /**
-     * Lấy trạng thái theo status_code
-     */
-    public function getStatusByCode()
+    public function voucherUsages()
     {
-        return Status::findByCodeAndType($this->status_code, 'user');
+        return $this->hasMany(VoucherUsage::class);
     }
 
-    /**
-     * Cập nhật trạng thái theo code
-     */
-    public function updateStatusByCode($statusCode, $user_id = null, $note = null)
+    public function statusLogs()
     {
-        $status = Status::findByCodeAndType($statusCode, 'user');
-        if ($status) {
-            $this->status_id = $status->id;
-            $this->status_code = $statusCode;
-            $this->save();
-
-            $this->statusLogs()->create([
-                'status_id' => $status->id,
-                'user_id'   => $user_id,
-                'note'      => $note,
-            ]);
-        }
+        return $this->hasMany(StatusLog::class);
     }
 
-    /**
-     * Quan hệ: Các log trạng thái của user (dùng morphMany nếu bạn log nhiều loại model)
-     */
-    public function statusLogs(): MorphMany
+    public function setPasswordAttribute($value)
     {
-        return $this->morphMany(StatusLog::class, 'loggable');
-    }
-
-    /**
-     * Cập nhật trạng thái cho User và ghi log
-     */
-    public function updateStatus($status_id, $user_id = null, $note = null)
-    {
-        $this->status_id = $status_id;
-        $this->save();
-
-        $this->statusLogs()->create([
-            'status_id' => $status_id,
-            'user_id'   => $user_id,
-            'note'      => $note,
-        ]);
+        $this->attributes['password'] = bcrypt($value);
     }
 }

@@ -93,6 +93,15 @@
               </div>
             @endif
           </div>
+          {{-- Trạng thái --}}
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-slate-600 mb-2">Trạng thái</label>
+            <select name="status_code" class="w-full px-4 py-2 border border-gray-300 rounded-md">
+                @foreach($statuses as $status)
+                    <option value="{{ $status->code }}" {{ $product->status_code == $status->code ? 'selected' : '' }}>{{ $status->name }}</option>
+                @endforeach
+            </select>
+          </div>
           {{-- Buttons --}}
           <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
             <button type="submit" style="padding: 8px 24px; background-color: #2563eb; color: white; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">Cập nhật</button>

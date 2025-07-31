@@ -73,13 +73,7 @@
                     <td class="px-6 py-3 text-sm">{{ $product->origin->country ?? 'Chưa có xuất xứ' }}</td>
                     <td class="px-6 py-3 text-sm">{{ $product->category->name ?? 'Chưa phân loại' }}</td>
                     <td class="px-6 py-3 text-sm text-center">
-                      @php
-                        $status = $product->status;
-                      @endphp
-                      <span class="px-2.5 py-1.4 text-xs rounded-1.8 font-bold uppercase leading-none text-white"
-                        style="background-color: {{ $status->color ?? '#888' }};">
-                        {{ $status->name ?? 'Chưa rõ' }}
-                      </span>
+                        {!! $product->getStatusDisplay() !!}
                     </td>
                     <td class="px-6 py-3 text-sm">
                       <div class="flex items-center gap-2">

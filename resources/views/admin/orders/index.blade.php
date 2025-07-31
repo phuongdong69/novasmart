@@ -58,44 +58,7 @@
                     <td class="px-6 py-3 text-sm font-medium text-gray-900">{{ number_format($order->total_price, 0, ',', '.') }} ₫</td>
                     
                     <td class="px-6 py-3 text-sm text-center">
-                      @php
-                        $orderStatuses = \App\Models\Status::where('type', 'order')->where('is_active', 1)->orderBy('sort_order')->get();
-                        $currentStatus = $order->orderStatus;
-                        $currentStatusIndex = $currentStatus
-                          ? $orderStatuses->search(function ($status) use ($currentStatus) {
-                              return $status->id == $currentStatus->id;
-                            })
-                          : -1;
-                        $nextStatus = $currentStatusIndex >= 0 && $currentStatusIndex < $orderStatuses->count() - 1
-                          ? $orderStatuses->get($currentStatusIndex + 1)
-                          : null;
-                        $isDelivered = $currentStatus && (
-                          str_contains(strtolower($currentStatus->name), 'đã giao hàng') ||
-                          str_contains(strtolower($currentStatus->code), 'delivered')
-                        );
-                        $isCompleted = $currentStatus && (
-                          str_contains(strtolower($currentStatus->name), 'hoàn thành') ||
-                          str_contains(strtolower($currentStatus->code), 'completed')
-                        );
-                      @endphp
-                      
-                      <div class="flex items-center justify-center gap-2">
-                        @if (!$isCompleted && !$isDelivered && $nextStatus)
-                          <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST" class="inline">
-                            @csrf
-                            <input type="hidden" name="status_id" value="{{ $nextStatus->id }}">
-                            <button type="submit" class="px-2.5 py-1.4 text-xs rounded-1.8 font-bold uppercase leading-none text-white transition-all duration-200 hover:opacity-80"
-                              style="background-color: {{ $currentStatus->color ?? '#10b981' }};">
-                              {{ $currentStatus ? $currentStatus->name : 'Chưa có trạng thái' }}
-                            </button>
-                          </form>
-                        @else
-                          <span class="px-2.5 py-1.4 text-xs rounded-1.8 font-bold uppercase leading-none text-white"
-                            style="background-color: {{ $currentStatus->color ?? '#6b7280' }};">
-                            {{ $currentStatus ? $currentStatus->name : 'Chưa có trạng thái' }}
-                          </span>
-                        @endif
-                      </div>
+                      {!! $order->getStatusDisplay() !!}
                     </td>
 
                     <td class="px-6 py-3 text-sm text-center">
@@ -120,7 +83,7 @@
                         
                         @php
                           $cancelStatus = \App\Models\Status::where('type', 'order')->where('code', 'cancelled')->first();
-                          $allowCancel = $currentStatus && in_array($currentStatus->code, ['pending', 'confirmed']);
+                          $allowCancel = $order->orderStatus && in_array($order->orderStatus->code, ['pending', 'confirmed']);
                         @endphp
 
                         @if ($cancelStatus && $allowCancel)

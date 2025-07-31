@@ -12,5 +12,5 @@
 
 
 
-<link href="{{ asset('assets/admin/css/argon-dashboard-tailwind.min.css') }}?v=1.0.1" rel="stylesheet" />
+<link href="{{ asset('assets/admin/css/argon-dashboard-tailwind.min.css') }}?v={{ time() }}" rel="stylesheet" />
 

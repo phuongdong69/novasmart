@@ -174,16 +174,11 @@
                     {{-- Trạng thái --}}
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-slate-600 mb-2">Trạng thái</label>
-                        <select
-                            name="status"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('status') border-red-500 @enderror"
-                        >
-                            <option value="1">Đang bán</option>
-                            <option value="0">Ngừng bán</option>
+                        <select name="status_code" class="w-full px-4 py-2 border border-gray-300 rounded-md">
+                            @foreach($statuses as $status)
+                                <option value="{{ $status->code }}">{{ $status->name }}</option>
+                            @endforeach
                         </select>
-                        @error('status')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
                     </div>
 
                     {{-- Submit --}}

@@ -12,6 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::table('users', function (Blueprint $table) {
+            if (Schema::hasColumn('users', 'status_id')) {
+                $table->dropForeign(['status_id']);
+                $table->dropColumn('status_id');
+            }
+        });
         // Thêm status_code cho bảng users
         Schema::table('users', function (Blueprint $table) {
             $table->string('status_code')->nullable()->after('status_id');
@@ -35,6 +41,10 @@ return new class extends Migration
 
         // Cập nhật dữ liệu cho vouchers
         DB::table('vouchers')->update(['status_code' => 'active']);
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('status_code');
+        });
     }
 
     /**
@@ -43,7 +53,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('status_code');
+            if (!Schema::hasColumn('users', 'status_id')) {
+                $table->foreignId('status_id')->nullable()->constrained('statuses')->after('id');
+            }
+        });
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('status_code')->nullable()->after('status_id');
         });
 
         Schema::table('products', function (Blueprint $table) {

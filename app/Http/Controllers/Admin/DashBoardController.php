@@ -38,7 +38,7 @@ class DashBoardController extends Controller
             ->join('statuses', 'orders.status_id', '=', 'statuses.id')
             ->whereBetween('orders.created_at', [$start, $end])
             ->whereIn('statuses.code', ['confirmed', 'delivered', 'completed'])
-            ->groupBy('users.id', 'users.status_id', 'users.role_id', 'users.name', 'users.email', 'users.password', 'users.phoneNumber', 'users.address', 'users.created_at', 'users.updated_at', 'users.remember_token')
+            ->groupBy('users.id', 'users.status_code', 'users.role_id', 'users.name', 'users.email', 'users.password', 'users.phoneNumber', 'users.address', 'users.created_at', 'users.updated_at')
             ->orderByDesc('total_spent')
             ->take(5)
             ->get();

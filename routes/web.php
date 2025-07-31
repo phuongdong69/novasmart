@@ -87,6 +87,74 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashBoardController::class, 'index'])->name('dashboard');
+    
+    // Temporary route to check data
+    Route::get('/check-users', function() {
+        $users = App\Models\User::all();
+        return response()->json($users);
+    })->name('check-users');
+    
+    // Test update route
+    Route::post('/test-update-user/{id}', function($id) {
+        try {
+            $user = App\Models\User::find($id);
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+            
+            $oldName = $user->name;
+            $user->name = 'Test Update ' . time();
+            $result = $user->save();
+            
+            return response()->json([
+                'success' => $result,
+                'old_name' => $oldName,
+                'new_name' => $user->name,
+                'user_id' => $id
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    })->name('test-update-user');
+    
+    // Test database connection
+    Route::get('/test-db', function() {
+        try {
+            $users = App\Models\User::all();
+            return response()->json([
+                'success' => true,
+                'count' => $users->count(),
+                'users' => $users->take(3)->toArray()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    })->name('test-db');
+    
+    // Test direct status update
+    Route::post('/test-status-update/{id}', function($id) {
+        try {
+            $user = App\Models\User::find($id);
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+            
+            $oldStatus = $user->status_id;
+            $newStatus = $oldStatus == 1 ? 2 : 1; // Toggle between status 1 and 2
+            
+            $user->status_id = $newStatus;
+            $result = $user->save();
+            
+            return response()->json([
+                'success' => $result,
+                'old_status_id' => $oldStatus,
+                'new_status_id' => $newStatus,
+                'user_id' => $id
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    })->name('test-status-update');
 
     // Categories
     Route::put('categories/{id}/toggle-status', [CategoryController::class, 'toggleStatus'])->name('categories.toggleStatus');
@@ -156,17 +224,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('product_variants', ProductVariantController::class);
     //Variant_attribute_value
     Route::resource('variant_attribute_values', VariantAttributeValueController::class);
-    Route::put('users/{id}/toggle-status', [App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggleStatus');
+    // Users Management
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
-    Route::post('users/{id}/update-role', [App\Http\Controllers\Admin\UserController::class, 'updateRole'])->name('users.updateRole');
+    
+
+    
     Route::get('status', function () {
         return view('admin.pages.status');
     })->name('status');
-    Route::get('users/{user}/status-logs', [App\Http\Controllers\Admin\UserController::class, 'statusLogs'])->name('users.status_logs');
+    
     Route::get('products/{product}/status-logs', [App\Http\Controllers\Admin\ProductController::class, 'statusLogs'])->name('products.status_logs');
     Route::get('orders/{order}/status-logs', [App\Http\Controllers\Admin\OrderController::class, 'statusLogs'])->name('orders.status_logs');
-    // Cập nhật trạng thái user
-    Route::post('users/{user}/update-status', [App\Http\Controllers\Admin\UserController::class, 'updateStatus'])->name('users.update_status');
     // Cập nhật trạng thái product
     Route::post('products/{product}/update-status', [App\Http\Controllers\Admin\ProductController::class, 'updateStatus'])->name('products.update_status');
     // Cập nhật trạng thái order
@@ -232,3 +300,5 @@ Route::get('/vnpay-redirect', function () {
 
     return view('user.checkout.vnpay_redirect', $data);
 })->name('vnpay.redirect.view');
+
+

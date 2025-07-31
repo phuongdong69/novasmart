@@ -72,20 +72,9 @@
                 </div>
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex gap-2">
-                                <a href="{{ route('admin.vouchers.edit', $voucher->id) }}" 
-                                   class="text-blue-600 hover:text-blue-900">Sửa</a>
-                                <a href="{{ route('admin.vouchers.show', $voucher->id) }}" 
-                                   class="text-green-600 hover:text-green-900">Chi tiết</a>
-                                <form action="{{ route('admin.vouchers.destroy', $voucher->id) }}" method="POST" class="inline">
-                        @csrf
-                        @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900"
-                                            onclick="return confirm('Bạn có chắc chắn muốn xóa voucher này?')">
-                                        Xóa
-                                    </button>
-                    </form>
-                </div>
+                            <div class="flex space-x-2">
+                                <a href="{{ route('admin.vouchers.show', $voucher->id) }}" class="text-blue-600 hover:text-blue-900">Xem chi tiết</a>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

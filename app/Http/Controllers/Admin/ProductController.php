@@ -38,7 +38,8 @@ class ProductController extends Controller
         $categories = Category::all();
         $origins = Origin::all();
         $attributes = \App\Models\Attribute::with('values')->get();
-        return view('admin.products.create', compact('brands', 'categories', 'origins', 'attributes'));
+        $statuses = \App\Models\Status::getByType('product');
+        return view('admin.products.create', compact('brands', 'categories', 'origins', 'attributes', 'statuses'));
     }
 
     /**
@@ -47,6 +48,17 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $data = $request->validated();
+        // Xử lý status_code
+        if (!empty($data['status_code'])) {
+            $status = \App\Models\Status::findByCodeAndType($data['status_code'], 'product');
+            if ($status) {
+                $data['status_id'] = $status->id;
+            }
+        } else {
+            $status = \App\Models\Status::where('type', 'product')->where('code', 'active')->first();
+            $data['status_id'] = $status?->id;
+            $data['status_code'] = $status?->code;
+        }
         // Lấy status_id mặc định nếu chưa có
         if (empty($data['status_id'])) {
             $activeStatusId = \App\Models\Status::where('code', 'active')->value('id');
@@ -179,7 +191,8 @@ class ProductController extends Controller
         $brands = Brand::all();
         $categories = Category::all();
         $origins = Origin::all();
-        return view('admin.products.edit', compact('product', 'brands', 'categories', 'origins'));
+        $statuses = \App\Models\Status::getByType('product');
+        return view('admin.products.edit', compact('product', 'brands', 'categories', 'origins', 'statuses'));
     }
 
     /**
@@ -187,31 +200,15 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        $oldData = $product->toArray();
         $data = $request->validated();
-        
-        // Xử lý ảnh mới nếu có
-        if ($request->hasFile('image')) {
-            // Xóa ảnh cũ (primary thumbnail)
-            $oldPrimaryThumbnail = $product->thumbnails()->where('is_primary', 1)->first();
-            if ($oldPrimaryThumbnail) {
-                // Xóa file ảnh cũ
-                if (Storage::disk('public')->exists($oldPrimaryThumbnail->url)) {
-                    Storage::disk('public')->delete($oldPrimaryThumbnail->url);
-                }
-                // Xóa record trong database
-                $oldPrimaryThumbnail->delete();
+        // Xử lý status_code
+        if (!empty($data['status_code'])) {
+            $status = \App\Models\Status::findByCodeAndType($data['status_code'], 'product');
+            if ($status) {
+                $data['status_id'] = $status->id;
             }
-            
-            // Upload ảnh mới
-            $path = $request->file('image')->store('uploads/products/thumbnails', 'public');
-            $product->thumbnails()->create([
-                'url' => $path,
-                'is_primary' => 1,
-                'sort_order' => 0,
-            ]);
         }
-        
+        $oldData = $product->toArray();
         // Cập nhật thông tin sản phẩm
         $product->update($data);
         

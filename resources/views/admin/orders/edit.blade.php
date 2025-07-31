@@ -69,19 +69,17 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label for="status_code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Trạng thái đơn hàng
                         </label>
-                        <select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:border-gray-600 dark:text-white">
+                        <select name="status_code" id="status_code" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:border-gray-600 dark:text-white">
                             @foreach($statuses as $status)
-                                <option value="{{ $status->id }}" 
-                                        {{ $order->status_id == $status->id ? 'selected' : '' }}
-                                        style="color: {{ $status->color }};">
+                                <option value="{{ $status->code }}" {{ $order->status_code == $status->code ? 'selected' : '' }} style="color: {{ $status->color }};">
                                     {{ $status->name }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('status')
+                        @error('status_code')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>

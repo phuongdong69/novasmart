@@ -14,6 +14,7 @@ class Order extends Model
         'voucher_id',
         'payment_id',
         'status_id',
+        'status_code',
         'name',
         'phoneNumber',
         'email',
@@ -60,5 +61,25 @@ class Order extends Model
             'user_id' => $user_id,
             'note' => $note,
         ]);
+    }
+
+    /**
+     * Lấy status theo status_code (type: order)
+     */
+    public function getStatusByCode()
+    {
+        return \App\Models\Status::findByCodeAndType($this->status_code, 'order');
+    }
+
+    /**
+     * Lấy badge/trạng thái hiển thị từ status_code (bảng statuses)
+     */
+    public function getStatusDisplay()
+    {
+        $status = $this->getStatusByCode();
+        if ($status) {
+            return $status->getDisplayAttribute();
+        }
+        return '<span class="px-2 py-1 text-xs rounded bg-gray-100 text-gray-800">Không xác định</span>';
     }
 }

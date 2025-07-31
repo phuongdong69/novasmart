@@ -167,10 +167,14 @@ class StatusSeeder extends Seeder
         ];
 
         foreach ($statuses as $status) {
-            Status::updateOrCreate(
+            $statusModel = Status::updateOrCreate(
                 ['code' => $status['code'], 'type' => $status['type']],
                 $status
             );
+            // Log id của status active user
+            if ($status['type'] === 'user' && $status['code'] === 'active') {
+                echo "User active status id: {$statusModel->id}\n";
+            }
         }
     }
 }
