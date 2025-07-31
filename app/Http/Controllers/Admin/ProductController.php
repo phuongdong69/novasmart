@@ -11,6 +11,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -23,6 +24,7 @@ class ProductController extends Controller
             'brand',
             'origin',
             'category',
+            'variants.status',
             'variants.variantAttributeValues.attributeValue.attribute',
             'status',
         ])->orderBy('id', 'desc')->paginate(10)->withQueryString();
@@ -111,20 +113,24 @@ class ProductController extends Controller
                 $existingSkus[] = $variant['sku'] ?? null;
                 $attributes = isset($variant['attributes']) && is_array($variant['attributes']) ? $variant['attributes'] : [];
                 unset($variant['attributes']);
+                if (empty($variant['status_id'])) {
+                    $activeStatusId = \App\Models\Status::where('type', 'product_variant')->where('code', 'active')->value('id');
+                    $variant['status_id'] = $activeStatusId;
+                }
                 $productVariant = $product->variants()->create($variant);
                 if (!$productVariant) {
-                    \Log::error('Không tạo được biến thể', [$variant]);
+                    Log::error('Không tạo được biến thể', [$variant]);
                     continue;
                 }
                 foreach ($attributes as $attr) {
                     $attribute = $this->findOrCreateAttribute($attr);
                     if (!$attribute) {
-                        \Log::warning('Không tìm/tạo được attribute', [$attr]);
+                        Log::warning('Không tìm/tạo được attribute', [$attr]);
                         continue;
                     }
                     $attributeValue = $this->findOrCreateAttributeValue($attr, $attribute->id);
                     if (!$attributeValue) {
-                        \Log::warning('Không tìm/tạo được attributeValue', [$attr]);
+                        Log::warning('Không tìm/tạo được attributeValue', [$attr]);
                         continue;
                     }
                     $created = \App\Models\VariantAttributeValue::create([
@@ -132,7 +138,7 @@ class ProductController extends Controller
                         'attribute_value_id' => $attributeValue->id,
                     ]);
                     if (!$created) {
-                        \Log::error('Không lưu được VariantAttributeValue', [
+                        Log::error('Không lưu được VariantAttributeValue', [
                             'variant_id' => $productVariant->id,
                             'attribute_value_id' => $attributeValue->id
                         ]);

@@ -55,7 +55,8 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::with(['orderStatus', 'user', 'voucher', 'payment', 'orderDetails.productVariant.product'])->findOrFail($id);
-        return view('admin.orders.show', compact('order'));
+        $statusLogs = $order->statusLogs()->with('status', 'user')->orderByDesc('created_at')->get();
+        return view('admin.orders.show', compact('order', 'statusLogs'));
     }
 
     public function edit($id)

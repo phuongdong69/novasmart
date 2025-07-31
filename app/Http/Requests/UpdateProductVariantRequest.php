@@ -26,7 +26,7 @@ class UpdateProductVariantRequest extends FormRequest
             'sku' => 'required|string|max:255|unique:product_variants,sku,' . $this->route('product_variant')->id,
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:0',
-            'status' => 'nullable|string|max:50',
+            'status_id' => 'required|exists:statuses,id',
         ];
     }
 }
