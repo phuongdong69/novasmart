@@ -14,14 +14,14 @@ class Status extends Model
         'code', 
         'type',
         'color',
-        'sort_order',
+        'priority',
         'is_active',
         'description'
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'sort_order' => 'integer'
+        'priority' => 'integer'
     ];
 
     // Relationship with products
@@ -54,10 +54,10 @@ class Status extends Model
         return $query->where('type', $type);
     }
 
-    // Scope to get statuses ordered by sort_order
+    // Scope to get statuses ordered by priority
     public function scopeOrdered($query)
     {
-        return $query->orderBy('sort_order');
+        return $query->orderBy('priority');
     }
 
     // Get status by code and type
@@ -71,7 +71,7 @@ class Status extends Model
     {
         return static::where('type', $type)
                     ->where('is_active', true)
-                    ->orderBy('sort_order')
+                    ->orderBy('priority')
                     ->get();
     }
 
@@ -80,7 +80,7 @@ class Status extends Model
     {
         return static::where('type', $type)
                     ->where('is_active', true)
-                    ->orderBy('sort_order')
+                    ->orderBy('priority')
                     ->pluck('name', 'code')
                     ->toArray();
     }

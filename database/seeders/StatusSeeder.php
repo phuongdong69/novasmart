@@ -13,156 +13,129 @@ class StatusSeeder extends Seeder
     public function run(): void
     {
         $statuses = [
-            // Order statuses
-            [
-                'code' => 'pending',
-                'name' => 'Chờ xử lý',
-                'type' => 'order',
-                'color' => '#f59e42',
-                'sort_order' => 1,
-                'is_active' => true,
-                'description' => 'Đơn hàng mới, chờ xử lý',
-            ],
-            [
-                'code' => 'processing',
-                'name' => 'Đang xử lý',
-                'type' => 'order',
-                'color' => '#3490dc',
-                'sort_order' => 2,
-                'is_active' => true,
-                'description' => 'Đơn hàng đang được xử lý',
-            ],
-            [
-                'code' => 'shipped',
-                'name' => 'Đang giao',
-                'type' => 'order',
-                'color' => '#3490dc',
-                'sort_order' => 3,
-                'is_active' => true,
-                'description' => 'Đơn hàng đang được giao',
-            ],
-            [
-                'code' => 'completed',
-                'name' => 'Đã hoàn thành',
-                'type' => 'order',
-                'color' => '#38c172',
-                'sort_order' => 4,
-                'is_active' => true,
-                'description' => 'Đơn hàng đã giao thành công',
-            ],
-            [
-                'code' => 'cancelled',
-                'name' => 'Đã hủy',
-                'type' => 'order',
-                'color' => '#e3342f',
-                'sort_order' => 5,
-                'is_active' => true,
-                'description' => 'Đơn hàng đã bị hủy',
-            ],
-
-            // User statuses
-            [
-                'code' => 'active',
-                'name' => 'Hoạt động',
-                'type' => 'user',
-                'color' => '#38c172',
-                'sort_order' => 1,
-                'is_active' => true,
-                'description' => 'Tài khoản đang hoạt động',
-            ],
-            [
-                'code' => 'suspended',
-                'name' => 'Bị khóa',
-                'type' => 'user',
-                'color' => '#e3342f',
-                'sort_order' => 2,
-                'is_active' => true,
-                'description' => 'Tài khoản bị khóa',
-            ],
-            [
-                'code' => 'pending_verification',
-                'name' => 'Chờ xác thực',
-                'type' => 'user',
-                'color' => '#f59e42',
-                'sort_order' => 0,
-                'is_active' => true,
-                'description' => 'Tài khoản chờ xác thực email',
-            ],
-
             // Product statuses
             [
-                'code' => 'draft',
-                'name' => 'Bản nháp',
-                'type' => 'product',
-                'color' => '#6c757d',
-                'sort_order' => 0,
-                'is_active' => true,
-                'description' => 'Sản phẩm chưa được xuất bản',
-            ],
-            [
-                'code' => 'published',
-                'name' => 'Đã xuất bản',
-                'type' => 'product',
-                'color' => '#3490dc',
-                'sort_order' => 1,
-                'is_active' => true,
-                'description' => 'Sản phẩm đã được xuất bản',
-            ],
-            [
-                'code' => 'in_stock',
-                'name' => 'Còn hàng',
-                'type' => 'product',
-                'color' => '#38c172',
-                'sort_order' => 2,
-                'is_active' => true,
-                'description' => 'Sản phẩm đang bán',
-            ],
-            [
-                'code' => 'out_of_stock',
-                'name' => 'Ngừng bán',
-                'type' => 'product',
-                'color' => '#e3342f',
-                'sort_order' => 3,
-                'is_active' => true,
-                'description' => 'Sản phẩm ngừng bán',
-            ],
-
-            // Voucher statuses
-            [
-                'code' => 'draft',
-                'name' => 'Bản nháp',
-                'type' => 'voucher',
-                'color' => '#6c757d',
-                'sort_order' => 0,
-                'is_active' => true,
-                'description' => 'Voucher chưa được kích hoạt',
-            ],
-            [
                 'code' => 'active',
-                'name' => 'Hoạt động',
-                'type' => 'voucher',
-                'color' => '#38c172',
-                'sort_order' => 1,
+                'name' => 'Kích hoạt (Active)',
+                'type' => 'product',
+                'color' => '#22c55e',
+                'priority' => 1,
                 'is_active' => true,
-                'description' => 'Voucher đang hoạt động',
+                'description' => 'Đang hoạt động (Operating)',
             ],
             [
                 'code' => 'inactive',
-                'name' => 'Ngừng hoạt động',
-                'type' => 'voucher',
-                'color' => '#e3342f',
-                'sort_order' => 2,
+                'name' => 'Ngừng hoạt động (Inactive)',
+                'type' => 'product',
+                'color' => '#ef4444',
+                'priority' => 2,
                 'is_active' => true,
-                'description' => 'Voucher ngừng hoạt động',
+                'description' => 'Không hoạt động (Not operating)',
+            ],
+
+            // Order statuses
+            [
+                'code' => 'pending',
+                'name' => 'Chờ xác nhận (Pending confirmation)',
+                'type' => 'order',
+                'color' => '#f59e42',
+                'priority' => 1,
+                'is_active' => true,
+                'description' => 'Đơn hàng chờ xác nhận (Order awaiting confirmation)',
             ],
             [
-                'code' => 'expired',
-                'name' => 'Hết hạn',
-                'type' => 'voucher',
-                'color' => '#e3342f',
-                'sort_order' => 3,
+                'code' => 'confirmed',
+                'name' => 'Đã xác nhận (Confirmed)',
+                'type' => 'order',
+                'color' => '#3b82f6',
+                'priority' => 2,
                 'is_active' => true,
-                'description' => 'Voucher đã hết hạn',
+                'description' => 'Đơn hàng đã được xác nhận (Order has been confirmed)',
+            ],
+            [
+                'code' => 'shipping',
+                'name' => 'Đang giao hàng (Shipping)',
+                'type' => 'order',
+                'color' => '#8b5cf6',
+                'priority' => 3,
+                'is_active' => true,
+                'description' => 'Đơn hàng đang được giao (Order is being delivered)',
+            ],
+            [
+                'code' => 'delivered',
+                'name' => 'Đã giao hàng (Delivered)',
+                'type' => 'order',
+                'color' => '#22c55e',
+                'priority' => 4,
+                'is_active' => true,
+                'description' => 'Đơn hàng đã giao thành công (Order delivered successfully)',
+            ],
+            [
+                'code' => 'completed',
+                'name' => 'Đã hoàn thành (Completed)',
+                'type' => 'order',
+                'color' => '#059669',
+                'priority' => 5,
+                'is_active' => true,
+                'description' => 'User đã xác nhận hoàn thành đơn hàng (User has confirmed order completion)',
+            ],
+            [
+                'code' => 'cancelled',
+                'name' => 'Đã hủy (Cancelled)',
+                'type' => 'order',
+                'color' => '#ef4444',
+                'priority' => 6,
+                'is_active' => true,
+                'description' => 'Đơn hàng đã bị hủy (Order has been cancelled)',
+            ],
+            [
+                'code' => 'refunded',
+                'name' => 'Hoàn tiền (Refunded)',
+                'type' => 'order',
+                'color' => '#6b7280',
+                'priority' => 7,
+                'is_active' => true,
+                'description' => 'Đơn hàng đã hoàn tiền (Order has been refunded)',
+            ],
+
+            // Product variant statuses
+            [
+                'code' => 'in_stock',
+                'name' => 'Còn hàng (In stock)',
+                'type' => 'product_variant',
+                'color' => '#22c55e',
+                'priority' => 1,
+                'is_active' => true,
+                'description' => 'Sản phẩm còn hàng (Product in stock)',
+            ],
+            [
+                'code' => 'out_of_stock',
+                'name' => 'Hết hàng (Out of stock)',
+                'type' => 'product_variant',
+                'color' => '#ef4444',
+                'priority' => 2,
+                'is_active' => true,
+                'description' => 'Sản phẩm hết hàng (Product out of stock)',
+            ],
+
+            // Payment statuses
+            [
+                'code' => 'unpaid',
+                'name' => 'Chưa thanh toán (Unpaid)',
+                'type' => 'payment',
+                'color' => '#eab308',
+                'priority' => 1,
+                'is_active' => true,
+                'description' => 'Đơn hàng chưa được thanh toán (Order not yet paid)',
+            ],
+            [
+                'code' => 'paid',
+                'name' => 'Đã thanh toán (Paid)',
+                'type' => 'payment',
+                'color' => '#10b981',
+                'priority' => 2,
+                'is_active' => true,
+                'description' => 'Đơn hàng đã được thanh toán (Order has been paid)',
             ],
         ];
 
@@ -171,10 +144,7 @@ class StatusSeeder extends Seeder
                 ['code' => $status['code'], 'type' => $status['type']],
                 $status
             );
-            // Log id của status active user
-            if ($status['type'] === 'user' && $status['code'] === 'active') {
-                echo "User active status id: {$statusModel->id}\n";
-            }
         }
     }
 }
+
