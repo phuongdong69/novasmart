@@ -25,18 +25,6 @@
 
                     @include('user.partials.mega-menu')
 
-                    <li class="has-submenu parent-parent-menu-item"><a href="javascript:void(0)"> Cửa hàng </a><span
-                            class="menu-arrow"></span>
-                        <ul class="submenu">
-                            <li><a href="shop-cart.html" class="sub-menu-item">Giỏ hàng</a></li>
-                            <li><a href="shop-checkout.html" class="sub-menu-item">Thanh toán</a></li>
-                            <li><a href="our-store.html" class="sub-menu-item">Cửa hàng của chúng tôi</a></li>
-                            <li><a href="brands.html" class="sub-menu-item">Thương hiệu</a></li>
-                            <li><a href="compare-product.html" class="sub-menu-item">So sánh sản phẩm</a></li>
-                            <li><a href="recently-viewed-product.html" class="sub-menu-item">Sản phẩm đã xem</a></li>
-                        </ul>
-                    </li>
-
                     <li class="has-submenu parent-parent-menu-item">
                         <a href="javascript:void(0)">Thông tin</a><span class="menu-arrow"></span>
                         <ul class="submenu">
