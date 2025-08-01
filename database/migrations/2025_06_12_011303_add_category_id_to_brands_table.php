@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('brands', function (Blueprint $table) {
-            $table->foreignId('category_id')->nullable()->after('name')->constrained('categories')->onDelete('set null');
+            $table->unsignedBigInteger('category_id')->nullable()->after('name');
+            // Nếu cần liên kết khóa ngoại:
+            // $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
         });
     }
 
@@ -22,7 +24,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('brands', function (Blueprint $table) {
-            $table->dropForeign(['category_id']);
             $table->dropColumn('category_id');
         });
     }
