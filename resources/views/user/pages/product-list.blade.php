@@ -1,6 +1,21 @@
 @extends('user.layouts.client')
 
 @section('content')
+@include('user.partials.popup')
+@if (session('success'))
+    <div id="toast-success" class="custom-toast">
+        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span class="toast-message">{{ session('success') }}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="toast-close-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="toast-progress"></div>
+    </div>
+@endif
 <section class="relative lg:py-24 py-16">
     <div class="container relative">
         <div class="grid grid-cols-1 mt-14">
@@ -102,7 +117,7 @@
                                     @csrf
                                     <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
                                     <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md hover:bg-orange-500">
+                                    <button type="submit" class="btn-add-cart py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md hover:bg-orange-500">
                                         Thêm vào giỏ
                                     </button>
                                 </form>
@@ -135,4 +150,78 @@
         </div>
     </div>
 </section>
+@if (!Auth::check())
+<div id="popup-login-required" class="fixed inset-0 z-[10000] bg-black bg-opacity-60 flex items-center justify-center hidden">
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-md shadow-lg max-w-md w-full popup-box">
+        <h2 class="text-lg font-semibold text-slate-800 dark:text-white mb-2">Yêu cầu đăng nhập</h2>
+        <p class="text-slate-500 dark:text-slate-400 mb-4">Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.</p>
+        <div class="flex justify-end space-x-2">
+            <a href="{{ route('login') }}" class="px-4 py-2 rounded bg-orange-500 text-white font-semibold">Đăng nhập</a>
+            <button onclick="document.getElementById('popup-login-required').classList.add('hidden')" class="px-4 py-2 rounded bg-gray-200 text-gray-800">Đóng</button>
+        </div>
+    </div>
+</div>
+@endif
+<style>
+.custom-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    min-width: 260px;
+    max-width: 360px;
+    background-color: #16a34a;
+    color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+    font-size: 14px;
+    line-height: 1.4;
+    transition: opacity 0.4s ease-out;
+}
+.toast-icon {
+    width: 20px;
+    height: 20px;
+    stroke: #fff;
+}
+.toast-message {
+    flex: 1;
+    font-weight: 600;
+}
+.toast-close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+.toast-close-icon {
+    width: 16px;
+    height: 16px;
+    stroke: #fff;
+}
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background-color: #a3e635;
+    animation: progressBar 4s linear forwards;
+    width: 100%;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(50%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes progressBar {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+</style>
+<script src="{{ asset('assets/user/js/shop-cart.js') }}"></script>
 @endsection

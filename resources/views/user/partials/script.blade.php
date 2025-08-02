@@ -3,6 +3,9 @@
 <script src="{{ asset('assets/user/js/plugins.init.js') }}"></script>
 <script src="{{ asset('assets/user/js/app.js') }}"></script>
 
+<!-- JS xử lý popup login -->
+<script src="{{ asset('assets/user/js/popup-cart.js') }}"></script>
+
 <!-- Header Scroll Fix -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {

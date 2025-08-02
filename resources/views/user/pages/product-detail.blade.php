@@ -1,9 +1,24 @@
 @extends('user.layouts.client')
+@include('user.partials.popup')
 @section('title', $product->product->name)
 @section('meta_description', $product->product->description)
 
 @section('content')
 <!-- Start Hero -->
+ @if (session('success'))
+    <div id="toast-success" class="custom-toast">
+        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span class="toast-message">{{ session('success') }}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="toast-close-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="toast-progress"></div>
+    </div>
+@endif
 <section class="relative table w-full py-20 lg:py-24 md:pt-28 bg-gray-50 dark:bg-slate-800">
     <div class="container relative">
         <div class="grid grid-cols-1 mt-14">
@@ -104,15 +119,6 @@
                         </div>
                         @endif
 
-                        <div class="flex items-center">
-                            <h5 class="text-lg font-semibold me-2">Số lượng:</h5>
-                            <div class="qty-icons ms-3 space-x-0.5">
-                                <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="size-9 inline-flex items-center justify-center tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white minus">-</button>
-                                <input min="1" name="quantity" value="1" type="number" class="h-9 inline-flex items-center justify-center tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white pointer-events-none w-16 ps-4 quantity">
-                                <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="size-9 inline-flex items-center justify-center tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white plus">+</button>
-                            </div>
-                        </div>
-
                         @if($colorAttribute)
                         <div class="flex items-center">
                             <h5 class="text-lg font-semibold me-2">Màu sắc:</h5>
@@ -133,10 +139,54 @@
                         </div>
                         @endif
                     </div>
+@php
+                        
+                        $status = $product?->status;
 
-                    <div class="mt-4 space-x-1">
-                        <button onclick="addToCart({{ $product->id }})" class="py-2 px-5 inline-block font-semibold tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white mt-2">Thêm vào giỏ</button>
-                    </div>
+                        $isOutOfStock =
+                            $product &&
+                            (($status && $status->code === 'out_of_stock' && $status->type === 'product_variant') ||
+                                $product->quantity == 0);
+                    @endphp
+                   @if ($product && !$isOutOfStock)
+<form action="{{ route('cart.add') }}" method="POST" class="mt-4 space-y-3">
+    @csrf
+    <input type="hidden" name="product_variant_id" value="{{ $product->id }}">
+
+    <div class="flex items-center">
+        <h5 class="text-lg font-semibold me-2">Số lượng:</h5>
+        <div class="qty-icons ms-3 space-x-0.5">
+            <button type="button"
+                onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
+                class="size-9 inline-flex items-center justify-center tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white minus">-</button>
+
+            <input min="1" name="quantity" value="1" type="number"
+                class="h-9 inline-flex items-center justify-center tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white pointer-events-none w-16 ps-4 quantity">
+
+            <button type="button"
+                onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
+                class="size-9 inline-flex items-center justify-center tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white plus">+</button>
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <button type="submit"
+            class="btn-add-cart py-2 px-5 inline-block font-semibold tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white mt-2">
+            Thêm vào giỏ
+        </button>
+    </div>
+</form>
+@elseif ($isOutOfStock)
+    <button disabled
+        class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-300 text-gray-700 w-full rounded-md cursor-not-allowed">
+        Hết hàng
+    </button>
+@else
+    <span
+        class="py-2 px-2 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-300 text-gray-700 w-full rounded-md cursor-not-allowed">
+        Liên hệ
+    </span>
+@endif
                 </div>
             </div>
         </div>
@@ -258,6 +308,84 @@
     </div>
 </section>
 <!-- End -->
+<style>
+.custom-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    min-width: 260px;
+    max-width: 360px;
+    background-color: #16a34a;
+    color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+    font-size: 14px;
+    line-height: 1.4;
+    transition: opacity 0.4s ease-out;
+}
 
+.toast-icon {
+    width: 20px;
+    height: 20px;
+    stroke: #fff;
+}
+
+.toast-message {
+    flex: 1;
+    font-weight: 600;
+}
+
+.toast-close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+
+.toast-close-icon {
+    width: 16px;
+    height: 16px;
+    stroke: #fff;
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background-color: #a3e635;
+    animation: progressBar 4s linear forwards;
+    width: 100%;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes progressBar {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+</style>
 @include('user.partials.product-detailjs')
+<script src="{{ asset('assets/user/js/shop-cart.js') }}"></script>
 @endsection

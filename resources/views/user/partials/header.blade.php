@@ -184,8 +184,9 @@
                         <li class="py-1.5 px-4">
                             <div class="text-center space-x-2">
                                 <a href="{{ route('cart.show') }}"
-                                    class="py-[5px] px-4 inline-block font-semibold text-sm rounded-md bg-orange-500 text-white">Xem
-                                    giỏ hàng</a>
+                                    class="btn-view-cart py-[5px] px-4 inline-block font-semibold text-sm rounded-md bg-orange-500 text-white">
+                                    Xem giỏ hàng
+                                </a>
                             </div>
                             <p class="text-xs text-slate-400 mt-1 text-center">*T&C Apply</p>
                         </li>

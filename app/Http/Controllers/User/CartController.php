@@ -60,7 +60,7 @@ class CartController extends Controller
             Session::put('cart', $cart);
         }
 
-        return back()->with('success', 'Đã thêm sản phẩm vào giỏ.');
+        return redirect()->back()->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
     }
 
 
