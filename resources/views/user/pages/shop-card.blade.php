@@ -35,18 +35,19 @@
         </div>
         @endif
         @if (session('error'))
-        <div id="cart-error-box" class="mb-4 bg-red-100 text-red-700 p-4 rounded-lg border border-red-300 text-sm flex items-center space-x-2">
-            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M12 2a10 10 0 1010 10A10 10 0 0012 2z" />
+        <div id="toast-error" class="custom-toast bg-red-600">
+        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M12 2a10 10 0 1010 10A10 10 0 0012 2z" />
+        </svg>
+        <span class="toast-message">{{ session('error') }}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="toast-close-icon" fill="none" stroke="currentColor"
+                 stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
-            <span class="cart-error-message">{{ session('error') }}</span>
-        </div>
-        @else
-        <div id="cart-error-box" class="hidden mb-4 bg-red-100 text-red-700 p-4 rounded-lg border border-red-300 text-sm flex items-center space-x-2">
-            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M12 2a10 10 0 1010 10A10 10 0 0012 2z" />
-            </svg>
-            <span class="cart-error-message"></span>
+        </button>
+        <div class="toast-progress bg-red-400"></div>
         </div>
         @endif
 
@@ -140,6 +141,7 @@
                                         <input type="number"
                                             name="quantity"
                                             value="{{ $quantity }}"
+                                            readonly
                                             min="1"
                                             max="{{ $variant->quantity }}"
                                             data-max="{{ $variant->quantity }}"
@@ -442,7 +444,13 @@
         border-bottom-left-radius: 6px;
         border-bottom-right-radius: 6px;
     }
+    #toast-error {
+    background-color: #dc2626; /* đỏ */
+    }
 
+    #toast-error .toast-progress {
+        background-color: #f87171; /* đỏ nhạt */
+    }
     /* Animations */
     @keyframes slideIn {
         from {

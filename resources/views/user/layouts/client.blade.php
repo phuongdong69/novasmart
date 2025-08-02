@@ -10,24 +10,28 @@
     <meta name="author" content="Shreethemes">
     @include('user.partials.assests')
 
-
+    {{-- Thêm biến login cho JS --}}
+    <script>
+        window.isLoggedIn = @json(Auth::check());
+    </script>
 </head>
 
 <body class="dark:bg-slate-900">
 
     @include('user.partials.header')
+
     <main>
         @yield('content')
     </main>
 
-
     @include('user.partials.footer')
-
     @include('user.partials.scroll')
 
+    {{-- Thêm popup yêu cầu đăng nhập --}}
+    @include('user.partials.popup')
 
+    {{-- Load JS (gồm cả popup-cart.js nếu đã thêm trong script.blade.php) --}}
     @include('user.partials.script')
-
 
 </body>
 

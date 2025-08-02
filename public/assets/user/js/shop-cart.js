@@ -123,6 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
      const toast = document.getElementById('toast-success');
+     ['toast-success', 'toast-error'].forEach(id => {
+    const toast = document.getElementById(id);
+    if (toast) {
+        setTimeout(() => toast.remove(), 4000);
+    }
+    });
     if (toast) {
         setTimeout(() => toast.remove(), 4000);
     }
@@ -229,10 +235,7 @@ if (checkAll) {
             totalCell.textContent = data.item_total;
             updateSelectedIds();
 
-            const productCheckbox = document.querySelector(`.item-checkbox[value="${id}"]`);
-            if (productCheckbox && productCheckbox.checked) {
-                showSuccessToast(data.message);
-            }
+            showSuccessToast(data.message);
         } else {
             errorBox.textContent = data.message || 'Không thể cập nhật.';
             errorBox.classList.remove('hidden');
@@ -251,13 +254,35 @@ if (checkAll) {
 });
     });
 
+    function getTotalSelectedQuantity() {
+    let totalQty = 0;
+    [...checkboxes].forEach(cb => {
+        if (cb.checked) {
+            const row = cb.closest('tr');
+            const qty = row?.querySelector('.quantity-input')?.value || 1;
+            totalQty += parseInt(qty);
+        }
+    });
+    return totalQty;
+}
     // 🧾 Xử lý form thanh toán
     formCheckout?.addEventListener('submit', e => {
-        updateSelectedIds();
-        if (![...checkboxes].some(cb => cb.checked)) {
-            e.preventDefault();
-            showError('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
-        }
+    updateSelectedIds();
+
+    const hasChecked = [...checkboxes].some(cb => cb.checked);
+    const totalQty = getTotalSelectedQuantity();
+
+    if (!hasChecked) {
+        e.preventDefault();
+        showErrorToast('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+        return;
+    }
+
+    if (totalQty > 3) {
+        e.preventDefault();
+        showErrorToast('Bạn chỉ có thể đặt tối đa 3 sản phẩm để thanh toán.');
+        return;
+    }
     });
 
     // 🗑️ Xử lý form xoá sản phẩm
@@ -329,6 +354,37 @@ if (checkAll) {
         toast.remove();
     }, 4000);
 }
+
+function showErrorToast(message) {
+    const existing = document.getElementById('toast-error');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'toast-error';
+    toast.className = 'custom-toast';
+    toast.style.backgroundColor = '#dc2626'; // đỏ
+    toast.innerHTML = `
+        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M12 2a10 10 0 1010 10A10 10 0 0012 2z" />
+        </svg>
+        <span class="toast-message">${message}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="toast-close-icon" fill="none" stroke="currentColor"
+                 stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="toast-progress" style="background-color: #f87171"></div>
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 4000);
+}
+
 // 🔒 Chỉ disable các thành phần, KHÔNG disable toàn bộ dòng (để nút xoá vẫn bấm được)
 document.querySelectorAll('tr[data-out-of-stock="1"]').forEach(row => {
     row.classList.add('opacity-60', 'bg-gray-50'); // làm mờ dòng
