@@ -20,8 +20,7 @@ class RegisterController extends Controller
         $validatedData = $request->validate([
             'fullname' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email|max:255',
-            'phone' => 'required|regex:/^[0-9]{10}$/',
-
+            'phone' => 'required|regex:/^[0-9]{10}$/|unique:users,phoneNumber',
             'password' => 'required|string|min:8|confirmed',
             'terms' => 'accepted',
         ], [
@@ -29,31 +28,29 @@ class RegisterController extends Controller
             'email.required' => 'Email là bắt buộc.',
             'email.unique' => 'Email đã được sử dụng.',
             'phone.required' => 'Số điện thoại là bắt buộc.',
-            'phone.regex' => 'Số điện thoại phải gồm đúng 10  số.',
-
+            'phone.regex' => 'Số điện thoại phải gồm đúng 10 số.',
+            'phone.unique' => 'Số điện thoại này đã được sử dụng.',
             'password.required' => 'Mật khẩu là bắt buộc.',
             'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
             'terms.accepted' => 'Bạn phải đồng ý với Điều khoản sử dụng và Chính sách bảo mật.',
         ]);
 
-        // ✅ Lấy role 'user' đã được seed sẵn
         $role = Role::where('name', 'user')->first();
 
         if (!$role) {
-            // Nếu chưa có role 'user' thì tạo (an toàn)
             $role = Role::create([
                 'name' => 'user',
                 'description' => 'Người dùng mặc định',
             ]);
         }
 
-        // ✅ Tạo user và gán role_id là role 'user'
         User::create([
             'role_id' => $role->id,
             'name' => $validatedData['fullname'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
             'phoneNumber' => $validatedData['phone'],
+             'status_id' => 12, 
             'image_user' => null,
             'address' => null,
         ]);

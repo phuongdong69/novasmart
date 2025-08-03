@@ -30,7 +30,19 @@ class LoginController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        // Thử đăng nhập
+        // Kiểm tra xem user có tồn tại không
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+            // Nếu tài khoản bị tạm khóa
+            if ($user->status_id == 13) {
+                return back()->withErrors([
+                    'login' => 'Tài khoản của bạn đang bị tạm khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ.',
+                ])->withInput($request->only('email'));
+            }
+        }
+
+        // Nếu không bị khóa, thử đăng nhập
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             // Đăng nhập thành công, tạo session mới
             $request->session()->regenerate();
@@ -45,12 +57,10 @@ class LoginController extends Controller
             }
         }
 
-        // Đăng nhập thất bại, quay lại với lỗi và dữ liệu cũ
-        return back() 
-            ->withErrors([
-                'login' => 'Email hoặc mật khẩu không đúng.',
-            ])
-            ->withInput($request->only('email')); // Giữ lại email người dùng nhập
+        // Đăng nhập thất bại
+        return back()->withErrors([
+            'login' => 'Email hoặc mật khẩu không đúng.',
+        ])->withInput($request->only('email'));
     }
 
     /**
@@ -60,10 +70,7 @@ class LoginController extends Controller
     {
         Auth::logout();
 
-        // Hủy session hiện tại
         $request->session()->invalidate();
-
-        // Tạo token session mới
         $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('success', 'Bạn đã đăng xuất thành công!');
