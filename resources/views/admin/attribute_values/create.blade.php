@@ -62,10 +62,14 @@ Thêm mới giá trị thuộc tính
                         @enderror
                     </div>
 
-                    <div class="flex justify-end">
-                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-6 rounded">
+                    <div class="flex justify-end gap-2">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-6 rounded transition duration-150">
                             Lưu
                         </button>
+                        <a href="{{ route('admin.attribute_values.index') }}" 
+                            class="border border-slate-400 text-slate-700 hover:bg-slate-100 hover:text-slate-900 text-sm font-medium py-2 px-4 rounded transition duration-150">
+                            Hủy
+                        </a>
                     </div>
                 </form>
             </div>

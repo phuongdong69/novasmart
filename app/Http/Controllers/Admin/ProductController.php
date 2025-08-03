@@ -102,8 +102,10 @@ class ProductController extends Controller
                 $attributes = isset($variant['attributes']) && is_array($variant['attributes']) ? $variant['attributes'] : [];
                 unset($variant['attributes']);
                 if (empty($variant['status_id'])) {
-                    $activeStatusId = \App\Models\Status::where('type', 'product_variant')->where('code', 'active')->value('id');
-                    $variant['status_id'] = $activeStatusId;
+                    // Tự động xác định trạng thái dựa trên số lượng
+                    $inStockStatusId = \App\Models\Status::where('type', 'product_variant')->where('code', 'in_stock')->value('id');
+                    $outOfStockStatusId = \App\Models\Status::where('type', 'product_variant')->where('code', 'out_of_stock')->value('id');
+                    $variant['status_id'] = (isset($variant['quantity']) && $variant['quantity'] > 0) ? $inStockStatusId : $outOfStockStatusId;
                 }
                 $productVariant = $product->variants()->create($variant);
                 if (!$productVariant) {
@@ -300,5 +302,60 @@ class ProductController extends Controller
         $product->updateStatus($newStatusId, auth()->id(), $note);
         
         return redirect()->back()->with('success', 'Đã cập nhật trạng thái sản phẩm!');
+    }
+
+    /**
+     * Thêm biến thể mới cho sản phẩm
+     */
+    public function addVariant(Request $request, Product $product)
+    {
+        $request->validate([
+            'sku' => 'required|string|max:255|unique:product_variants,sku',
+            'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:0',
+            'attributes' => 'nullable|array',
+            'attributes.*.attribute_id' => 'required_with:attributes|exists:attributes,id',
+            'attributes.*.value' => 'required_with:attributes|exists:attribute_values,id',
+        ]);
+
+        try {
+            // Tự động xác định trạng thái dựa trên số lượng
+            $inStockStatusId = \App\Models\Status::where('type', 'product_variant')->where('code', 'in_stock')->value('id');
+            $outOfStockStatusId = \App\Models\Status::where('type', 'product_variant')->where('code', 'out_of_stock')->value('id');
+            $statusId = $request->quantity > 0 ? $inStockStatusId : $outOfStockStatusId;
+            
+            // Tạo biến thể mới
+            $variant = $product->variants()->create([
+                'sku' => $request->sku,
+                'price' => $request->price,
+                'quantity' => $request->quantity,
+                'status_id' => $statusId,
+            ]);
+
+            // Thêm thuộc tính cho biến thể nếu có
+            if ($request->has('attributes')) {
+                $attributes = $request->input('attributes');
+                foreach ($attributes as $attr) {
+                    if (!empty($attr['attribute_id']) && !empty($attr['value'])) {
+                        \App\Models\VariantAttributeValue::create([
+                            'product_variant_id' => $variant->id,
+                            'attribute_value_id' => $attr['value'],
+                        ]);
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thêm biến thể thành công!',
+                'variant' => $variant->load('variantAttributeValues.attributeValue.attribute')
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

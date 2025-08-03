@@ -60,6 +60,14 @@ class AttributeValueController extends Controller
      */
     public function update(UpdateAttributeValueRequest $request, AttributeValue $attributeValue)
     {
+        if ($request->ajax() || $request->wantsJson()) {
+            try {
+                $attributeValue->update($request->only('value'));
+                return response()->json(['success' => true, 'value' => $attributeValue->value]);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'Lỗi khi cập nhật giá trị!'], 422);
+            }
+        }
         $attributeValue->update($request->validated());
         return redirect()->route('admin.attribute_values.index')->with('success', 'Cập nhật giá trị thuộc tính thành công.');
     }

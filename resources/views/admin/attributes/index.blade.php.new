@@ -6,21 +6,6 @@ Trang Thuộc Tính
 <div class="w-full px-6 py-6 mx-auto">
     <div class="flex flex-wrap -mx-3">
         <div class="flex-none w-full max-w-full px-3">
-            {{-- Khu vực thông báo --}}
-            <div id="notification-area" class="fixed top-0 inset-x-0 flex items-start justify-center z-50 hidden pt-2">
-                <div class="max-w-md w-full mx-4 px-4 py-3 rounded-lg shadow-lg relative transition-all transform duration-300 opacity-0 bg-white border border-gray-100" role="alert">
-                    <div class="flex items-center">
-                        <span class="message font-medium flex-grow"></span>
-                        <button type="button" class="ml-4 alert-close focus:outline-none hover:opacity-75">
-                            <svg class="fill-current h-4 w-4" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <title>Đóng</title>
-                                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
             <div class="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
                 {{-- Tiêu đề + Nút thêm mới --}}
                 <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl border-b-transparent flex justify-between items-center">
@@ -68,7 +53,12 @@ Trang Thuộc Tính
                                         </td>
                                         <td class="px-6 py-3 text-sm">{{ $attribute->description }}</td>
                                         <td class="px-6 py-3 text-sm">
-                                            <a href="{{ route('admin.attributes.edit', $attribute->id) }}" class="text-blue-600 hover:underline">Sửa</a>
+                                            <a href="{{ route('admin.attributes.edit', $attribute->id) }}" class="text-blue-600 hover:underline mr-2">Sửa</a>
+                                            <form action="{{ route('admin.attributes.destroy', $attribute->id) }}" method="post" style="display:inline-block;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa không?')" class="text-red-500 hover:underline">Xóa</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty
@@ -86,57 +76,17 @@ Trang Thuộc Tính
 </div>
 
 <!-- Popover for Attribute Values -->
-<div id="attributeValuesPopover" class="hidden fixed bg-white rounded-lg shadow-xl border border-gray-200 p-4" style="min-width:300px; max-width:400px; z-index:1000;">
-    <div class="flex justify-between items-center border-b pb-2 mb-3">
-        <h4 class="text-base font-semibold text-gray-800">Giá trị thuộc tính</h4>
-        <button id="closeAttributePopover" class="text-gray-400 hover:text-gray-600 text-xl leading-none focus:outline-none">&times;</button>
-    </div>
+<div id="attributeValuesPopover" class="hidden absolute bg-white rounded-lg shadow-lg border border-gray-200 p-4" style="min-width:220px; max-width:320px; z-index:50;">
+    <button id="closeAttributePopover" class="absolute top-1 right-2 text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+    <h4 class="text-base font-semibold mb-3">Giá trị thuộc tính</h4>
     <div id="attributeValuesContent"></div>
 </div>
 
 <script>
-function showNotification(message, type = 'success') {
-    const notificationArea = document.getElementById('notification-area');
-    const alertDiv = notificationArea.querySelector('div[role="alert"]');
-    const messageSpan = notificationArea.querySelector('.message');
-
-    // Thiết lập màu sắc dựa trên loại thông báo
-    if (type === 'success') {
-        alertDiv.className = alertDiv.className.replace(/bg-\w+-\d+/g, '') + ' bg-green-100 text-green-800';
-    } else {
-        alertDiv.className = alertDiv.className.replace(/bg-\w+-\d+/g, '') + ' bg-red-100 text-red-800';
-    }
-
-    messageSpan.textContent = message;
-    notificationArea.classList.remove('hidden');
-    
-    // Thêm animation hiện
-    setTimeout(() => {
-        alertDiv.classList.remove('opacity-0');
-        alertDiv.classList.add('opacity-100', 'translate-y-0');
-    }, 10);
-
-    // Tự động ẩn sau 3 giây
-    const hideTimeout = setTimeout(() => {
-        alertDiv.classList.add('opacity-0');
-        alertDiv.classList.remove('opacity-100');
-        setTimeout(() => {
-            notificationArea.classList.add('hidden');
-        }, 300);
-    }, 3000);
-}
-
 document.addEventListener('DOMContentLoaded', function () {
     const popover = document.getElementById('attributeValuesPopover');
     const content = document.getElementById('attributeValuesContent');
     const closeBtn = document.getElementById('closeAttributePopover');
-    
-    // Thêm sự kiện đóng cho nút đóng thông báo
-    document.querySelectorAll('.alert-close').forEach(button => {
-        button.addEventListener('click', function() {
-            this.closest('#notification-area').classList.add('hidden');
-        });
-    });
 
     // Đảm bảo popover luôn là con của body để định vị tuyệt đối chính xác
     if (popover.parentNode !== document.body) {
@@ -155,18 +105,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Popover xuất hiện ngang với tên thuộc tính
             const rect = this.getBoundingClientRect();
-            // Điều chỉnh vị trí popover
-            const viewportHeight = window.innerHeight;
-            const popoverHeight = popover.offsetHeight;
-            let topPosition = rect.top + window.scrollY;
-
-            // Kiểm tra xem popover có vượt quá viewport không
-            if (rect.top + popoverHeight > viewportHeight) {
-                topPosition = rect.top - popoverHeight + window.scrollY;
-            }
-
-            popover.style.top = `${topPosition}px`;
-            popover.style.left = `${rect.right + 10}px`;
+            popover.style.top = `${rect.top + window.scrollY}px`;
+            popover.style.left = `${rect.left}px`;
 
             fetch(`/admin/attributes/${attributeId}/values`)
                 .then(response => response.json())
@@ -176,8 +116,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class='flex items-center justify-between mb-2' data-value-id='${v.id}' data-attribute-id='${v.attribute_id}'>
                                 <span class='block bg-gray-100 rounded px-2 py-1 value-text'>${v.value}</span>
                                 <input type='text' class='hidden value-input border rounded px-2 py-1 text-sm' value='${v.value}' style='min-width:80px;'>
-                                <button class='ml-2 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded shadow-sm transition duration-150 ease-in-out edit-btn'>Sửa</button>
-                                <button class='ml-2 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded shadow-sm transition duration-150 ease-in-out save-btn hidden' style='min-width: 60px;'>Lưu</button>
+                                <button class='ml-2 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded shadow transition edit-btn'>Sửa</button>
+                                <button class='ml-2 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded shadow transition save-btn hidden'>Lưu</button>
                             </div>
                         `).join('');
 
@@ -206,62 +146,34 @@ document.addEventListener('DOMContentLoaded', function () {
                                 btn.disabled = true;
                                 btn.innerText = 'Đang lưu...';
 
-                                // Đổi màu nút khi đang lưu
-                                btn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
-                                btn.classList.add('bg-blue-400', 'cursor-not-allowed');
+                                const formData = new FormData();
+                                formData.append('_method', 'PUT');
+                                formData.append('value', newValue);
+                                formData.append('attribute_id', row.getAttribute('data-attribute-id'));
 
                                 fetch(`/admin/attribute_values/${valueId}`, {
                                     method: 'POST',
                                     headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                                        'Accept': 'application/json'
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
                                     },
-                                    body: JSON.stringify({
-                                        _method: 'PUT',
-                                        value: newValue
-                                    })
+                                    body: formData
                                 })
                                 .then(async r => {
                                     let data;
                                     try { data = await r.json(); } catch (e) { data = {}; }
 
                                     if (r.ok && data.success) {
-                                        // Cập nhật UI khi thành công
                                         row.querySelector('.value-text').textContent = newValue;
                                         row.querySelector('.value-text').classList.remove('hidden');
                                         input.classList.add('hidden');
                                         btn.classList.add('hidden');
                                         row.querySelector('.edit-btn').classList.remove('hidden');
-
-                                        // Hiển thị thông báo thành công ở đầu trang
-                                        showNotification('Cập nhật thành công!', 'success');
                                     } else {
-                                        // Khôi phục nút về trạng thái bình thường và hiện thông báo lỗi ở đầu trang
-                                        btn.classList.remove('bg-blue-400', 'cursor-not-allowed');
-                                        btn.classList.add('bg-blue-500', 'hover:bg-blue-600');
-                                        showNotification(data?.message ?? 'Có lỗi xảy ra khi cập nhật. Vui lòng thử lại.', 'error');
+                                        alert(data?.message ?? 'Lỗi khi lưu!');
                                     }
                                 })
-                                .catch((error) => {
-                                    console.error('Error:', error);
-                                    const errorMsg = document.createElement('div');
-                                    errorMsg.className = 'text-red-500 text-sm mt-1 error-message';
-                                    errorMsg.textContent = 'Có lỗi xảy ra khi lưu. Vui lòng thử lại.';
-                                    
-                                    // Xóa thông báo lỗi cũ nếu có
-                                    const oldError = row.querySelector('.error-message');
-                                    if (oldError) oldError.remove();
-                                    
-                                    // Thêm thông báo lỗi mới
-                                    row.appendChild(errorMsg);
-                                    
-                                    // Khôi phục nút về trạng thái bình thường
-                                    btn.classList.remove('bg-gray-400');
-                                    btn.classList.add('bg-blue-500', 'hover:bg-blue-600');
-                                    
-                                    // Tự động ẩn thông báo sau 3 giây
-                                    setTimeout(() => errorMsg.remove(), 3000);
+                                .catch(() => {
+                                    alert('Lỗi khi lưu!');
                                 })
                                 .finally(() => {
                                     btn.disabled = false;

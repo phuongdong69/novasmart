@@ -5,282 +5,745 @@
 @section('content')
 <div class="max-w-7xl mx-auto py-8">
     <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
-    <form method="GET" class="mb-8 flex flex-wrap gap-4 items-end">
-        <div>
-            <label for="start_date" class="block text-sm font-medium text-gray-700">Từ ngày</label>
-            <input type="date" id="start_date" name="start_date" value="{{ request('start_date', \Carbon\Carbon::yesterday()->format('Y-m-d')) }}" class="border rounded px-3 py-2">
+
+    <!-- Doanh thu -->
+    <div class="bg-white shadow rounded-lg p-6 mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-coins text-yellow-600"></i>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-800">Doanh Thu</h2>
+            </div>
+            <!-- Bộ lọc cho revenue -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Giữ các filter khác -->
+                <form method="GET" action="{{ route('admin.dashboard') }}" class="hidden" id="revenue-form">
+                    <input type="hidden" name="users_period" value="{{ $usersPeriod ?? 'week' }}">
+                    <input type="hidden" name="users_start_date" value="{{ $usersStart }}">
+                    <input type="hidden" name="users_end_date" value="{{ $usersEnd }}">
+                    <input type="hidden" name="products_period" value="{{ $productsPeriod ?? 'week' }}">
+                    <input type="hidden" name="products_start_date" value="{{ $productsStart }}">
+                    <input type="hidden" name="products_end_date" value="{{ $productsEnd }}">
+                    <input type="hidden" name="orders_period" value="{{ $ordersPeriod ?? 'week' }}">
+                    <input type="hidden" name="orders_start_date" value="{{ $ordersStart }}">
+                    <input type="hidden" name="orders_end_date" value="{{ $ordersEnd }}">
+                    <input type="hidden" name="revenue_period" id="revenue-period-input" value="{{ $revenuePeriod ?? 'week' }}">
+                    <input type="hidden" name="revenue_start_date" id="revenue-start-input" value="{{ $revenueStart }}">
+                    <input type="hidden" name="revenue_end_date" id="revenue-end-input" value="{{ $revenueEnd }}">
+                </form>
+                
+                <!-- Các nút lọc thời gian -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="setRevenuePeriod('week')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($revenuePeriod ?? 'week') == 'week' ? 'background-color: #f59e0b; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #fde68a; color: #92400e; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Tuần
+                    </button>
+                    <button onclick="setRevenuePeriod('month')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($revenuePeriod ?? 'week') == 'month' ? 'background-color: #f59e0b; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #fde68a; color: #92400e; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Tháng
+                    </button>
+                    <button onclick="setRevenuePeriod('quarter')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($revenuePeriod ?? 'week') == 'quarter' ? 'background-color: #f59e0b; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #fde68a; color: #92400e; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Quý
+                    </button>
+                    <button onclick="setRevenuePeriod('year')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($revenuePeriod ?? 'week') == 'year' ? 'background-color: #f59e0b; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #fde68a; color: #92400e; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Năm
+                    </button>
+                </div>
+                
+                <!-- Chọn khoảng thời gian tùy chỉnh -->
+                <div class="flex flex-wrap gap-3 items-center mt-3 p-3 bg-gray-50 rounded-lg border">
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700">Từ ngày:</label>
+                        <input type="date" id="revenue-start-date" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value="{{ $revenueStart }}">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700">Đến ngày:</label>
+                        <input type="date" id="revenue-end-date" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value="{{ $revenueEnd }}">
+                    </div>
+                    <button onclick="applyRevenueCustom()" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2" style="background-color: #f59e0b; color: white; border: none;">
+                        <i class="fas fa-search"></i>
+                        Áp dụng
+                    </button>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="end_date" class="block text-sm font-medium text-gray-700">Đến ngày</label>
-            <input type="date" id="end_date" name="end_date" value="{{ request('end_date', \Carbon\Carbon::today()->format('Y-m-d')) }}" class="border rounded px-3 py-2">
-        </div>
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded font-semibold">Tìm</button>
-    </form>
-    <div class="w-full rounded-2xl mb-10 p-10 shadow-xl" style="background: linear-gradient(90deg, #4f8cff 0%, #38cfff 100%); color: #fff;">
-        <h1 class="text-xl font-extrabold mb-2 text-white ml-2 text-left">Tổng quan hiệu suất kinh doanh</h1>
-        <div class="flex flex-row flex-nowrap gap-16 items-center justify-start overflow-x-auto">
-            <div class="rounded-2xl p-4 flex flex-col items-center shadow-lg bg-white/20 min-w-[180px]">
-                <div class="w-12 h-12 flex items-center justify-center rounded-full mb-2" style="background: linear-gradient(135deg, #5a8dee 60%, #46c6ef 100%);">
-                    <i class="fas fa-users text-xl text-white"></i>
-                </div>
-                <div class="text-2xl font-bold mb-1 text-white drop-shadow">{{ $newCustomers }}</div>
-                <div class="text-xs text-blue-100">Khách hàng mới</div>
-            </div>
-            <div class="rounded-2xl p-4 flex flex-col items-center shadow-lg bg-white/20 min-w-[180px]">
-                <div class="w-12 h-12 flex items-center justify-center rounded-full mb-2" style="background: linear-gradient(135deg, #38cfff 60%, #5a8dee 100%);">
-                    <i class="fas fa-shopping-cart text-xl text-white"></i>
-                </div>
-                <div class="text-2xl font-bold mb-1 text-white drop-shadow">{{ $totalOrders }}</div>
-                <div class="text-xs text-blue-100">Tổng đơn hàng</div>
-            </div>
-            <div class="rounded-2xl p-4 flex flex-col items-center shadow-lg bg-white/20 min-w-[180px]">
-                <div class="w-12 h-12 flex items-center justify-center rounded-full mb-2" style="background: linear-gradient(135deg, #46c6ef 60%, #5a8dee 100%);">
-                    <i class="fas fa-coins text-xl text-white"></i>
-                </div>
-                <div class="text-2xl font-bold mb-1 text-white drop-shadow">{{ number_format($revenue, 0, ',', '.') }} ₫</div>
-                <div class="text-xs text-blue-100">Tổng doanh thu</div>
-            </div>
-        </div>
-    </div>
-        <!-- Biểu đồ -->
-        <div class="mb-8">
-            <h2 class="text-xl font-bold mb-4">Thống kê trực quan</h2>
-            <!-- Hàng 1 -->
-            <div class="flex flex-wrap gap-x-8 mb-4">
-                <div class="bg-white border rounded-xl p-4 shadow-sm flex flex-col w-full md:w-1/2">
-                    <div class="w-full text-base font-semibold text-blue-700 mb-2 text-left">Top user</div>
-                    <div class="flex flex-row items-center flex-1">
-                        <div class="flex flex-col items-start flex-1 mr-4">
-                            @foreach($topUserLabels as $i => $label)
-                                <div class="flex items-center mb-1">
-                                    <span class="inline-block w-4 h-4 rounded-full mr-2" style="background: {{ ['#2563eb', '#10b981', '#f59e42', '#f43f5e', '#6366f1'][$i % 5] }};"></span>
-                                    <span class="text-sm text-gray-700">{{ $label }}: <span class="font-semibold">{{ number_format($topUserValues[$i] ?? 0, 0, ',', '.') }} ₫</span></span>
-                                </div>
-                            @endforeach
-                        </div>
-                        <canvas id="topUserPie" height="80" style="max-width: 250px; margin-right: 10%;"></canvas>
+        
+        <!-- Hiển thị doanh thu -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Tổng doanh thu -->
+            <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">Tổng Doanh Thu</h3>
+                        <p class="text-3xl font-bold">{{ number_format($revenue, 0, ',', '.') }} ₫</p>
                     </div>
-                </div>
-                <div class="bg-white border rounded-xl p-4 shadow-sm flex flex-col w-full md:w-1/2">
-                    <div class="w-full text-base font-semibold text-blue-700 mb-2 text-left">Top sản phẩm</div>
-                    <div class="flex flex-row items-center flex-1">
-                        <div class="flex flex-col items-start flex-1 mr-4">
-                            @foreach($topProductLabels as $i => $label)
-                                <div class="flex items-center mb-1">
-                                    <span class="inline-block w-4 h-4 rounded-full mr-2" style="background: {{ ['#f59e42', '#2563eb', '#10b981', '#f43f5e', '#6366f1'][$i % 5] }};"></span>
-                                    <span class="text-sm text-gray-700">{{ $label }}: <span class="font-semibold">{{ $topProductValues[$i] ?? 0 }}</span></span>
-                                </div>
-                            @endforeach
-                        </div>
-                        <canvas id="topProductPie" height="80" style="max-width: 250px; margin-right: 10%;"></canvas>
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-chart-line text-2xl"></i>
                     </div>
                 </div>
             </div>
-            <!-- Hàng 2 -->
-            <div class="flex flex-wrap gap-x-8 mb-4">
-                <div class="bg-white border rounded-xl p-4 shadow-sm flex flex-col w-full md:w-1/2">
-                    <div class="w-full text-base font-semibold text-blue-700 mb-2 text-left">Trạng thái đơn hàng</div>
-                    <div class="flex flex-row items-center flex-1">
-                        <div class="flex flex-col items-start flex-1 mr-4">
-                            @foreach($orderStatusLabels as $i => $label)
-                                <div class="flex items-center mb-1">
-                                    <span class="inline-block w-4 h-4 rounded-full mr-2" style="background: {{ ['#2563eb', '#10b981', '#f59e42', '#f43f5e', '#6366f1', '#a3e635', '#fbbf24'][$i % 7] }};"></span>
-                                    <span class="text-sm text-gray-700">{{ $label }}: <span class="font-semibold">{{ $orderStatusValues[$i] ?? 0 }}</span></span>
-                                </div>
-                            @endforeach
-                        </div>
-                        <canvas id="orderStatusPie" height="80" style="max-width: 250px; margin-right: 10%;"></canvas>
-                    </div>
-                </div>
-                <div class="bg-white border rounded-xl p-4 shadow-sm flex flex-col w-full md:w-1/2">
-                    <div class="w-full text-base font-semibold text-blue-700 mb-2 text-left">Doanh thu theo ngày</div>
-                    <div class="flex flex-row items-center flex-1">
-                        <div class="flex flex-col items-start flex-1 mr-4">
-                            @foreach($dateLabels as $i => $label)
-                                @if($i < 5)
-                                <div class="flex items-center mb-1">
-                                    <span class="inline-block w-4 h-4 rounded-full mr-2" style="background: #2563eb;"></span>
-                                    <span class="text-sm text-gray-700">{{ $label }}: <span class="font-semibold">{{ number_format($revenueByDay[$i] ?? 0, 0, ',', '.') }} ₫</span></span>
-                                </div>
-                                @endif
-                            @endforeach
-                            @if(count($dateLabels) > 5)
-                                <div class="text-xs text-gray-400 mt-1">...</div>
-                            @endif
-                        </div>
-                        <canvas id="revenueChart" height="120" style="max-width: 400px; margin-right: 10%;"></canvas>
-                    </div>
-                </div>
-            </div>
-            <!-- Hàng 3 -->
-            <div class="flex flex-wrap gap-x-8 mt-4">
-                <div class="bg-white border rounded-xl p-4 shadow-sm flex flex-col w-full md:w-1/2">
-                    <div class="w-full text-base font-semibold text-blue-700 mb-2 text-left">Số lượng đơn hàng theo ngày</div>
-                    <div class="flex flex-row items-center flex-1">
-                        <div class="flex flex-col items-start flex-1 mr-4">
-                            @foreach($dateLabels as $i => $label)
-                                @if($i < 5)
-                                <div class="flex items-center mb-1">
-                                    <span class="inline-block w-4 h-4 rounded-full mr-2" style="background: #10b981;"></span>
-                                    <span class="text-sm text-gray-700">{{ $label }}: <span class="font-semibold">{{ $orderCountByDay[$i] ?? 0 }}</span></span>
-                                </div>
-                                @endif
-                            @endforeach
-                            @if(count($dateLabels) > 5)
-                                <div class="text-xs text-gray-400 mt-1">...</div>
-                            @endif
-                        </div>
-                        <canvas id="orderCountChart" height="120" style="max-width: 400px; margin-right: 10%;"></canvas>
-                    </div>
-                </div>
+            
+            <!-- Biểu đồ doanh thu -->
+            <div>
+                <canvas id="revenueChart" width="400" height="200"></canvas>
             </div>
         </div>
     </div>
-    <h2 class="text-xl font-bold mb-4">Bảng thống kê chi tiết</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-        <div class="bg-white shadow rounded-lg p-6 flex flex-col items-center justify-center">
-            <div class="text-lg font-semibold mb-2">Tổng doanh thu</div>
-            <div class="text-3xl font-bold text-green-600">{{ number_format($revenue, 0, ',', '.') }} ₫</div>
+    
+    <!-- Phân cách màu vàng -->
+    <div class="h-1 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-full mb-8 shadow-sm"></div>
+    
+    <!-- Top User Mua Nhiều Nhất -->
+    <div class="bg-white shadow rounded-lg p-6 mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-users text-blue-600"></i>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-800">Top User Mua Nhiều Nhất</h2>
+            </div>
+            <!-- Bộ lọc cho users -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Giữ các filter khác -->
+                <form method="GET" action="{{ route('admin.dashboard') }}" class="hidden" id="users-form">
+                    <input type="hidden" name="revenue_period" value="{{ $revenuePeriod ?? 'week' }}">
+                    <input type="hidden" name="revenue_start_date" value="{{ $revenueStart }}">
+                    <input type="hidden" name="revenue_end_date" value="{{ $revenueEnd }}">
+                    <input type="hidden" name="products_period" value="{{ $productsPeriod ?? 'week' }}">
+                    <input type="hidden" name="products_start_date" value="{{ $productsStart }}">
+                    <input type="hidden" name="products_end_date" value="{{ $productsEnd }}">
+                    <input type="hidden" name="orders_period" value="{{ $ordersPeriod ?? 'week' }}">
+                    <input type="hidden" name="orders_start_date" value="{{ $ordersStart }}">
+                    <input type="hidden" name="orders_end_date" value="{{ $ordersEnd }}">
+                    <input type="hidden" name="users_period" id="users-period-input" value="{{ $usersPeriod ?? 'week' }}">
+                    <input type="hidden" name="users_start_date" id="users-start-input" value="{{ $usersStart }}">
+                    <input type="hidden" name="users_end_date" id="users-end-input" value="{{ $usersEnd }}">
+                </form>
+                
+                <!-- Các nút lọc thời gian -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="setUsersPeriod('week')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($usersPeriod ?? 'week') == 'week' ? 'background-color: #3b82f6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #bfdbfe; color: #1e40af; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Tuần
+                    </button>
+                    <button onclick="setUsersPeriod('month')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($usersPeriod ?? 'week') == 'month' ? 'background-color: #3b82f6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #bfdbfe; color: #1e40af; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Tháng
+                    </button>
+                    <button onclick="setUsersPeriod('quarter')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($usersPeriod ?? 'week') == 'quarter' ? 'background-color: #3b82f6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #bfdbfe; color: #1e40af; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Quý
+                    </button>
+                    <button onclick="setUsersPeriod('year')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($usersPeriod ?? 'week') == 'year' ? 'background-color: #3b82f6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #bfdbfe; color: #1e40af; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Năm
+                    </button>
+                </div>
+                
+                <!-- Chọn khoảng thời gian tùy chỉnh -->
+                <div class="flex flex-wrap gap-3 items-center mt-3 p-3 bg-gray-50 rounded-lg border">
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700">Từ ngày:</label>
+                        <input type="date" id="users-start-date" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ $usersStart }}">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700">Đến ngày:</label>
+                        <input type="date" id="users-end-date" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="{{ $usersEnd }}">
+                    </div>
+                    <button onclick="applyUsersCustom()" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2" style="background-color: #3b82f6; color: white; border: none;">
+                        <i class="fas fa-search"></i>
+                        Áp dụng
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <div class="bg-white shadow rounded-lg p-6">
-            <h2 class="text-xl font-semibold mb-4">Top User Mua Nhiều Nhất</h2>
+        <!-- Biểu đồ cột Top Users -->
+        <div class="mb-6">
+            <canvas id="topUsersChart" width="400" height="200"></canvas>
+        </div>
+        <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tên</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tổng chi tiêu</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng chi tiêu</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($topUsers as $user)
-                        <tr>
-                            <td class="px-4 py-2">{{ $user->name }}</td>
-                            <td class="px-4 py-2">{{ $user->email }}</td>
-                            <td class="px-4 py-2">{{ number_format($user->total_spent, 0, ',', '.') }} ₫</td>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ $user->name }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ $user->email }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-green-600">{{ number_format($user->total_spent, 0, ',', '.') }} ₫</td>
                         </tr>
                     @empty
-                        <tr><td colspan="3" class="text-center py-2">Không có dữ liệu</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="bg-white shadow rounded-lg p-6">
-            <h2 class="text-xl font-semibold mb-4">Top Sản Phẩm Bán Chạy</h2>
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tên sản phẩm</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Số lượng bán</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($topProducts as $product)
                         <tr>
-                            <td class="px-4 py-2">{{ $product->name }}</td>
-                            <td class="px-4 py-2">{{ $product->sold_quantity ?? 0 }}</td>
+                            <td colspan="3" class="px-4 py-3 text-center text-sm text-gray-500">Không có dữ liệu</td>
                         </tr>
-                    @empty
-                        <tr><td colspan="2" class="text-center py-2">Không có dữ liệu</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 
-    <div class="bg-white shadow rounded-lg p-6">
-        <h2 class="text-xl font-semibold mb-4">Top Order Mới Nhất</h2>
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Mã đơn</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Khách hàng</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tổng tiền</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Ngày tạo</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($latestOrders as $order)
+    <!-- Phân cách màu xanh lá -->
+    <div class="h-1 bg-gradient-to-r from-green-400 via-green-500 to-green-600 rounded-full mb-8 shadow-sm"></div>
+
+    <!-- Top Sản Phẩm Bán Chạy -->
+    <div class="bg-white shadow rounded-lg p-6 mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-box text-green-600"></i>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-800">Top Sản Phẩm Bán Chạy</h2>
+            </div>
+            <!-- Bộ lọc cho products -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Giữ các filter khác -->
+                <form method="GET" action="{{ route('admin.dashboard') }}" class="hidden" id="products-form">
+                    <input type="hidden" name="revenue_period" value="{{ $revenuePeriod ?? 'week' }}">
+                    <input type="hidden" name="revenue_start_date" value="{{ $revenueStart }}">
+                    <input type="hidden" name="revenue_end_date" value="{{ $revenueEnd }}">
+                    <input type="hidden" name="users_period" value="{{ $usersPeriod ?? 'week' }}">
+                    <input type="hidden" name="users_start_date" value="{{ $usersStart }}">
+                    <input type="hidden" name="users_end_date" value="{{ $usersEnd }}">
+                    <input type="hidden" name="orders_period" value="{{ $ordersPeriod ?? 'week' }}">
+                    <input type="hidden" name="orders_start_date" value="{{ $ordersStart }}">
+                    <input type="hidden" name="orders_end_date" value="{{ $ordersEnd }}">
+                    <input type="hidden" name="products_period" id="products-period-input" value="{{ $productsPeriod ?? 'week' }}">
+                    <input type="hidden" name="products_start_date" id="products-start-input" value="{{ $productsStart }}">
+                    <input type="hidden" name="products_end_date" id="products-end-input" value="{{ $productsEnd }}">
+                </form>
+                
+                <!-- Các nút lọc thời gian -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="setProductsPeriod('week')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($productsPeriod ?? 'week') == 'week' ? 'background-color: #10b981; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #a7f3d0; color: #065f46; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Tuần
+                    </button>
+                    <button onclick="setProductsPeriod('month')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($productsPeriod ?? 'week') == 'month' ? 'background-color: #10b981; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #a7f3d0; color: #065f46; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Tháng
+                    </button>
+                    <button onclick="setProductsPeriod('quarter')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($productsPeriod ?? 'week') == 'quarter' ? 'background-color: #10b981; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #a7f3d0; color: #065f46; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Quý
+                    </button>
+                    <button onclick="setProductsPeriod('year')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($productsPeriod ?? 'week') == 'year' ? 'background-color: #10b981; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #a7f3d0; color: #065f46; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Năm
+                    </button>
+                </div>
+                
+                <!-- Chọn khoảng thời gian tùy chỉnh -->
+                <div class="flex flex-wrap gap-3 items-center mt-3 p-3 bg-gray-50 rounded-lg border">
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700">Từ ngày:</label>
+                        <input type="date" id="products-start-date" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" value="{{ $productsStart }}">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700">Đến ngày:</label>
+                        <input type="date" id="products-end-date" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" value="{{ $productsEnd }}">
+                    </div>
+                    <button onclick="applyProductsCustom()" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2" style="background-color: #10b981; color: white; border: none;">
+                        <i class="fas fa-search"></i>
+                        Áp dụng
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Biểu đồ cột Top Products -->
+        <div class="mb-6">
+            <canvas id="topProductsChart" width="400" height="200"></canvas>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                     <tr>
-                        <td class="px-4 py-2">{{ $order->order_code }}</td>
-                        <td class="px-4 py-2">{{ $order->user->name ?? '-' }}</td>
-                        <td class="px-4 py-2">{{ number_format($order->total_price, 0, ',', '.') }} ₫</td>
-                        <td class="px-4 py-2">{{ $order->created_at ? $order->created_at->format('d/m/Y H:i') : '-' }}</td>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên sản phẩm</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng bán</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Doanh thu</th>
                     </tr>
-                @empty
-                    <tr><td colspan="4" class="text-center py-2">Không có dữ liệu</td></tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($topProducts as $product)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ $product->name }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ $product->sold_quantity ?? 0 }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-blue-600">{{ number_format($product->total_revenue ?? 0, 0, ',', '.') }} ₫</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="px-4 py-3 text-center text-sm text-gray-500">Không có dữ liệu</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Phân cách màu cam -->
+    <div class="h-1 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 rounded-full mb-8 shadow-sm"></div>
+
+    <!-- Top Order Mới Nhất -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-shopping-cart text-purple-600"></i>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-800">Top Order Mới Nhất</h2>
+            </div>
+            <!-- Bộ lọc cho orders -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Giữ các filter khác -->
+                <form method="GET" action="{{ route('admin.dashboard') }}" class="hidden" id="orders-form">
+                    <input type="hidden" name="revenue_period" value="{{ $revenuePeriod ?? 'week' }}">
+                    <input type="hidden" name="revenue_start_date" value="{{ $revenueStart }}">
+                    <input type="hidden" name="revenue_end_date" value="{{ $revenueEnd }}">
+                    <input type="hidden" name="users_period" value="{{ $usersPeriod ?? 'week' }}">
+                    <input type="hidden" name="users_start_date" value="{{ $usersStart }}">
+                    <input type="hidden" name="users_end_date" value="{{ $usersEnd }}">
+                    <input type="hidden" name="products_period" value="{{ $productsPeriod ?? 'week' }}">
+                    <input type="hidden" name="products_start_date" value="{{ $productsStart }}">
+                    <input type="hidden" name="products_end_date" value="{{ $productsEnd }}">
+                    <input type="hidden" name="orders_period" id="orders-period-input" value="{{ $ordersPeriod ?? 'week' }}">
+                    <input type="hidden" name="orders_start_date" id="orders-start-input" value="{{ $ordersStart }}">
+                    <input type="hidden" name="orders_end_date" id="orders-end-input" value="{{ $ordersEnd }}">
+                </form>
+                
+                <!-- Các nút lọc thời gian -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="setOrdersPeriod('week')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($ordersPeriod ?? 'week') == 'week' ? 'background-color: #8b5cf6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #ddd6fe; color: #5b21b6; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Tuần
+                    </button>
+                    <button onclick="setOrdersPeriod('month')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($ordersPeriod ?? 'week') == 'month' ? 'background-color: #8b5cf6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #ddd6fe; color: #5b21b6; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Tháng
+                    </button>
+                    <button onclick="setOrdersPeriod('quarter')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($ordersPeriod ?? 'week') == 'quarter' ? 'background-color: #8b5cf6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #ddd6fe; color: #5b21b6; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Quý
+                    </button>
+                    <button onclick="setOrdersPeriod('year')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($ordersPeriod ?? 'week') == 'year' ? 'background-color: #8b5cf6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #ddd6fe; color: #5b21b6; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Năm
+                    </button>
+                </div>
+                
+                <!-- Chọn khoảng thời gian tùy chỉnh -->
+                <div class="flex flex-wrap gap-3 items-center mt-3 p-3 bg-gray-50 rounded-lg border">
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700">Từ ngày:</label>
+                        <input type="date" id="orders-start-date" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500" value="{{ $ordersStart }}">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700">Đến ngày:</label>
+                        <input type="date" id="orders-end-date" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500" value="{{ $ordersEnd }}">
+                    </div>
+                    <button onclick="applyOrdersCustom()" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2" style="background-color: #8b5cf6; color: white; border: none;">
+                        <i class="fas fa-search"></i>
+                        Áp dụng
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Biểu đồ cột Latest Orders -->
+        <div class="mb-6">
+            <canvas id="latestOrdersChart" width="400" height="200"></canvas>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã đơn</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khách hàng</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng tiền</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày tạo</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($latestOrders as $order)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ $order->order_code }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ $order->user->name ?? '-' }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-green-600">{{ number_format($order->total_price, 0, ',', '.') }} ₫</td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                    @if($order->orderStatus ->code === 'pending') bg-yellow-100 text-yellow-800
+                                    @elseif($order->orderStatus ->code === 'confirmed') bg-blue-100 text-blue-800
+                                    @elseif($order->orderStatus ->code === 'shipping') bg-purple-100 text-purple-800
+                                    @elseif($order->orderStatus ->code === 'completed') bg-green-100 text-green-800
+                                    @elseif($order->orderStatus ->code === 'cancelled') bg-red-100 text-red-800
+                                    @else bg-gray-100 text-gray-800
+                                    @endif">
+                                    {{ $order->orderStatus ->name ?? 'N/A' }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ $order->created_at ? $order->created_at->format('d/m/Y H:i') : '-' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-3 text-center text-sm text-gray-500">Không có dữ liệu</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-@push('scripts')
-<script src="{{ asset('assets/admin/js/plugins/chartjs.min.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Pie top user
-    const topUserPie = new Chart(document.getElementById('topUserPie').getContext('2d'), {
-        type: 'pie',
-        data: {
-            labels: @json($topUserLabels),
-            datasets: [{
-                data: @json($topUserValues),
-                backgroundColor: ['#2563eb', '#10b981', '#f59e42', '#f43f5e', '#6366f1']
-            }]
-        },
-        options: {responsive: true, plugins: {legend: {display: false}}}
-    });
-    // Pie top sản phẩm
-    const topProductPie = new Chart(document.getElementById('topProductPie').getContext('2d'), {
-        type: 'pie',
-        data: {
-            labels: @json($topProductLabels),
-            datasets: [{
-                data: @json($topProductValues),
-                backgroundColor: ['#f59e42', '#2563eb', '#10b981', '#f43f5e', '#6366f1']
-            }]
-        },
-        options: {responsive: true, plugins: {legend: {display: false}}}
-    });
-    // Pie trạng thái đơn hàng
-    const orderStatusPie = new Chart(document.getElementById('orderStatusPie').getContext('2d'), {
-        type: 'pie',
-        data: {
-            labels: @json($orderStatusLabels),
-            datasets: [{
-                data: @json($orderStatusValues),
-                backgroundColor: ['#2563eb', '#10b981', '#f59e42', '#f43f5e', '#6366f1', '#a3e635', '#fbbf24']
-            }]
-        },
-        options: {responsive: true, plugins: {legend: {display: false}}}
-    });
-    // Bar doanh thu
-    const revenueChart = new Chart(document.getElementById('revenueChart').getContext('2d'), {
+    // Revenue section functions
+    function setRevenuePeriod(period) {
+        document.getElementById('revenue-period-input').value = period;
+        document.getElementById('revenue-start-input').value = '';
+        document.getElementById('revenue-end-input').value = '';
+        document.getElementById('revenue-form').submit();
+    }
+
+    function applyRevenueCustom() {
+        const startDate = document.getElementById('revenue-start-date').value;
+        const endDate = document.getElementById('revenue-end-date').value;
+        if (startDate && endDate) {
+            document.getElementById('revenue-period-input').value = 'custom';
+            document.getElementById('revenue-start-input').value = startDate;
+            document.getElementById('revenue-end-input').value = endDate;
+            document.getElementById('revenue-form').submit();
+        } else {
+            alert('Vui lòng chọn cả ngày bắt đầu và ngày kết thúc');
+        }
+    }
+
+    // Users section functions
+    function setUsersPeriod(period) {
+        document.getElementById('users-period-input').value = period;
+        document.getElementById('users-start-input').value = '';
+        document.getElementById('users-end-input').value = '';
+        document.getElementById('users-form').submit();
+    }
+
+    function applyUsersCustom() {
+        const startDate = document.getElementById('users-start-date').value;
+        const endDate = document.getElementById('users-end-date').value;
+        if (startDate && endDate) {
+            document.getElementById('users-period-input').value = 'custom';
+            document.getElementById('users-start-input').value = startDate;
+            document.getElementById('users-end-input').value = endDate;
+            document.getElementById('users-form').submit();
+        } else {
+            alert('Vui lòng chọn cả ngày bắt đầu và ngày kết thúc');
+        }
+    }
+
+    // Products section functions
+    function setProductsPeriod(period) {
+        document.getElementById('products-period-input').value = period;
+        document.getElementById('products-start-input').value = '';
+        document.getElementById('products-end-input').value = '';
+        document.getElementById('products-form').submit();
+    }
+
+    function applyProductsCustom() {
+        const startDate = document.getElementById('products-start-date').value;
+        const endDate = document.getElementById('products-end-date').value;
+        if (startDate && endDate) {
+            document.getElementById('products-period-input').value = 'custom';
+            document.getElementById('products-start-input').value = startDate;
+            document.getElementById('products-end-input').value = endDate;
+            document.getElementById('products-form').submit();
+        } else {
+            alert('Vui lòng chọn cả ngày bắt đầu và ngày kết thúc');
+        }
+    }
+
+    // Orders section functions
+    function setOrdersPeriod(period) {
+        document.getElementById('orders-period-input').value = period;
+        document.getElementById('orders-start-input').value = '';
+        document.getElementById('orders-end-input').value = '';
+        document.getElementById('orders-form').submit();
+    }
+
+    function applyOrdersCustom() {
+        const startDate = document.getElementById('orders-start-date').value;
+        const endDate = document.getElementById('orders-end-date').value;
+        if (startDate && endDate) {
+            document.getElementById('orders-period-input').value = 'custom';
+            document.getElementById('orders-start-input').value = startDate;
+            document.getElementById('orders-end-input').value = endDate;
+            document.getElementById('orders-form').submit();
+        } else {
+            alert('Vui lòng chọn cả ngày bắt đầu và ngày kết thúc');
+        }
+    }
+</script>
+<script>
+    // Dữ liệu cho biểu đồ doanh thu
+    const revenueLabels = @json($revenueChartLabels ?? []);
+    const revenueData = @json($revenueChartValues ?? []);
+
+    // Biểu đồ cột doanh thu
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
         type: 'bar',
         data: {
-            labels: @json($dateLabels),
+            labels: revenueLabels,
             datasets: [{
-                label: 'Doanh thu (₫)',
-                data: @json($revenueByDay),
-                backgroundColor: '#2563eb'
+                label: 'Doanh thu hàng ngày (₫)',
+                data: revenueData,
+                backgroundColor: 'rgba(251, 191, 36, 0.8)',
+                borderColor: 'rgba(251, 191, 36, 1)',
+                borderWidth: 1
             }]
         },
-        options: {responsive: true, plugins: {legend: {display: false}}}
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Doanh Thu Hàng Ngày'
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Doanh thu (₫)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Ngày'
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' ₫';
+                        }
+                    }
+                }
+            }
+        }
     });
-    // Bar số lượng đơn hàng
-    const orderCountChart = new Chart(document.getElementById('orderCountChart').getContext('2d'), {
+
+    // Dữ liệu cho biểu đồ Top Users
+    const topUsersLabels = @json($topUsersChartLabels ?? []);
+    const topUsersData = @json($topUsersChartData ?? []);
+
+    // Dữ liệu cho biểu đồ Top Products
+    const topProductsLabels = @json($topProductsChartLabels ?? []);
+    const topProductsData = @json($topProductsChartData ?? []);
+
+    // Dữ liệu cho biểu đồ Latest Orders
+    const latestOrdersLabels = @json($latestOrdersChartLabels ?? []);
+    const latestOrdersData = @json($latestOrdersChartData ?? []);
+
+    // Biểu đồ cột Top Users
+    const topUsersCtx = document.getElementById('topUsersChart').getContext('2d');
+    new Chart(topUsersCtx, {
         type: 'bar',
         data: {
-            labels: @json($dateLabels),
+            labels: topUsersLabels,
             datasets: [{
-                label: 'Số đơn hàng',
-                data: @json($orderCountByDay),
-                backgroundColor: '#10b981'
+                label: 'Tổng chi tiêu (₫)',
+                data: topUsersData,
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(255, 205, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 205, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+                borderWidth: 1
             }]
         },
-        options: {responsive: true, plugins: {legend: {display: false}}}
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Top 5 Khách Hàng Mua Nhiều Nhất'
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Tổng chi tiêu (₫)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Khách hàng'
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Tổng chi tiêu: ' + new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' ₫';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Biểu đồ cột Top Products
+    const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+    new Chart(topProductsCtx, {
+        type: 'bar',
+        data: {
+            labels: topProductsLabels,
+            datasets: [{
+                label: 'Số lượng bán',
+                data: topProductsData,
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(255, 205, 86, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(153, 102, 255, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 205, 86, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Top 5 Sản Phẩm Bán Chạy Nhất'
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Số lượng bán'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Sản phẩm'
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Đã bán: ' + context.parsed.y + ' sản phẩm';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Biểu đồ cột Latest Orders
+    const latestOrdersCtx = document.getElementById('latestOrdersChart').getContext('2d');
+    new Chart(latestOrdersCtx, {
+        type: 'bar',
+        data: {
+            labels: latestOrdersLabels,
+            datasets: [{
+                label: 'Giá trị đơn hàng (₫)',
+                data: latestOrdersData,
+                backgroundColor: [
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(255, 205, 86, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(75, 192, 192, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 205, 86, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Top 5 Đơn Hàng Mới Nhất'
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Giá trị đơn hàng (₫)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Mã đơn hàng'
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Giá trị: ' + new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' ₫';
+                        }
+                    }
+                }
+            }
+        }
     });
 </script>
-@endpush
 @endsection 

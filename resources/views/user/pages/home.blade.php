@@ -9,7 +9,7 @@
     <section class="relative md:py-24 py-16">
         {{-- slideshow --}}
         @include('user.partials.slideshow')
-        @include('user.partials.popup')
+        {{-- @include('user.partials.popup') --}}
         @if (session('success'))
         <div id="toast-success" class="custom-toast">
             <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"

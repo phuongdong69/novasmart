@@ -80,11 +80,11 @@
                     <td class="px-6 py-3 text-sm">
                       <div class="flex items-center gap-2">
                         <a href="{{ route('admin.product_thumbnail.edit', $thumbnail->id) }}" class="text-blue-600 hover:underline">Sửa</a>
-                        <form action="{{ route('admin.product_thumbnail.destroy', $thumbnail->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thumbnail này không?')">
+                        {{-- <form action="{{ route('admin.product_thumbnail.destroy', $thumbnail->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thumbnail này không?')">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="text-red-600 hover:underline">Xóa</button>
-                        </form>
+                        </form> --}}
                       </div>
                     </td>
                   </tr>
