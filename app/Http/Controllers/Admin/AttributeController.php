@@ -98,5 +98,16 @@ class AttributeController extends Controller
         }
     }
 
-
+    /**
+     * Lấy danh sách giá trị của thuộc tính
+     */
+    public function getValues(Attribute $attribute)
+    {
+        try {
+            $values = $attribute->values()->get(['id', 'value']);
+            return response()->json(['values' => $values]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Không thể lấy giá trị thuộc tính.'], 500);
+        }
+    }
 }

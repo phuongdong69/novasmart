@@ -141,9 +141,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     //productAdd commentMore actions
     Route::resource('products', ProductController::class);
     //attribute
+    Route::get('attributes/{attribute}/values', [AttributeController::class, 'getValues'])->name('attributes.values');
     Route::resource('attributes', AttributeController::class);
     //attribute_values
-    Route::resource('attribute_values', AttributeValueController::class);
+    Route::resource('attribute_values', AttributeValueController::class)->names([
+        'index' => 'attribute_values.index',
+        'create' => 'attribute_values.create',
+        'store' => 'attribute_values.store',
+        'edit' => 'attribute_values.edit',
+        'update' => 'attribute_values.update',
+        'destroy' => 'attribute_values.destroy',
+    ]);
     //product_variant
     Route::resource('product_variants', ProductVariantController::class);
     //Variant_attribute_value
@@ -168,6 +176,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('brands', BrandController::class);
     Route::resource('orders', OrderController::class);
     Route::put('products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
+    
+    // Thêm biến thể cho sản phẩm
+    Route::post('products/{product}/variants', [ProductController::class, 'addVariant'])->name('products.addVariant');
     
     //slideshows
     Route::resource('slideshows', SlideshowController::class);

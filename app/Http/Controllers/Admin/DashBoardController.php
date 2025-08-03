@@ -13,42 +13,116 @@ use Illuminate\Support\Facades\DB;
 
 class DashBoardController extends Controller
 {
-    public function index(Request $request) {
-        // Lấy ngày bắt đầu/kết thúc từ request hoặc mặc định là hôm qua đến hôm nay
-        $start = $request->input('start_date');
-        $end = $request->input('end_date');
-        if (!$start || !$end) {
-            $start = \Carbon\Carbon::yesterday()->startOfDay()->toDateTimeString();
-            $end = \Carbon\Carbon::today()->endOfDay()->toDateTimeString();
-        } else {
-            $start = \Carbon\Carbon::parse($start)->startOfDay()->toDateTimeString();
-            $end = \Carbon\Carbon::parse($end)->endOfDay()->toDateTimeString();
+    private function getDateRange($period, $customStart = null, $customEnd = null)
+    {
+        if ($period === 'custom' && $customStart && $customEnd) {
+            return [
+                Carbon::parse($customStart)->startOfDay(),
+                Carbon::parse($customEnd)->endOfDay()
+            ];
         }
 
-        // Tổng doanh thu
+        $now = Carbon::now();
+        
+        switch ($period) {
+            case 'today':
+                return [
+                    $now->copy()->startOfDay(),
+                    $now->copy()->endOfDay()
+                ];
+            case 'yesterday':
+                return [
+                    $now->copy()->subDay()->startOfDay(),
+                    $now->copy()->subDay()->endOfDay()
+                ];
+            case 'week':
+                return [
+                    $now->copy()->startOfWeek(),
+                    $now->copy()->endOfWeek()
+                ];
+            case 'last_week':
+                return [
+                    $now->copy()->subWeek()->startOfWeek(),
+                    $now->copy()->subWeek()->endOfWeek()
+                ];
+            case 'month':
+                return [
+                    $now->copy()->startOfMonth(),
+                    $now->copy()->endOfMonth()
+                ];
+            case 'last_month':
+                return [
+                    $now->copy()->subMonth()->startOfMonth(),
+                    $now->copy()->subMonth()->endOfMonth()
+                ];
+            case 'quarter':
+                return [
+                    $now->copy()->startOfQuarter(),
+                    $now->copy()->endOfQuarter()
+                ];
+            case 'year':
+                return [
+                    $now->copy()->startOfYear(),
+                    $now->copy()->endOfYear()
+                ];
+            default: // mặc định là tuần này
+                return [
+                    $now->copy()->startOfWeek(),
+                    $now->copy()->endOfWeek()
+                ];
+        }
+    }
+
+    public function index(Request $request) {
+        // Lấy bộ lọc cho từng section
+        $revenuePeriod = $request->input('revenue_period', 'week');
+        $revenueStart = $request->input('revenue_start_date');
+        $revenueEnd = $request->input('revenue_end_date');
+        
+        $usersPeriod = $request->input('users_period', 'week');
+        $usersStart = $request->input('users_start_date');
+        $usersEnd = $request->input('users_end_date');
+        
+        $productsPeriod = $request->input('products_period', 'week');
+        $productsStart = $request->input('products_start_date');
+        $productsEnd = $request->input('products_end_date');
+        
+        $ordersPeriod = $request->input('orders_period', 'week');
+        $ordersStart = $request->input('orders_start_date');
+        $ordersEnd = $request->input('orders_end_date');
+
+        // Tính toán khoảng thời gian cho từng section
+        list($revenueStartDate, $revenueEndDate) = $this->getDateRange($revenuePeriod, $revenueStart, $revenueEnd);
+        list($usersStartDate, $usersEndDate) = $this->getDateRange($usersPeriod, $usersStart, $usersEnd);
+        list($productsStartDate, $productsEndDate) = $this->getDateRange($productsPeriod, $productsStart, $productsEnd);
+        list($ordersStartDate, $ordersEndDate) = $this->getDateRange($ordersPeriod, $ordersStart, $ordersEnd);
+
+        // Tổng doanh thu (theo revenue filter)
         $revenue = Order::join('statuses', 'orders.status_id', '=', 'statuses.id')
-            ->whereBetween('orders.created_at', [$start, $end])
+            ->whereBetween('orders.created_at', [$revenueStartDate, $revenueEndDate])
             ->whereIn('statuses.code', ['confirmed', 'delivered', 'completed'])
             ->sum('orders.total_price');
 
-        // Top user mua nhiều nhất
+        // Top user mua nhiều nhất (theo users filter)
         $topUsers = User::select('users.*', DB::raw('SUM(orders.total_price) as total_spent'))
             ->join('orders', 'users.id', '=', 'orders.user_id')
             ->join('statuses', 'orders.status_id', '=', 'statuses.id')
-            ->whereBetween('orders.created_at', [$start, $end])
+            ->whereBetween('orders.created_at', [$usersStartDate, $usersEndDate])
             ->whereIn('statuses.code', ['confirmed', 'delivered', 'completed'])
             ->groupBy('users.id', 'users.status_id', 'users.role_id', 'users.name', 'users.email', 'users.password', 'users.phoneNumber', 'users.address', 'users.created_at', 'users.updated_at', 'users.remember_token')
             ->orderByDesc('total_spent')
             ->take(5)
             ->get();
 
-        // Top sản phẩm bán chạy nhất
-        $topProducts = Product::select('products.*', DB::raw('SUM(order_details.quantity) as sold_quantity'))
+        // Top sản phẩm bán chạy nhất (theo products filter)
+        $topProducts = Product::select('products.*', 
+                DB::raw('SUM(order_details.quantity) as sold_quantity'),
+                DB::raw('SUM(order_details.quantity * order_details.price) as total_revenue'))
             ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
             ->join('order_details', 'product_variants.id', '=', 'order_details.product_variant_id')
             ->join('orders', 'order_details.order_id', '=', 'orders.id')
             ->join('statuses', 'orders.status_id', '=', 'statuses.id')
-            ->whereBetween('orders.created_at', [$start, $end])
+            ->whereBetween('orders.created_at', [$productsStartDate, $productsEndDate])
             ->whereIn('statuses.code', ['confirmed', 'delivered', 'completed'])
             ->groupBy(
                 'products.id', 'products.brand_id', 'products.origin_id', 'products.category_id',
@@ -58,71 +132,55 @@ class DashBoardController extends Controller
             ->take(5)
             ->get();
 
-        // Top order mới nhất
-        $latestOrders = Order::with('user')
-            ->join('statuses', 'orders.status_id', '=', 'statuses.id')
-            ->whereBetween('orders.created_at', [$start, $end])
-            ->whereIn('statuses.code', ['confirmed', 'delivered', 'completed'])
+        // Top order mới nhất (theo orders filter)
+        $latestOrders = Order::with(['user', 'orderStatus'])
+            ->whereBetween('orders.created_at', [$ordersStartDate, $ordersEndDate])
             ->orderByDesc('orders.created_at')
-            ->select('orders.*')
             ->take(5)
             ->get();
 
-        // Biểu đồ doanh thu theo ngày và số đơn theo ngày (7 ngày gần nhất hoặc theo filter)
-        $period = \Carbon\CarbonPeriod::create(
-            \Carbon\Carbon::parse($start)->startOfDay(),
-            '1 day',
-            \Carbon\Carbon::parse($end)->endOfDay()
-        );
-        $dateLabels = [];
-        $revenueByDay = [];
-        $orderCountByDay = [];
-        foreach ($period as $date) {
-            $label = $date->format('d/m');
-            $dateLabels[] = $label;
-            $from = $date->copy()->startOfDay();
-            $to = $date->copy()->endOfDay();
-            $revenueByDay[] = Order::join('statuses', 'orders.status_id', '=', 'statuses.id')
-                ->whereBetween('orders.created_at', [$from, $to])
-                ->whereIn('statuses.code', ['confirmed', 'delivered', 'completed'])
-                ->sum('orders.total_price');
-            $orderCountByDay[] = Order::join('statuses', 'orders.status_id', '=', 'statuses.id')
-                ->whereBetween('orders.created_at', [$from, $to])
-                ->whereIn('statuses.code', ['confirmed', 'delivered', 'completed'])
-                ->count();
-        }
+        // Tổng số khách hàng mới trong khoảng ngày (theo revenue filter)
+        $newCustomers = User::whereBetween('created_at', [$revenueStartDate, $revenueEndDate])->count();
+        
+        // Tổng số đơn hàng trong khoảng ngày (theo revenue filter)
+        $totalOrders = Order::whereBetween('created_at', [$revenueStartDate, $revenueEndDate])->count();
 
-        // Biểu đồ tròn tỉ lệ top user
-        $topUserLabels = $topUsers->pluck('name');
-        $topUserValues = $topUsers->pluck('total_spent');
+        // Chuẩn bị dữ liệu cho biểu đồ cột Top Users
+        $topUsersChartLabels = $topUsers->pluck('name')->toArray();
+        $topUsersChartData = $topUsers->pluck('total_spent')->toArray();
 
-        // Biểu đồ tròn tỉ lệ top sản phẩm
-        $topProductLabels = $topProducts->pluck('name');
-        $topProductValues = $topProducts->pluck('sold_quantity');
+        // Chuẩn bị dữ liệu cho biểu đồ cột Top Products
+        $topProductsChartLabels = $topProducts->pluck('name')->toArray();
+        $topProductsChartData = $topProducts->pluck('sold_quantity')->toArray();
 
-        // Biểu đồ tròn tỉ lệ trạng thái đơn hàng
-        $statusCounts = Order::join('statuses', 'orders.status_id', '=', 'statuses.id')
-            ->whereBetween('orders.created_at', [$start, $end])
-            ->select('statuses.name', DB::raw('COUNT(*) as count'))
-            ->groupBy('statuses.name')
+        // Chuẩn bị dữ liệu cho biểu đồ cột Latest Orders
+        $latestOrdersChartLabels = $latestOrders->pluck('order_code')->toArray();
+        $latestOrdersChartData = $latestOrders->pluck('total_price')->toArray();
+
+        // Chuẩn bị dữ liệu cho biểu đồ doanh thu theo ngày
+        $revenueChartData = Order::join('statuses', 'orders.status_id', '=', 'statuses.id')
+            ->whereBetween('orders.created_at', [$revenueStartDate, $revenueEndDate])
+            ->whereIn('statuses.code', ['confirmed', 'delivered', 'completed'])
+            ->selectRaw('DATE(orders.created_at) as date, SUM(orders.total_price) as daily_revenue')
+            ->groupBy('date')
+            ->orderBy('date')
             ->get();
-        $orderStatusLabels = $statusCounts->pluck('name');
-        $orderStatusValues = $statusCounts->pluck('count');
-
-        // Tổng số khách hàng mới trong khoảng ngày
-        $newCustomers = \App\Models\User::whereBetween('created_at', [$start, $end])->count();
-        // Tổng số đơn hàng trong khoảng ngày
-        $totalOrders = \App\Models\Order::whereBetween('created_at', [$start, $end])->count();
-        // Lợi nhuận (placeholder, nếu chưa có trường thì để 0)
-        $profit = 0;
+        
+        $revenueChartLabels = $revenueChartData->pluck('date')->map(function($date) {
+            return \Carbon\Carbon::parse($date)->format('d/m');
+        })->toArray();
+        $revenueChartValues = $revenueChartData->pluck('daily_revenue')->toArray();
 
         return view('admin.dashboard', compact(
-            'revenue', 'topUsers', 'topProducts', 'latestOrders', 'start', 'end',
-            'dateLabels', 'revenueByDay', 'orderCountByDay',
-            'topUserLabels', 'topUserValues',
-            'topProductLabels', 'topProductValues',
-            'orderStatusLabels', 'orderStatusValues',
-            'newCustomers', 'totalOrders', 'profit'
+            'revenue', 'topUsers', 'topProducts', 'latestOrders', 'newCustomers', 'totalOrders',
+            'revenuePeriod', 'revenueStart', 'revenueEnd',
+            'usersPeriod', 'usersStart', 'usersEnd',
+            'productsPeriod', 'productsStart', 'productsEnd',
+            'ordersPeriod', 'ordersStart', 'ordersEnd',
+            'topUsersChartLabels', 'topUsersChartData',
+            'topProductsChartLabels', 'topProductsChartData',
+            'latestOrdersChartLabels', 'latestOrdersChartData',
+            'revenueChartLabels', 'revenueChartValues'
         ))->with('title', 'Dashboard');
     }
 }

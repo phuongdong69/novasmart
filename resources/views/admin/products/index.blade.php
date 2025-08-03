@@ -240,12 +240,88 @@
                                                             @endif
                                                         @empty
                                                             <tr>
-                                                                <td colspan="5"
+                                                                <td colspan="6"
                                                                     class="px-6 py-4 text-center text-sm text-gray-500">
                                                                     Sản phẩm chưa có biến thể nào
                                                                 </td>
                                                             </tr>
                                                         @endforelse
+                                                        <tr>
+                                                            <td colspan="6" class="px-6 py-4 text-right">
+                                                                <button type="button" 
+                                                                    class="add-variant-btn"
+                                                                    data-product-id="{{ $product->id }}"
+                                                                    style="background-color: #10b981 !important; color: white !important; border: none !important; padding: 8px 16px !important; border-radius: 4px !important; font-size: 14px !important; font-weight: 600 !important; cursor: pointer !important;">
+                                                                    + Thêm biến thể
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        <!-- Form thêm biến thể (ẩn mặc định) -->
+                                                        <tr id="add-variant-form-{{ $product->id }}" class="hidden">
+                                                            <td colspan="6" class="px-6 py-4 bg-gray-50">
+                                                                <div class="bg-white p-4 rounded-lg border">
+                                                                    <h4 class="text-lg font-semibold mb-4">Thêm biến thể mới</h4>
+                                                                    
+                                                                    <form class="add-variant-form" method="POST" action="/admin/products/{{ $product->id }}/variants">
+                                                                        @csrf
+                                                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                                        
+                                                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                                                            <div>
+                                                                                <label class="block text-sm font-medium text-gray-700 mb-2">SKU</label>
+                                                                                <input type="text" name="sku" required
+                                                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                                            </div>
+                                                                            <div>
+                                                                                <label class="block text-sm font-medium text-gray-700 mb-2">Giá</label>
+                                                                                <input type="number" name="price" required min="0"
+                                                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                                            </div>
+                                                                            <div>
+                                                                                <label class="block text-sm font-medium text-gray-700 mb-2">Số lượng</label>
+                                                                                <input type="number" name="quantity" required min="0"
+                                                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                        
+                                                                        <div class="mb-4">
+                                                                            <label class="block text-sm font-medium text-gray-700 mb-2">Thuộc tính</label>
+                                                                            <div class="attributes-container-{{ $product->id }}">
+                                                                                <div class="attribute-row flex gap-4 mb-2">
+                                                                                    <div class="flex-1">
+                                                                                        <select name="attributes[0][attribute_id]" class="attribute-select w-full px-3 py-2 border border-gray-300 rounded-md" onchange="handleAttributeSelect(this, 0, {{ $product->id }})">
+                                                                                            <option value="">-- Chọn thuộc tính --</option>
+                                                                                            @foreach (\App\Models\Attribute::all() as $attribute)
+                                                                                                <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
+                                                                                            @endforeach
+                                                                                        </select>
+                                                                                    </div>
+                                                                                    <div class="flex-1">
+                                                                                        <select name="attributes[0][value]" class="value-select w-full px-3 py-2 border border-gray-300 rounded-md" data-attribute-index="0">
+                                                                                            <option value="">-- Chọn giá trị --</option>
+                                                                                        </select>
+                                                                                    </div>
+                                                                                    <button type="button" class="remove-attribute-btn" style="background-color: #dc2626 !important; color: white !important; border: none !important; padding: 8px 16px !important; border-radius: 4px !important; font-size: 14px !important; font-weight: 600 !important; cursor: pointer !important;">Xóa</button>
+                                                                                </div>
+                                                                            </div>
+                                                                            <button type="button" class="add-attribute-btn" style="background-color: #16a34a !important; color: white !important; border: none !important; padding: 8px 16px !important; border-radius: 4px !important; font-size: 14px !important; font-weight: 600 !important; cursor: pointer !important;">+ Thêm thuộc tính</button>
+                                                                        </div>
+                                                                        
+                                                                        <div class="flex justify-end gap-2">
+                                                                            <button type="button" class="cancel-add-variant-btn" 
+                                                                                style="background-color: #6b7280 !important; color: white !important; border: none !important; padding: 8px 16px !important; border-radius: 4px !important; font-size: 14px !important; font-weight: 600 !important; cursor: pointer !important;">
+                                                                                Hủy
+                                                                            </button>
+                                                                            <button type="submit" 
+                                                                                style="background-color: #2563eb !important; color: white !important; border: none !important; padding: 8px 16px !important; border-radius: 4px !important; font-size: 14px !important; font-weight: 600 !important; cursor: pointer !important;">
+                                                                                Thêm biến thể
+                                                                            </button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -278,11 +354,16 @@
                                                                 <td class="px-4 py-2 text-sm text-gray-900">
                                                                     {{ $variant->sku }}</td>
                                                                 <td class="px-4 py-2 text-sm">
-                                                                    @if ($variant->status_id == 1)
-                                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Đang bán</span>
-                                                                @else
-                                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Ngừng bán</span>
-                                                                @endif
+                                                                    @if ($variant->status && is_object($variant->status))
+                                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
+                                                                              style="background-color: {{ $variant->status->color ?? '#888' }}; color: white;">
+                                                                            {{ $variant->status->name }}
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-200 text-gray-700">
+                                                                            {{ $variant->quantity > 0 ? 'Còn hàng' : 'Hết hàng' }}
+                                                                        </span>
+                                                                    @endif
                                                                 </td>
                                                                 <td class="px-4 py-2 text-sm">
                                                                     @include(
@@ -312,11 +393,22 @@
         </div>
     </div>
 
+
+
     @push('scripts')
         <script>
             var PRODUCT_VARIANT_STATUSES = {!! json_encode(
                 \App\Models\Status::where('type', 'product_variant')->orderBy('priority')->get(['id', 'name', 'color', 'priority']),
             ) !!};
+            
+            var ATTRIBUTE_VALUES = {};
+            @foreach (\App\Models\Attribute::with('values')->get() as $attribute)
+                ATTRIBUTE_VALUES['{{ $attribute->id }}'] = [
+                    @foreach ($attribute->values as $value)
+                        {id: {{ $value->id }}, value: @json($value->value)},
+                    @endforeach
+                ];
+            @endforeach
 
             function toggleVariants(productId) {
                 const el = document.getElementById('variants-' + productId);
@@ -403,8 +495,252 @@
                         console.error('Lỗi fetch:', err);
                     });
             }
+
+            // Inline form functions
+            function showAddVariantForm(productId) {
+                console.log('showAddVariantForm called with productId:', productId);
+                
+                const formElement = document.getElementById('add-variant-form-' + productId);
+                
+                if (!formElement) {
+                    console.error('Form not found for product ID:', productId);
+                    return;
+                }
+                
+                // Show form
+                formElement.classList.remove('hidden');
+                
+                // Focus on first input
+                setTimeout(() => {
+                    const skuInput = formElement.querySelector('input[name="sku"]');
+                    if (skuInput) {
+                        skuInput.focus();
+                    }
+                }, 100);
+                
+                console.log('Form should be visible now');
+            }
+
+            function hideAddVariantForm(productId) {
+                console.log('hideAddVariantForm called with productId:', productId);
+                
+                const formElement = document.getElementById('add-variant-form-' + productId);
+                
+                if (!formElement) {
+                    console.error('Form not found for product ID:', productId);
+                    return;
+                }
+                
+                // Hide form
+                formElement.classList.add('hidden');
+                
+                // Reset form
+                const form = formElement.querySelector('form');
+                if (form) {
+                    form.reset();
+                }
+                
+                // Reset attributes container
+                const container = formElement.querySelector('.attributes-container-' + productId);
+                if (container) {
+                    container.innerHTML = `
+                        <div class="attribute-row flex gap-4 mb-2">
+                            <div class="flex-1">
+                                <select name="attributes[0][attribute_id]" class="attribute-select w-full px-3 py-2 border border-gray-300 rounded-md" onchange="handleAttributeSelect(this, 0, ${productId})">
+                                    <option value="">-- Chọn thuộc tính --</option>
+                                    @foreach (\App\Models\Attribute::all() as $attribute)
+                                        <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <select name="attributes[0][value]" class="value-select w-full px-3 py-2 border border-gray-300 rounded-md" data-attribute-index="0">
+                                    <option value="">-- Chọn giá trị --</option>
+                                </select>
+                            </div>
+                            <button type="button" class="remove-attribute-btn" style="background-color: #dc2626 !important; color: white !important; border: none !important; padding: 8px 16px !important; border-radius: 4px !important; font-size: 14px !important; font-weight: 600 !important; cursor: pointer !important;">Xóa</button>
+                        </div>
+                    `;
+                }
+                
+                console.log('Form should be hidden now');
+            }
+
+            function addAttributeRow() {
+                console.log('addAttributeRow called');
+                
+                // Find the active form container (visible form)
+                const visibleForm = document.querySelector('tr[id^="add-variant-form-"]:not(.hidden)');
+                if (!visibleForm) {
+                    console.error('No visible form found');
+                    return;
+                }
+                
+                console.log('Found visible form:', visibleForm);
+                
+                const container = visibleForm.querySelector('[class*="attributes-container-"]');
+                if (!container) {
+                    console.error('Attributes container not found');
+                    return;
+                }
+                
+                console.log('Found container:', container);
+                
+                const attributeCount = container.querySelectorAll('.attribute-row').length;
+                const productId = visibleForm.id.replace('add-variant-form-', '');
+                
+                console.log('Attribute count:', attributeCount, 'Product ID:', productId);
+                
+                const newRow = document.createElement('div');
+                newRow.className = 'attribute-row flex gap-4 mb-2';
+                newRow.innerHTML = `
+                    <div class="flex-1">
+                        <select name="attributes[${attributeCount}][attribute_id]" class="attribute-select w-full px-3 py-2 border border-gray-300 rounded-md" onchange="handleAttributeSelect(this, ${attributeCount}, ${productId})">
+                            <option value="">-- Chọn thuộc tính --</option>
+                            @foreach (\App\Models\Attribute::all() as $attribute)
+                                <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex-1">
+                        <select name="attributes[${attributeCount}][value]" class="value-select w-full px-3 py-2 border border-gray-300 rounded-md" data-attribute-index="${attributeCount}">
+                            <option value="">-- Chọn giá trị --</option>
+                        </select>
+                    </div>
+                    <button type="button" class="remove-attribute-btn" style="background-color: #dc2626 !important; color: white !important; border: none !important; padding: 8px 16px !important; border-radius: 4px !important; font-size: 14px !important; font-weight: 600 !important; cursor: pointer !important;">Xóa</button>
+                `;
+                container.appendChild(newRow);
+                
+                console.log('New attribute row added');
+            }
+
+            function removeAttributeRow(button) {
+                console.log('removeAttributeRow called');
+                
+                const row = button.closest('.attribute-row');
+                if (!row) {
+                    console.error('Attribute row not found');
+                    return;
+                }
+                
+                // Find the container to check total count
+                const container = row.closest('[class*="attributes-container-"]');
+                if (!container) {
+                    console.error('Container not found');
+                    return;
+                }
+                
+                const totalRows = container.querySelectorAll('.attribute-row').length;
+                console.log('Total attribute rows:', totalRows);
+                
+                if (totalRows > 1) {
+                    row.remove();
+                    console.log('Attribute row removed');
+                } else {
+                    console.log('Cannot remove last attribute row');
+                }
+            }
+
+            function handleAttributeSelect(select, index, productId) {
+                const attributeId = select.value;
+                const row = select.closest('.attribute-row');
+                const valueSelect = row.querySelector('.value-select');
+                
+                valueSelect.innerHTML = '<option value="">-- Chọn giá trị --</option>';
+                if (ATTRIBUTE_VALUES[attributeId]) {
+                    ATTRIBUTE_VALUES[attributeId].forEach(function(val) {
+                        valueSelect.innerHTML += '<option value="' + val.id + '">' + val.value + '</option>';
+                    });
+                }
+            }
+
+            // Ensure functions are available globally
+            window.showAddVariantForm = showAddVariantForm;
+            window.hideAddVariantForm = hideAddVariantForm;
+            window.addAttributeRow = addAttributeRow;
+            window.removeAttributeRow = removeAttributeRow;
+            window.handleAttributeSelect = handleAttributeSelect;
+
+            // Add event listeners when DOM is loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                // Add click event listeners for all "Thêm biến thể" buttons
+                document.querySelectorAll('.add-variant-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const productId = this.getAttribute('data-product-id');
+                        console.log('Button clicked for product ID:', productId);
+                        showAddVariantForm(productId);
+                    });
+                });
+
+                // Add event listeners for attribute buttons (delegation)
+                document.addEventListener('click', function(e) {
+                    console.log('Click event on:', e.target);
+                    console.log('Target classes:', e.target.classList);
+                    
+                    // Add attribute row button
+                    if (e.target.classList.contains('add-attribute-btn')) {
+                        e.preventDefault();
+                        console.log('Add attribute button clicked');
+                        addAttributeRow();
+                    }
+                    
+                    // Remove attribute row button
+                    if (e.target.classList.contains('remove-attribute-btn')) {
+                        e.preventDefault();
+                        console.log('Remove attribute button clicked');
+                        removeAttributeRow(e.target);
+                    }
+                    
+                    // Cancel add variant button
+                    if (e.target.classList.contains('cancel-add-variant-btn')) {
+                        e.preventDefault();
+                        const formElement = e.target.closest('tr');
+                        const productId = formElement.id.replace('add-variant-form-', '');
+                        console.log('Cancel button clicked for product ID:', productId);
+                        hideAddVariantForm(productId);
+                    }
+                });
+            });
+
+            // Handle form submission
+            document.addEventListener('submit', function(e) {
+                if (e.target.classList.contains('add-variant-form')) {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    const url = e.target.action;
+                    
+
+                    
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': formData.get('_token')
+                        },
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Hide form and reload page
+                            const formElement = e.target.closest('tr');
+                            const productId = formElement.id.replace('add-variant-form-', '');
+                            hideAddVariantForm(productId);
+                            location.reload();
+                        } else {
+                            alert('Lỗi: ' + (data.message || 'Có lỗi xảy ra'));
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Lỗi:', err);
+                        alert('Có lỗi xảy ra khi thêm biến thể');
+                    });
+                }
+            });
         </script>
     @endpush
 
     {{-- Styling is handled by Tailwind CSS --}}
 @endsection
+

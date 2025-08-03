@@ -51,12 +51,13 @@ Danh sách giá trị thuộc tính
                                         <td class="px-6 py-3 text-sm">{{ $value->attribute->name }}</td>
                                         <td class="px-6 py-3 text-sm">{{ $value->value }}</td>
                                         <td class="px-6 py-3 text-sm">
-                                            <a href="{{ route('admin.attribute_values.edit', $value->id) }}" class="text-blue-600 hover:underline mr-2">Sửa</a>
-                                            <form action="{{ route('admin.attribute_values.destroy', $value->id) }}" method="post" style="display:inline-block;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa không?')" class="text-red-500 hover:underline">Xóa</button>
-                                            </form>
+                                            <a href="{{ route('admin.attribute_values.edit', $value->id) }}" 
+                                                class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-bold rounded-md text-white bg-blue-500 hover:bg-blue-700 transition-all duration-150 shadow-sm">
+                                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                                </svg>
+                                                Sửa
+                                            </a>
                                         </td>
                                     </tr>
                                 @empty
