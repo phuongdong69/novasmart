@@ -163,7 +163,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('products/{product}/update-status', [App\Http\Controllers\Admin\ProductController::class, 'updateStatus'])->name('products.update_status');
     // Cập nhật trạng thái order
     Route::post('orders/{order}/update-status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update_status');
-    Route::resource('statuses', App\Http\Controllers\Admin\StatusController::class);
+    Route::resource('statuses', App\Http\Controllers\Admin\StatusController::class)->names([
+        'index' => 'statuses.index',
+        'create' => 'statuses.create',
+        'store' => 'statuses.store',
+        'show' => 'statuses.show',
+        'edit' => 'statuses.edit',
+        'update' => 'statuses.update',
+        'destroy' => 'statuses.destroy',
+    ]);
     //brands
     Route::resource('brands', BrandController::class);
     Route::resource('orders', OrderController::class);

@@ -8,9 +8,26 @@ use Illuminate\Http\Request;
 
 class StatusController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $statuses = Status::orderBy('type')->orderBy('priority')->get();
+        $query = Status::query();
+
+        // Tìm kiếm theo tên, mã hoặc mô tả
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Lọc theo loại trạng thái
+        if ($request->filled('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
+        $statuses = $query->orderBy('type')->orderBy('priority')->get();
         return view('admin.statuses.index', compact('statuses'));
     }
 
