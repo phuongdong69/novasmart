@@ -188,6 +188,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 */
 Route::middleware('auth')->group(function () {
     Route::get('/user/pages/home', [HomeController::class, 'index'])->name('user.pages.home');
+    Route::get('/user/pages/about', [App\Http\Controllers\User\AboutController::class, 'index'])->name('user.pages.about');
+    Route::get('/user/pages/product-list', [App\Http\Controllers\User\ProductController::class, 'index'])->name('user.pages.product-list');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/orders', [OrderrController::class, 'index'])->name('user.orders.index');
