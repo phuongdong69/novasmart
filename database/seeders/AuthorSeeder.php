@@ -37,13 +37,13 @@ class AuthorSeeder extends Seeder
             [
                 'name' => 'Laurent Perrier',
                 'email' => 'laurent@creative-tim.com',
-                'role_id' => 3,
+                'role_id' => 2,
                 'password' => bcrypt('password'),
             ],
             [
                 'name' => 'Michael Levi',
                 'email' => 'michael@creative-tim.com',
-                'role_id' => 3,
+                'role_id' => 2,
                 'password' => bcrypt('password'),
             ],
             [
@@ -55,7 +55,7 @@ class AuthorSeeder extends Seeder
             [
                 'name' => 'Miriam Eric',
                 'email' => 'miriam@creative-tim.com',
-                'role_id' => 3,
+                'role_id' => 2,
                 'password' => bcrypt('password'),
             ],
         ]);

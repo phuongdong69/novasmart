@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\ProductThumbnailController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\User\CartController;
@@ -130,15 +130,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     ]);
 
     // Vouchers
-    Route::resource('vouchers', VoucherController::class)->names([
-        'index' => 'vouchers.index',
-        'create' => 'vouchers.create',
-        'store' => 'vouchers.store',
-        'show' => 'vouchers.show',
-        'edit' => 'vouchers.edit',
-        'update' => 'vouchers.update',
-        'destroy' => 'vouchers.destroy',
-    ]);
+
+    Route::resource('vouchers', App\Http\Controllers\Admin\VoucherController::class);
+
+
     //productAdd commentMore actions
     Route::resource('products', ProductController::class);
     //attribute
@@ -177,10 +172,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('brands', BrandController::class);
     Route::resource('orders', OrderController::class);
     Route::put('products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
-    
+
     // Thêm biến thể cho sản phẩm
     Route::post('products/{product}/variants', [ProductController::class, 'addVariant'])->name('products.addVariant');
-    
+
     //slideshows
     Route::resource('slideshows', SlideshowController::class);
 });
@@ -197,7 +192,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [OrderrController::class, 'index'])->name('user.orders.index');
     Route::get('/orders/{order}', [OrderrController::class, 'show'])->name('user.orders.show');
     Route::post('/orders/{id}/cancel', [OrderrController::class, 'cancel'])->name('user.orders.cancel');
-    Route::post('/orders/{id}/confirm-received', [OrderrController::class, 'confirmReceived']) ->name('user.orders.confirm-received');
+    Route::post('/orders/{id}/confirm-received', [OrderrController::class, 'confirmReceived'])->name('user.orders.confirm-received');
 
     // Wishlist routes
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
@@ -205,7 +200,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/wishlist/remove', [WishlistController::class, 'remove'])->name('wishlist.remove');
     Route::post('/wishlist/check', [WishlistController::class, 'check'])->name('wishlist.check');
     Route::get('/wishlist/count', [WishlistController::class, 'count'])->name('wishlist.count');
-
 });
 
 /*
