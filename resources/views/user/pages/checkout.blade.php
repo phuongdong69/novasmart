@@ -53,7 +53,7 @@
     if ($voucherId) {
     $voucherModel = \App\Models\Voucher::find($voucherId);
     if ($voucherModel) {
-    $discount = $voucherModel->discount_type === 'percentage'
+    $discount = $voucherModel->discount_type === 'percent'
     ? round($total * ($voucherModel->discount_value / 100))
     : min($voucherModel->discount_value, $total);
     }

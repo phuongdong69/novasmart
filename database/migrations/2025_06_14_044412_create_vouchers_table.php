@@ -8,15 +8,16 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('vouchers', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('status_id')->nullable()->constrained('statuses')->after('id');
-            $table->string('code', 50)->unique();
-            $table->enum('discount_type', ['percentage', 'fixed']);
-            $table->decimal('discount_value', 10, 2);
-            $table->date('expiry_date');
-            $table->integer('quantity');
-            $table->timestamps();
-        });
+        $table->id();
+        $table->string('code')->unique(); // mã giảm giá duy nhất
+        $table->string('description')->nullable(); // mô tả
+        $table->enum('discount_type', ['percent', 'fixed']); // loại giảm giá
+        $table->decimal('discount_value', 10, 2); // giá trị giảm
+        $table->integer('quantity')->default(0); // số lượng còn lại
+        $table->dateTime('expired_at'); // ngày hết hạn
+        $table->foreignId('status_id')->constrained()->onDelete('cascade'); // liên kết bảng statuses
+        $table->timestamps();
+    });
     }
 
     public function down(): void

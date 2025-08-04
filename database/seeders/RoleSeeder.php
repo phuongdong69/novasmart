@@ -12,18 +12,13 @@ class RoleSeeder extends Seeder
     {
         DB::table('roles')->insert([
             [
-                
+
                 'name' => 'admin',
                 'description' => 'Quản trị hệ thống',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
-            [
-                'name' => 'staff',
-                'description' => 'Nhân viên quản lý',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
+
             [
                 'name' => 'user',
                 'description' => 'Người dùng thông thường',

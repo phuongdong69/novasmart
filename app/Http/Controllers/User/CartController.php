@@ -132,8 +132,8 @@ class CartController extends Controller
         Session::put('cart', $cart);
 
         // ✅ Nếu hết hàng, cập nhật trạng thái
-        if ($variant->quantity <= 0 && $variant->status_id != 12) {
-            $variant->status_id = 12;
+        if ($variant->quantity <= 0 && $variant->status_id != 11) {
+            $variant->status_id = 11;
             $variant->save();
         }
 
@@ -257,7 +257,7 @@ class CartController extends Controller
         // ⚠️ Tìm mã giảm giá, kiểm tra hạn, số lượng và trạng thái
         $voucher = Voucher::with('status')
             ->where('code', $voucherCode)
-            ->whereDate('expiry_date', '>=', now())
+            ->whereDate('expired_at', '>=', now()) // ⚠️ Đổi lại tên cột ở đây
             ->where('quantity', '>', 0)
             ->whereHas('status', fn($q) => $q->where('code', 'active'))
             ->first();

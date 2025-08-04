@@ -187,7 +187,7 @@ class PaymentController extends Controller
                 $body .= "Trân trọng,\nNova Smart";
 
                 // Gửi mail thông báo đặt hàng
-                \Mail::raw($body, function ($message) use ($order) {
+                Mail::raw($body, function ($message) use ($order) {
                     $message->to($order->email, $order->name)
                         ->subject('Thông báo đặt hàng thành công - Nova Smart');
                 });

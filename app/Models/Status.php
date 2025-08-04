@@ -10,14 +10,14 @@ class Status extends Model
     use HasFactory;
 
     protected $fillable = [
-    'name',
-    'code', 
-    'type',
-    'color',
-    'priority',
-    'is_active',
-    'description'
-];
+        'name',
+        'code',
+        'type',
+        'color',
+        'priority',
+        'is_active',
+        'description'
+    ];
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -50,5 +50,9 @@ class Status extends Model
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+    public function vouchers()
+    {
+        return $this->hasMany(Voucher::class);
     }
 }

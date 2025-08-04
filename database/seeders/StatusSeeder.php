@@ -137,24 +137,28 @@ class StatusSeeder extends Seeder
                 'is_active' => 1,
                 'description' => 'Tài khoản bị tạm khóa',
             ],
+            // Status cho Voucher
             [
-                'name' => 'Chờ xác minh',
-                'code' => 'pending_verify',
-                'type' => 'user',
-                'color' => '#facc15',
-                'priority' => 3,
+                'name' => 'Đang hoạt động',
+                'code' => 'active',
+                'type' => 'voucher',
+                'color' => '#22c55e',
+                'priority' => 1,
                 'is_active' => 1,
-                'description' => 'Chờ người dùng xác minh email hoặc số điện thoại',
+                'description' => 'Voucher còn sử dụng được',
             ],
             [
-                'name' => 'Đã xóa',
-                'code' => 'deleted',
-                'type' => 'user',
+                'name' => 'Hết hạn',
+                'code' => 'expired',
+                'type' => 'voucher',
                 'color' => '#6b7280',
-                'priority' => 4,
-                'is_active' => 0,
-                'description' => 'Tài khoản đã bị xóa hoặc không còn sử dụng',
+                'priority' => 2,
+                'is_active' => 1,
+                'description' => 'Voucher đã hết hạn sử dụng',
             ],
+        
+
+
         ];
 
         foreach ($statuses as $status) {

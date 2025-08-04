@@ -28,7 +28,7 @@ class CheckoutController extends Controller
 
         // Tính giảm giá từ voucher
         $discount = $voucher
-            ? ($voucher->discount_type === 'percentage'
+            ? ($voucher->discount_type === 'percent'
                 ? round($total * ($voucher->discount_value / 100))
                 : min($voucher->discount_value, $total))
             : 0;
@@ -83,7 +83,7 @@ class CheckoutController extends Controller
         // Tính giảm giá nếu có voucher
         $discount = 0;
         if ($voucherId && ($voucher = Voucher::find($voucherId))) {
-            $discount = $voucher->discount_type === 'percentage'
+            $discount = $voucher->discount_type === 'percent'
                 ? round($amount * ($voucher->discount_value / 100))
                 : min($voucher->discount_value, $amount);
         }
