@@ -179,6 +179,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     //slideshows
     Route::resource('slideshows', SlideshowController::class);
+    
+    // News Management
+Route::resource('news', App\Http\Controllers\Admin\NewsController::class)->names([
+    'index' => 'news.index',
+    'create' => 'news.create',
+    'store' => 'news.store',
+    'show' => 'news.show',
+    'edit' => 'news.edit',
+    'update' => 'news.update',
+    'destroy' => 'news.destroy',
+]);
 });
 
 /*
@@ -196,6 +207,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{order}', [OrderrController::class, 'show'])->name('user.orders.show');
     Route::post('/orders/{id}/cancel', [OrderrController::class, 'cancel'])->name('user.orders.cancel');
     Route::post('/orders/{id}/confirm-received', [OrderrController::class, 'confirmReceived']) ->name('user.orders.confirm-received');
+
+    // News Routes (User)
+    Route::get('/news', [App\Http\Controllers\User\NewsController::class, 'index'])->name('user.news.index');
+    Route::get('/news/{slug}', [App\Http\Controllers\User\NewsController::class, 'show'])->name('user.news.show');
 
 });
 
