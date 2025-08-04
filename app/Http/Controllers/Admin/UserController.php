@@ -5,156 +5,176 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Status;
+use App\Models\StatusLog;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::with(['role', 'status']);
+
         if ($request->filled('keyword')) {
-            $keyword = $request->keyword;
-            $query->where(function ($q) use ($keyword) {
-                $q->where('name', 'like', "%$keyword%")
-                  ->orWhere('email', 'like', "%$keyword%")
-                  ->orWhere('phone', 'like', "%$keyword%")
-                  ->orWhere('id', $keyword);
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->keyword . '%')
+                    ->orWhere('email', 'like', '%' . $request->keyword . '%')
+                    ->orWhere('phoneNumber', 'like', '%' . $request->keyword . '%');
             });
         }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+
         if ($request->filled('role_id')) {
             $query->where('role_id', $request->role_id);
         }
+
+        if ($request->filled('status_id')) {
+            $query->where('status_id', $request->status_id);
+        }
+
         if ($request->filled('created_from')) {
             $query->whereDate('created_at', '>=', $request->created_from);
         }
+
         if ($request->filled('created_to')) {
             $query->whereDate('created_at', '<=', $request->created_to);
         }
-        $users = $query->with('status')->orderBy('id', 'desc')->paginate(10)->withQueryString();
-        $roles = \App\Models\Role::all();
-        return view('admin.users.index', compact('users', 'roles'));
+
+        $users = $query->latest()->paginate(10);
+
+        $roles = Role::all();
+        $statuses = Status::active()->where('type', 'user')->get();
+
+        return view('admin.users.index', compact('users', 'roles', 'statuses'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $roles = Role::all();
-        return view('admin.users.create', compact('roles'));
+        $statuses = Status::all(); // nếu muốn cho admin chọn trạng thái ban đầu
+        return view('admin.users.create', compact('roles', 'statuses'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'phone' => 'nullable|string|max:20',
+            'phoneNumber' => 'required|digits:10|unique:users,phoneNumber',
             'password' => 'required|string|min:6|confirmed',
-            'status' => 'required|boolean',
             'role_id' => 'required|exists:roles,id',
+        ], [
+            'required' => ':attribute không được để trống',
+            'email' => 'Email không đúng định dạng',
+            'unique' => ':attribute đã tồn tại',
+            'digits' => ':attribute phải gồm 10 chữ số',
+            'confirmed' => 'Xác nhận mật khẩu không khớp',
+            'exists' => ':attribute không hợp lệ',
+        ], [
+            'name' => 'Họ tên',
+            'email' => 'Email',
+            'phoneNumber' => 'Số điện thoại',
+            'password' => 'Mật khẩu',
+            'role_id' => 'Vai trò',
         ]);
-        $data['password'] = Hash::make($data['password']);
-        User::create($data);
-        return redirect()->route('admin.users.index')->with('success', 'Thêm user thành công!');
+
+        try {
+            User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phoneNumber' => $validated['phoneNumber'],
+                'password' => bcrypt($validated['password']),
+                'role_id' => $validated['role_id'],
+                'status_id' => 12, // mặc định đang hoạt động
+            ]);
+
+            return redirect()->route('admin.users.index')->with('success', 'Tạo tài khoản thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Đã xảy ra lỗi khi tạo tài khoản. Vui lòng thử lại.'])->withInput();
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
-    {
-        $user = User::findOrFail($id);
-        $roles = \App\Models\Role::all();
-        return view('admin.users.show', compact('user', 'roles'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
+        $currentUser = auth()->user();
         $user = User::findOrFail($id);
+
+        if ($currentUser->role_id == $user->role_id) {
+            return redirect()->back()->with('error', 'Bạn không có quyền chỉnh sửa người dùng có cùng vai trò!');
+        }
+
         $roles = Role::all();
-        return view('admin.users.edit', compact('user', 'roles'));
+        $statuses = Status::all();
+
+        return view('admin.users.edit', compact('user', 'roles', 'statuses'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
+        $currentUser = auth()->user();
         $user = User::findOrFail($id);
-        $data = $request->validate([
+
+        if ($currentUser->role_id == $user->role_id) {
+            return redirect()->back()->with('error', 'Bạn không có quyền cập nhật người dùng có cùng vai trò!');
+        }
+
+        $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'status' => 'required|boolean',
-            'role_id' => 'required|exists:roles,id',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'phoneNumber' => [
+                'required',
+                'digits:10',
+                Rule::unique('users', 'phoneNumber')->ignore($user->id),
+            ],
+            'status_id' => 'nullable|exists:statuses,id',
+        ], [
+            'name.required' => 'Họ tên không được để trống.',
+            'name.string' => 'Họ tên phải là chuỗi ký tự.',
+            'name.max' => 'Họ tên không được vượt quá :max ký tự.',
+
+            'email.required' => 'Email không được để trống.',
+            'email.email' => 'Email không đúng định dạng.',
+            'email.unique' => 'Email đã tồn tại.',
+
+            'phoneNumber.required' => 'Số điện thoại không được để trống.',
+            'phoneNumber.digits' => 'Số điện thoại phải gồm 10 chữ số.',
+            'phoneNumber.unique' => 'Số điện thoại đã tồn tại.',
+
+            'status_id.exists' => 'Trạng thái không hợp lệ.',
         ]);
-        $user->update($data);
-        return redirect()->route('admin.users.index')->with('success', 'Cập nhật user thành công!');
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $user = User::findOrFail($id);
-        $user->delete();
-        return redirect()->route('admin.users.index')->with('success', 'Xóa user thành công!');
-    }
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phoneNumber = $request->phoneNumber;
 
-    public function toggleStatus($id)
-    {
-        $user = User::findOrFail($id);
-        $user->status = !$user->status;
+        if ($currentUser->role->name === 'admin' && $request->filled('status_id')) {
+            if ($user->status_id != $request->status_id) {
+                // ✅ Ghi log thay đổi trạng thái
+                StatusLog::create([
+                    'loggable_type' => User::class,
+                    'loggable_id' => $user->id,
+                    'status_id' => $request->status_id,
+                    'user_id' => auth()->id(),
+                    'note' => 'Cập nhật trạng thái bởi admin',
+                ]);
+            }
+
+            $user->status_id = $request->status_id;
+        }
+
         $user->save();
-        return redirect()->route('admin.users.index')->with('success', 'Đã cập nhật trạng thái user.');
-    }
 
-    public function updateRole(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-        $data = $request->validate([
-            'role_id' => 'required|exists:roles,id',
-        ]);
-        $user->role_id = $data['role_id'];
-        $user->save();
-        return redirect()->route('admin.users.show', $user->id)->with('success', 'Cập nhật vai trò thành công!');
+        return redirect()->route('admin.users.index')->with('success', 'Cập nhật người dùng thành công.');
     }
-
-    /**
-     * Hiển thị lịch sử thay đổi trạng thái của user
-     */
     public function statusLogs($id)
     {
-        $user = \App\Models\User::findOrFail($id);
-        $logs = $user->statusLogs()->with('status', 'loggable')->orderByDesc('created_at')->get();
-        return view('admin.users.status_logs', compact('user', 'logs'));
-    }
+        $user = User::findOrFail($id);
+        $logs = $user->statusLogs()->with('status', 'user')->latest()->get();
 
-    /**
-     * Cập nhật trạng thái cho user và ghi log
-     */
-    public function updateStatus(Request $request, $id)
-    {
-        $user = \App\Models\User::findOrFail($id);
-        $request->validate([
-            'status_id' => 'required|exists:statuses,id',
-            'note' => 'nullable|string',
-        ]);
-        $user->updateStatus($request->status_id, auth()->id(), $request->note);
-        return redirect()->back()->with('success', 'Cập nhật trạng thái thành công!');
+        return view('admin.users.status_logs', compact('user', 'logs'));
     }
 }

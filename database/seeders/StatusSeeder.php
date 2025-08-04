@@ -98,7 +98,7 @@ class StatusSeeder extends Seeder
                 'is_active' => 1,
                 'description' => 'Đơn hàng đã hoàn tiền',
             ],
-            
+
             // Status cho Product Variant
             [
                 'name' => 'Còn hàng',
@@ -117,6 +117,43 @@ class StatusSeeder extends Seeder
                 'priority' => 2,
                 'is_active' => 1,
                 'description' => 'Sản phẩm hết hàng',
+            ],
+            // Status cho User
+            [
+                'name' => 'Hoạt động',
+                'code' => 'active',
+                'type' => 'user',
+                'color' => '#22c55e',
+                'priority' => 1,
+                'is_active' => 1,
+                'description' => 'Tài khoản đang hoạt động',
+            ],
+            [
+                'name' => 'Tạm khóa',
+                'code' => 'inactive',
+                'type' => 'user',
+                'color' => '#ef4444',
+                'priority' => 2,
+                'is_active' => 1,
+                'description' => 'Tài khoản bị tạm khóa',
+            ],
+            [
+                'name' => 'Chờ xác minh',
+                'code' => 'pending_verify',
+                'type' => 'user',
+                'color' => '#facc15',
+                'priority' => 3,
+                'is_active' => 1,
+                'description' => 'Chờ người dùng xác minh email hoặc số điện thoại',
+            ],
+            [
+                'name' => 'Đã xóa',
+                'code' => 'deleted',
+                'type' => 'user',
+                'color' => '#6b7280',
+                'priority' => 4,
+                'is_active' => 0,
+                'description' => 'Tài khoản đã bị xóa hoặc không còn sử dụng',
             ],
         ];
 

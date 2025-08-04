@@ -75,14 +75,23 @@
         .pulse-custom {
             animation: pulse-custom 2s infinite;
         }
-        .btn-orange, .bg-orange, .bg-orange-500, .hover\:bg-orange-600:hover {
+
+        .btn-orange,
+        .bg-orange,
+        .bg-orange-500,
+        .hover\:bg-orange-600:hover {
             background: linear-gradient(to right, #ff8800, #ff6600) !important;
             color: #fff !important;
         }
-        .text-orange, .text-orange-500, .hover\:text-orange-600:hover {
+
+        .text-orange,
+        .text-orange-500,
+        .hover\:text-orange-600:hover {
             color: #ff6600 !important;
         }
-        .border-orange, .border-orange-500 {
+
+        .border-orange,
+        .border-orange-500 {
             border-color: #ff6600 !important;
         }
     </style>
@@ -100,13 +109,16 @@
                     Tạo tài khoản Nova Smart để trải nghiệm mua sắm tuyệt vời!
                 </span>
 
-                <form method="POST" action="{{ route('register') }}" class="space-y-6">
+                <!-- Dòng này giữ nguyên -->
+                <form method="POST" action="{{ route('register') }}" class="space-y-6" autocomplete="off">
                     @csrf
+
                     <div>
                         <span class="mb-2 text-md text-slate-700">Họ và tên</span>
                         <input type="text"
                             class="w-full p-2 border border-slate-300 rounded-md placeholder:font-light placeholder:text-slate-400 focus:border-blue-500 focus:outline-none @error('fullname') border-red-500 @enderror"
-                            name="fullname" id="fullname" placeholder="Nhập họ và tên" value="{{ old('fullname') }}" />
+                            name="fullname" id="fullname" placeholder="Nhập họ và tên" value="{{ old('fullname') }}"
+                            autocomplete="off" />
                         @error('fullname')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -116,8 +128,8 @@
                         <span class="mb-2 text-md text-slate-700">Email</span>
                         <input type="email"
                             class="w-full p-2 border border-slate-300 rounded-md placeholder:font-light placeholder:text-slate-400 focus:border-blue-500 focus:outline-none @error('email') border-red-500 @enderror"
-                            name="email" id="email" placeholder="Nhập email của bạn"
-                            value="{{ old('email') }}" />
+                            name="email" id="email" placeholder="Nhập email của bạn" value="{{ old('email') }}"
+                            autocomplete="off" />
                         @error('email')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -127,8 +139,8 @@
                         <span class="mb-2 text-md text-slate-700">Số điện thoại</span>
                         <input type="tel"
                             class="w-full p-2 border border-slate-300 rounded-md placeholder:font-light placeholder:text-slate-400 focus:border-blue-500 focus:outline-none @error('phone') border-red-500 @enderror"
-                            name="phone" id="phone" placeholder="Nhập số điện thoại"
-                            value="{{ old('phone') }}" />
+                            name="phone" id="phone" placeholder="Nhập số điện thoại" value="{{ old('phone') }}"
+                            autocomplete="off" />
                         @error('phone')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -138,7 +150,7 @@
                         <span class="mb-2 text-md text-slate-700">Mật khẩu</span>
                         <input type="password" name="password" id="password"
                             class="w-full p-2 border border-slate-300 rounded-md placeholder:font-light placeholder:text-slate-400 focus:border-blue-500 focus:outline-none @error('password') border-red-500 @enderror"
-                            placeholder="Nhập mật khẩu" />
+                            placeholder="Nhập mật khẩu" autocomplete="new-password" />
                         @error('password')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -148,7 +160,7 @@
                         <span class="mb-2 text-md text-slate-700">Xác nhận mật khẩu</span>
                         <input type="password" name="password_confirmation" id="password_confirmation"
                             class="w-full p-2 border border-slate-300 rounded-md placeholder:font-light placeholder:text-slate-400 focus:border-blue-500 focus:outline-none"
-                            placeholder="Nhập lại mật khẩu" />
+                            placeholder="Nhập lại mật khẩu" autocomplete="new-password" />
                         @error('password_confirmation')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -199,7 +211,8 @@
 
                 <div class="text-center text-slate-500">
                     Đã có tài khoản?
-                    <a href="{{ route('login') }}" class="font-bold text-orange-500 hover:text-orange-600 ml-1">Đăng nhập
+                    <a href="{{ route('login') }}" class="font-bold text-orange-500 hover:text-orange-600 ml-1">Đăng
+                        nhập
                         ngay</a>
                 </div>
             </div>
