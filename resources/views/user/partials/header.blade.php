@@ -194,11 +194,39 @@
                 </div>
             </li>
 
-            <li class="inline-block ps-0.5">
-                <a href="javascript:void(0)"
-                    class="size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full bg-orange-500 text-white">
+            <li class="dropdown inline-block relative ps-0.5">
+                <button data-dropdown-toggle="wishlist-dropdown"
+                    class="dropdown-toggle size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full bg-orange-500 text-white relative"
+                    type="button">
                     <i data-feather="heart" class="h-4 w-4"></i>
-                </a>
+                    @auth
+                        <span id="wishlist-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-sm">0</span>
+                    @endauth
+                </button>
+                <!-- Dropdown menu -->
+                <div class="dropdown-menu absolute end-0 mt-4 z-10 w-72 rounded-md bg-white dark:bg-slate-900 shadow-sm dark:shadow-gray-800 hidden"
+                    id="wishlist-dropdown" onclick="event.stopPropagation();">
+                    <ul class="py-3 text-start" aria-labelledby="dropdownDefault">
+                        @auth
+                            <div id="wishlist-items">
+                                <!-- Wishlist items will be loaded here -->
+                            </div>
+                            <li class="border-t border-gray-100 dark:border-gray-800 my-2"></li>
+                            <li class="py-1.5 px-4">
+                                <div class="text-center space-x-2">
+                                    <a href="{{ route('wishlist.index') }}"
+                                        class="btn-view-wishlist py-[5px] px-4 inline-block font-semibold text-sm rounded-md bg-orange-500 text-white">
+                                        Xem danh sách yêu thích
+                                    </a>
+                                </div>
+                            </li>
+                        @else
+                            <li class="px-4 py-2 text-center text-sm text-gray-500">
+                                <a href="{{ route('login') }}" class="text-orange-500 hover:underline">Đăng nhập</a> để xem danh sách yêu thích
+                            </li>
+                        @endauth
+                    </ul>
+                </div>
             </li>
 
             <!-- Nếu đã đăng nhập thì hiển thị avatar -->

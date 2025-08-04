@@ -81,9 +81,13 @@
                             <!-- Nút yêu thích, xem nhanh, bookmark -->
                             <ul
                                 class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
-                                <li><a href="javascript:void(0)"
-                                        class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
-                                            data-feather="heart" class="size-4"></i></a></li>
+                                <li>
+                                    <button onclick="toggleWishlist({{ $variant->id }}, this)"
+                                        class="wishlist-btn size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow cursor-pointer"
+                                        data-product-variant-id="{{ $variant->id }}">
+                                        <i data-feather="heart" class="size-4"></i>
+                                    </button>
+                                </li>
                                 <li class="mt-1"><a href="{{ route('products.show', $variant->id) }}"
                                         class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
                                             data-feather="eye" class="size-4"></i></a></li>
