@@ -6,6 +6,9 @@
 <!-- JS xử lý popup login -->
 <script src="{{ asset('assets/user/js/popup-cart.js') }}"></script>
 
+<!-- JS xử lý wishlist -->
+<script src="{{ asset('assets/user/js/wishlist.js') }}"></script>
+
 <!-- Header Scroll Fix -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {

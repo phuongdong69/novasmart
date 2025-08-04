@@ -4,11 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="auth-status" content="{{ Auth::check() ? 'true' : 'false' }}">
     <title>@yield('title')</title>
     <meta name="description" content="@yield('meta_description')">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Shreethemes">
     @include('user.partials.assests')
+    
+    <!-- Wishlist CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/user/css/wishlist.css') }}">
 
     {{-- Thêm biến login cho JS --}}
     <script>

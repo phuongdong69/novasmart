@@ -24,6 +24,7 @@ use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\User\OrderrController;
+use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\ShopController;
 
 
@@ -197,6 +198,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{order}', [OrderrController::class, 'show'])->name('user.orders.show');
     Route::post('/orders/{id}/cancel', [OrderrController::class, 'cancel'])->name('user.orders.cancel');
     Route::post('/orders/{id}/confirm-received', [OrderrController::class, 'confirmReceived']) ->name('user.orders.confirm-received');
+
+    // Wishlist routes
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('wishlist.add');
+    Route::post('/wishlist/remove', [WishlistController::class, 'remove'])->name('wishlist.remove');
+    Route::post('/wishlist/check', [WishlistController::class, 'check'])->name('wishlist.check');
+    Route::get('/wishlist/count', [WishlistController::class, 'count'])->name('wishlist.count');
 
 });
 

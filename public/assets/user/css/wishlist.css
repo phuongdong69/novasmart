@@ -1,0 +1,108 @@
+/* Wishlist styles */
+.wishlist-btn {
+    transition: all 0.3s ease;
+}
+
+.wishlist-btn:hover {
+    transform: scale(1.05);
+}
+
+.wishlist-btn.liked {
+    background-color: #ef4444 !important;
+    color: white !important;
+}
+
+/* Badge styles */
+#wishlist-count {
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Hide badge when count is 0 */
+#wishlist-count[data-count="0"],
+#wishlist-count:empty {
+    display: none !important;
+}
+
+/* Wishlist dropdown styles */
+.wishlist-item {
+    transition: background-color 0.2s ease;
+}
+
+.wishlist-item:hover {
+    background-color: #f8fafc;
+}
+
+.wishlist-item button {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.wishlist-item:hover button {
+    opacity: 1;
+}
+
+/* Product card wishlist button */
+.group:hover .wishlist-btn {
+    transform: scale(1.1);
+}
+
+/* Notification styles */
+.wishlist-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white !important;
+    font-weight: 500;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease;
+    text-align: center;
+    min-width: 200px;
+    border: none;
+    outline: none;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Specific notification colors */
+.wishlist-notification.bg-green-500 {
+    background-color: #10b981 !important;
+}
+
+.wishlist-notification.bg-red-500 {
+    background-color: #ef4444 !important;
+}
+
+.wishlist-notification.bg-blue-500 {
+    background-color: #3b82f6 !important;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+} 
