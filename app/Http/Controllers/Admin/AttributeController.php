@@ -75,9 +75,31 @@ class AttributeController extends Controller
     {
         try {
             $attribute->update($request->validated());
+            
+            // Kiểm tra nếu là AJAX request
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Thuộc tính đã được cập nhật thành công!',
+                    'data' => [
+                        'id' => $attribute->id,
+                        'name' => $attribute->name,
+                        'description' => $attribute->description
+                    ]
+                ]);
+            }
+            
             return redirect()->route('admin.attributes.index')
                 ->with('success', 'Thuộc tính đã được cập nhật thành công!');
         } catch (\Exception $e) {
+            // Kiểm tra nếu là AJAX request
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể cập nhật thuộc tính. Vui lòng thử lại.'
+                ], 422);
+            }
+            
             return redirect()->back()
                 ->with('error', 'Không thể cập nhật thuộc tính. Vui lòng thử lại.');
         }
@@ -108,6 +130,58 @@ class AttributeController extends Controller
             return response()->json(['values' => $values]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Không thể lấy giá trị thuộc tính.'], 500);
+        }
+    }
+
+    /**
+     * Tạo giá trị mới cho thuộc tính
+     */
+    public function storeValue(Request $request, Attribute $attribute)
+    {
+        $request->validate([
+            'value' => 'required|string|max:255'
+        ], [
+            'value.required' => 'Giá trị là bắt buộc',
+            'value.max' => 'Giá trị không được vượt quá 255 ký tự'
+        ]);
+
+        try {
+            // Kiểm tra giá trị đã tồn tại chưa
+            $existingValue = $attribute->values()->where('value', $request->value)->first();
+            if ($existingValue) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Giá trị này đã tồn tại!'
+                    ], 422);
+                }
+                return redirect()->back()->with('error', 'Giá trị này đã tồn tại!');
+            }
+
+            $attributeValue = $attribute->values()->create([
+                'value' => $request->value
+            ]);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Thêm giá trị thành công!',
+                    'data' => [
+                        'id' => $attributeValue->id,
+                        'value' => $attributeValue->value
+                    ]
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Thêm giá trị thành công!');
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể thêm giá trị. Vui lòng thử lại.'
+                ], 422);
+            }
+            return redirect()->back()->with('error', 'Không thể thêm giá trị. Vui lòng thử lại.');
         }
     }
 }

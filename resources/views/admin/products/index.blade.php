@@ -743,4 +743,3 @@
 
     {{-- Styling is handled by Tailwind CSS --}}
 @endsection
-
