@@ -138,6 +138,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('products', ProductController::class);
     //attribute
     Route::get('attributes/{attribute}/values', [AttributeController::class, 'getValues'])->name('attributes.values');
+    Route::post('attributes/{attribute}/values', [AttributeController::class, 'storeValue'])->name('attributes.values.store');
     Route::resource('attributes', AttributeController::class);
     //attribute_values
     Route::resource('attribute_values', AttributeValueController::class)->names([

@@ -3,6 +3,7 @@
 Trang Thuộc Tính
 @endsection
 @section('content')
+<script src="https://cdn.tailwindcss.com"></script>
 <div class="w-full px-6 py-6 mx-auto">
     <div class="flex flex-wrap -mx-3">
         <div class="flex-none w-full max-w-full px-3">
@@ -61,14 +62,39 @@ Trang Thuộc Tính
                             </thead>
                             <tbody>
                                 @forelse ($attributes as $attribute)
-                                    <tr class="border-b dark:border-white/40 hover:bg-gray-50 transition">
+                                    <tr class="border-b dark:border-white/40 hover:bg-gray-50 transition" data-attribute-id="{{ $attribute->id }}">
                                         <td class="px-6 py-3 text-sm">{{ $loop->index + 1 }}</td>
                                         <td class="px-6 py-3 text-sm">
-                                            <a href="#" class="attribute-name text-blue-600 hover:underline" data-attribute-id="{{ $attribute->id }}">{{ $attribute->name }}</a>
+                                            <!-- Display mode -->
+                                            <div class="name-display">
+                                                <a href="#" class="attribute-name text-blue-600 hover:underline" data-attribute-id="{{ $attribute->id }}">{{ $attribute->name }}</a>
+                                            </div>
+                                            <!-- Edit mode -->
+                                            <div class="name-edit hidden">
+                                                <input type="text" class="name-input border border-gray-300 rounded px-2 py-1 text-sm w-full" value="{{ $attribute->name }}">
+                                            </div>
                                         </td>
-                                        <td class="px-6 py-3 text-sm">{{ $attribute->description }}</td>
                                         <td class="px-6 py-3 text-sm">
-                                            <a href="{{ route('admin.attributes.edit', $attribute->id) }}" class="text-blue-600 hover:underline">Sửa</a>
+                                            <!-- Display mode -->
+                                            <div class="description-display">
+                                                <span class="description-text">{{ $attribute->description }}</span>
+                                            </div>
+                                            <!-- Edit mode -->
+                                            <div class="description-edit hidden">
+                                                <input type="text" class="description-input border border-gray-300 rounded px-2 py-1 text-sm w-full" value="{{ $attribute->description }}">
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-3 text-sm">
+                                            <!-- Display mode buttons -->
+                                            <div class="action-display flex gap-2">
+                                                <button class="edit-attribute-btn border border-blue-500 text-blue-600 hover:bg-blue-50 px-3 py-1 rounded text-xs font-medium transition-colors" data-attribute-id="{{ $attribute->id }}">Sửa</button>
+                                                <a href="{{ route('admin.attributes.edit', $attribute->id) }}" class="border border-gray-500 text-gray-600 hover:bg-gray-50 px-3 py-1 rounded text-xs font-medium transition-colors inline-block">Chi tiết</a>
+                                            </div>
+                                            <!-- Edit mode buttons -->
+                                            <div class="action-edit hidden flex gap-2">
+                                                <button class="save-attribute-btn border border-green-500 text-green-600 hover:bg-green-50 px-3 py-1 rounded text-xs font-medium transition-colors">Lưu</button>
+                                                <button class="cancel-attribute-btn border border-red-500 text-red-600 hover:bg-red-50 px-3 py-1 rounded text-xs font-medium transition-colors">Hủy</button>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
@@ -89,9 +115,20 @@ Trang Thuộc Tính
 <div id="attributeValuesPopover" class="hidden fixed bg-white rounded-lg shadow-xl border border-gray-200 p-4" style="min-width:300px; max-width:400px; z-index:1000;">
     <div class="flex justify-between items-center border-b pb-2 mb-3">
         <h4 class="text-base font-semibold text-gray-800">Giá trị thuộc tính</h4>
-        <button id="closeAttributePopover" class="text-gray-400 hover:text-gray-600 text-xl leading-none focus:outline-none">&times;</button>
+        <div class="flex items-center gap-2">
+            <button id="addAttributeValueBtn" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm font-medium">+ Thêm</button>
+            <button id="closeAttributePopover" class="text-gray-400 hover:text-gray-600 text-xl leading-none focus:outline-none">&times;</button>
+        </div>
     </div>
     <div id="attributeValuesContent"></div>
+    <!-- Add new value form (hidden by default) -->
+    <div id="addValueForm" class="hidden mt-3 pt-3 border-t">
+        <div class="flex gap-2">
+            <input type="text" id="newValueInput" class="border border-gray-300 rounded px-2 py-1 text-sm flex-1" placeholder="Nhập giá trị mới...">
+            <button id="saveNewValueBtn" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm font-medium">Lưu</button>
+            <button id="cancelNewValueBtn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-medium">Hủy</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -149,6 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
         el.addEventListener('click', function (e) {
             e.preventDefault();
             const attributeId = this.getAttribute('data-attribute-id');
+            currentAttributeId = attributeId; // Set current attribute ID for add functionality
             lastTarget = this;
             content.innerHTML = '<div class="text-gray-400">Đang tải...</div>';
             popover.classList.remove('hidden');
@@ -290,12 +328,255 @@ document.addEventListener('DOMContentLoaded', function () {
     // Đóng popup khi click ra ngoài
     closeBtn.addEventListener('click', function () {
         popover.classList.add('hidden');
+        // Reset add form when closing
+        document.getElementById('addValueForm').classList.add('hidden');
+        document.getElementById('newValueInput').value = '';
     });
 
     document.addEventListener('mousedown', function (e) {
         if (!popover.contains(e.target) && (!lastTarget || e.target !== lastTarget)) {
             popover.classList.add('hidden');
+            // Reset add form when closing
+            document.getElementById('addValueForm').classList.add('hidden');
+            document.getElementById('newValueInput').value = '';
         }
+    });
+
+    // Add new attribute value functionality
+    let currentAttributeId = null;
+    
+    document.getElementById('addAttributeValueBtn').addEventListener('click', function() {
+        const addForm = document.getElementById('addValueForm');
+        const newValueInput = document.getElementById('newValueInput');
+        
+        addForm.classList.remove('hidden');
+        newValueInput.focus();
+    });
+    
+    document.getElementById('cancelNewValueBtn').addEventListener('click', function() {
+        const addForm = document.getElementById('addValueForm');
+        const newValueInput = document.getElementById('newValueInput');
+        
+        addForm.classList.add('hidden');
+        newValueInput.value = '';
+    });
+    
+    document.getElementById('saveNewValueBtn').addEventListener('click', function() {
+        const newValueInput = document.getElementById('newValueInput');
+        const newValue = newValueInput.value.trim();
+        
+        if (!newValue) {
+            showNotification('Vui lòng nhập giá trị!', 'error');
+            newValueInput.focus();
+            return;
+        }
+        
+        if (!currentAttributeId) {
+            showNotification('Không tìm thấy thuộc tính!', 'error');
+            return;
+        }
+        
+        // Disable button and show loading state
+        const saveBtn = this;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = 'Đang lưu...';
+        saveBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+        saveBtn.classList.remove('border-green-500', 'text-green-600', 'hover:bg-green-50');
+        
+        // Send AJAX request to create new attribute value
+        fetch(`/admin/attributes/${currentAttributeId}/values`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                value: newValue
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Hide add form and clear input
+                document.getElementById('addValueForm').classList.add('hidden');
+                newValueInput.value = '';
+                
+                // Refresh the attribute values list
+                const attributeNameElement = document.querySelector(`[data-attribute-id="${currentAttributeId}"]`);
+                if (attributeNameElement) {
+                    attributeNameElement.click(); // Trigger reload of values
+                }
+                
+                showNotification('Thêm giá trị thành công!', 'success');
+            } else {
+                showNotification(data.message || 'Có lỗi xảy ra khi thêm giá trị!', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Có lỗi xảy ra khi thêm giá trị!', 'error');
+        })
+        .finally(() => {
+            // Restore button state
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = 'Lưu';
+            saveBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            saveBtn.classList.add('border-green-500', 'text-green-600', 'hover:bg-green-50');
+        });
+    });
+    
+    // Handle Enter key to save new value
+    document.getElementById('newValueInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('saveNewValueBtn').click();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            document.getElementById('cancelNewValueBtn').click();
+        }
+    });
+
+    // Inline editing functionality for attributes
+    document.querySelectorAll('.edit-attribute-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const row = this.closest('tr');
+            const attributeId = this.getAttribute('data-attribute-id');
+            
+            // Switch to edit mode
+            row.querySelector('.name-display').classList.add('hidden');
+            row.querySelector('.name-edit').classList.remove('hidden');
+            row.querySelector('.description-display').classList.add('hidden');
+            row.querySelector('.description-edit').classList.remove('hidden');
+            row.querySelector('.action-display').classList.add('hidden');
+            row.querySelector('.action-edit').classList.remove('hidden');
+            
+            // Focus on name input
+            row.querySelector('.name-input').focus();
+        });
+    });
+
+    // Save attribute changes
+    document.querySelectorAll('.save-attribute-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const row = this.closest('tr');
+            const attributeId = row.getAttribute('data-attribute-id');
+            const nameInput = row.querySelector('.name-input');
+            const descriptionInput = row.querySelector('.description-input');
+            
+            const newName = nameInput.value.trim();
+            const newDescription = descriptionInput.value.trim();
+            
+            if (!newName) {
+                showNotification('Tên thuộc tính không được để trống!', 'error');
+                nameInput.focus();
+                return;
+            }
+            
+            // Disable button and show loading state
+            btn.disabled = true;
+            btn.innerHTML = 'Đang lưu...';
+            btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+            
+            // Send AJAX request to update attribute
+            fetch(`/admin/attributes/${attributeId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    name: newName,
+                    description: newDescription
+                })
+            })
+            .then(response => {
+                // Check if the response is ok (status 200-299)
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data); // Debug log
+                if (data.success) {
+                    // Update display values
+                    row.querySelector('.attribute-name').textContent = newName;
+                    row.querySelector('.description-text').textContent = newDescription;
+                    
+                    // Switch back to display mode
+                    row.querySelector('.name-display').classList.remove('hidden');
+                    row.querySelector('.name-edit').classList.add('hidden');
+                    row.querySelector('.description-display').classList.remove('hidden');
+                    row.querySelector('.description-edit').classList.add('hidden');
+                    row.querySelector('.action-display').classList.remove('hidden');
+                    row.querySelector('.action-edit').classList.add('hidden');
+                    
+                    showNotification('Cập nhật thuộc tính thành công!', 'success');
+                } else {
+                    console.log('Server returned success=false:', data); // Debug log
+                    showNotification(data.message || 'Có lỗi xảy ra khi cập nhật thuộc tính!', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Có lỗi xảy ra khi cập nhật thuộc tính!', 'error');
+            })
+            .finally(() => {
+                // Restore button state
+                btn.disabled = false;
+                btn.innerHTML = 'Lưu';
+                btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                btn.classList.add('bg-green-500', 'hover:bg-green-600');
+            });
+        });
+    });
+
+    // Cancel attribute editing
+    document.querySelectorAll('.cancel-attribute-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const row = this.closest('tr');
+            
+            // Reset input values to original
+            const originalName = row.querySelector('.attribute-name').textContent;
+            const originalDescription = row.querySelector('.description-text').textContent;
+            row.querySelector('.name-input').value = originalName;
+            row.querySelector('.description-input').value = originalDescription;
+            
+            // Switch back to display mode
+            row.querySelector('.name-display').classList.remove('hidden');
+            row.querySelector('.name-edit').classList.add('hidden');
+            row.querySelector('.description-display').classList.remove('hidden');
+            row.querySelector('.description-edit').classList.add('hidden');
+            row.querySelector('.action-display').classList.remove('hidden');
+            row.querySelector('.action-edit').classList.add('hidden');
+        });
+    });
+
+    // Handle Enter key to save, Escape key to cancel
+    document.querySelectorAll('.name-input, .description-input').forEach(function(input) {
+        input.addEventListener('keydown', function(e) {
+            const row = this.closest('tr');
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                row.querySelector('.save-attribute-btn').click();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                row.querySelector('.cancel-attribute-btn').click();
+            }
+        });
     });
 });
 </script>
