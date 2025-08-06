@@ -101,7 +101,7 @@
 
                     <li><a href="sale.html" class="sub-menu-item">Bán</a></li>
 
-                    <li><a href="{{ route('user.pages.about') }}" class="sub-menu-item">Về chúng tôi</a></li>
+                    <li><a href="{{ route('user.pages.about') }}" class="sub-menu-item">về chúng tôi</a></li>
 
                     <li><a href="contact.html" class="sub-menu-item">Liên hệ</a></li>
                 </ul>

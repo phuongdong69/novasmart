@@ -13,7 +13,7 @@
                                     <span class="text-xs text-gray-400 font-medium -mt-1">Uy tín chất lượng</span>
                                 </div>
                             </a>
-                            <p class="mt-6 text-gray-300">NovaSmart - Đối tác tin cậy của bạn trong lĩnh vực công nghệ. Chúng tôi cung cấp các sản phẩm điện tử chất lượng cao với giá cả hợp lý và dịch vụ hậu mãi tận tâm</p>
+                            <p class="mt-6 text-gray-300">NovaSmart - Đối tác tin cậy của bạn trong lĩnh vực công nghệ. Chúng tôi cung cấp các sản phẩm điện tử chất lượng cao với giá cả hợp lý và dịch vụ hậu mãi tận tâm.</p>
                             <ul class="list-none mt-6">
                                 <li class="inline"><a href="#" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="facebook" class="size-4"></i></a></li>
                                 <li class="inline"><a href="#" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="instagram" class="size-4"></i></a></li>

@@ -143,7 +143,7 @@
                 <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Sứ mệnh & Tầm nhìn</span>
             </h2>
             <p class="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
-                Định hướng phát triển và mục tiêu tương lai của NovaSmart
+                Định hướng phát triển và mục tiêu tương lai của NovaSmart.
             </p>
         </div>
         
