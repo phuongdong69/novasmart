@@ -358,4 +358,62 @@ class ProductController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Cập nhật biến thể sản phẩm
+     */
+    public function updateVariant(Request $request, Product $product, \App\Models\ProductVariant $variant)
+    {
+        $request->validate([
+            'sku' => 'required|string|max:255|unique:product_variants,sku,' . $variant->id,
+            'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:0',
+            'attributes' => 'nullable|array',
+            'attributes.*.attribute_id' => 'required_with:attributes|exists:attributes,id',
+            'attributes.*.value' => 'required_with:attributes|exists:attribute_values,id',
+        ]);
+
+        try {
+            // Tự động xác định trạng thái dựa trên số lượng
+            $inStockStatusId = \App\Models\Status::where('type', 'product_variant')->where('code', 'in_stock')->value('id');
+            $outOfStockStatusId = \App\Models\Status::where('type', 'product_variant')->where('code', 'out_of_stock')->value('id');
+            $statusId = $request->quantity > 0 ? $inStockStatusId : $outOfStockStatusId;
+            
+            // Cập nhật thông tin biến thể
+            $variant->update([
+                'sku' => $request->sku,
+                'price' => $request->price,
+                'quantity' => $request->quantity,
+                'status_id' => $statusId,
+            ]);
+
+            // Xóa các thuộc tính cũ
+            $variant->variantAttributeValues()->delete();
+
+            // Thêm thuộc tính mới nếu có
+            if ($request->has('attributes')) {
+                $attributes = $request->input('attributes');
+                foreach ($attributes as $attr) {
+                    if (!empty($attr['attribute_id']) && !empty($attr['value'])) {
+                        \App\Models\VariantAttributeValue::create([
+                            'product_variant_id' => $variant->id,
+                            'attribute_value_id' => $attr['value'],
+                        ]);
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật biến thể thành công!',
+                'variant' => $variant->fresh()->load('variantAttributeValues.attributeValue.attribute')
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
