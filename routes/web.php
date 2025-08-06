@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\User\OrderrController;
 use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\User\AboutController;
 
 
 /*
@@ -37,6 +38,9 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\User\HomeController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// About page
+Route::get('/about', [AboutController::class, 'index'])->name('about');
 
 // User-facing product list
 use App\Http\Controllers\User\ProductController as UserProductController;
