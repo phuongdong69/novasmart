@@ -28,8 +28,6 @@
                     <li class="has-submenu parent-parent-menu-item">
                         <a href="javascript:void(0)">Thông tin</a><span class="menu-arrow"></span>
                         <ul class="submenu">
-                            <li><a href="{{ route('user.pages.about') }}" class="sub-menu-item">Về chúng tôi</a></li>
-
                             <li class="has-submenu parent-menu-item">
                                 <a href="javascript:void(0)">Tài khoản của tôi</a><span class="submenu-arrow"></span>
                                 <ul class="submenu">
@@ -101,6 +99,8 @@
 
 
                     <li><a href="sale.html" class="sub-menu-item">Bán</a></li>
+
+                    <li><a href="{{ route('user.pages.about') }}" class="sub-menu-item">Về chúng tôi</a></li>
 
                     <li><a href="contact.html" class="sub-menu-item">Liên hệ</a></li>
                 </ul>

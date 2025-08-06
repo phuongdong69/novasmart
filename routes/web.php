@@ -199,6 +199,7 @@ Route::resource('news', App\Http\Controllers\Admin\NewsController::class)->names
 */
 Route::middleware('auth')->group(function () {
     Route::get('/user/pages/home', [HomeController::class, 'index'])->name('user.pages.home');
+    //route about
     Route::get('/user/pages/about', [App\Http\Controllers\User\AboutController::class, 'index'])->name('user.pages.about');
     Route::get('/user/pages/product-list', [App\Http\Controllers\User\ProductController::class, 'index'])->name('user.pages.product-list');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

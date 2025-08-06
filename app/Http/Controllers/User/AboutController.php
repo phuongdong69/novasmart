@@ -12,3 +12,4 @@ class AboutController extends Controller
         return view('user.pages.about');
     }
 } 
+//file này là file controller cho trang about

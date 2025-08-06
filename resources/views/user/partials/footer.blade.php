@@ -51,7 +51,8 @@
 
                                 <div class="md:col-span-4">
                                     <ul class="list-none footer-list mt-6">
-                                        <li><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Tài khoản của tôi</a></li>
+                                        <li><a href="{{ route('user.pages.about') }}" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Về chúng tôi</a></li>
+                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Tài khoản của tôi</a></li>
                                         <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Lịch sử đơn hàng</a></li>
                                         <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Sản phẩm yêu thích</a></li>
                                         <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Bảo hành & Sửa chữa</a></li>
