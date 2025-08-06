@@ -5,9 +5,8 @@
 
 @section('content')
 <!-- Hero Section -->
- 
-<section class="relative min-h-screen flex items-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 overflow-hidden pt-48">
-    <!-- Background Elements -->
+<section class="relative py-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 overflow-hidden">
+    <!-- Animated Background Elements -->
     <div class="absolute inset-0">
         <div class="absolute top-20 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
         <div class="absolute top-40 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
@@ -17,56 +16,55 @@
     <div class="container mx-auto px-4 relative z-10">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div class="space-y-8">
-                <br>
-                <br>
-                <br>
-                <div class="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur-sm border border-blue-200 text-blue-700 rounded-full text-sm font-semibold shadow-lg">
-                    <i class="fas fa-star mr-3 text-yellow-500"></i>Thương hiệu uy tín hàng đầu
+                <div class="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur-sm border border-blue-200 text-blue-700 rounded-full text-sm font-semibold shadow-lg animate-fade-in-up">
+                    <i class="fas fa-star mr-3 text-yellow-500 animate-pulse"></i>Thương hiệu uy tín hàng đầu
                 </div>
                 
-                <h1 class="text-5xl lg:text-7xl font-bold text-slate-800 dark:text-white leading-tight">
-                    NovaSmart
-                    <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">NovaSmart</span>
-                </h1>
+                <div class="space-y-6">
+                    <h1 class="text-6xl lg:text-8xl font-bold text-slate-800 dark:text-white leading-tight animate-fade-in-up animation-delay-200">
+                        <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent animate-gradient">NovaSmart</span>
+                    </h1>
+                    
+                    <p class="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl animate-fade-in-up animation-delay-400">
+                        NovaSmart là công ty chuyên cung cấp các sản phẩm và giải pháp công nghệ tiên tiến, giúp khách hàng tiếp cận nhanh nhất với những xu hướng công nghệ mới trên thị trường. Với phương châm <span class="font-semibold text-blue-600 dark:text-blue-400">"Công nghệ thông minh – Cuộc sống thông minh"</span>, chúng tôi không chỉ mang đến sản phẩm chất lượng mà còn chú trọng dịch vụ hỗ trợ tận tâm, đảm bảo trải nghiệm mua sắm và sử dụng hoàn hảo cho khách hàng.
+                    </p>
+                </div>
                 
-                <p class="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
-                     là thương hiệu công nghệ hàng đầu, chuyên cung cấp các sản phẩm điện tử chất lượng cao với sứ mệnh mang đến trải nghiệm mua sắm tuyệt vời cho mọi khách hàng.
-                </p>
-                
-                <div class="grid grid-cols-3 gap-8">
-                    <div class="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-blue-100">
-                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-users text-white text-2xl"></i>
+                <div class="grid grid-cols-3 gap-6 animate-fade-in-up animation-delay-600">
+                    <div class="group text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-blue-100 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-500">
+                            <i class="fas fa-users text-white text-2xl group-hover:rotate-12 transition-transform duration-500"></i>
                         </div>
                         <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Tận tâm</h3>
-                        <p class="text-sm text-slate-600 dark:text-slate-400 font-medium">Chăm sóc khách hàng hài lòng</p>
+                        <p class="text-base text-slate-600 dark:text-slate-400 font-medium">Chăm sóc khách hàng hài lòng</p>
                     </div>
                     
-                    <div class="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-green-100">
-                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-shipping-fast text-white text-2xl"></i>
+                    <div class="group text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-green-100 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-500">
+                            <i class="fas fa-shipping-fast text-white text-2xl group-hover:rotate-12 transition-transform duration-500"></i>
                         </div>
                         <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">24/7</h3>
-                        <p class="text-sm text-slate-600 dark:text-slate-400 font-medium">Hỗ trợ khách hàng</p>
+                        <p class="text-base text-slate-600 dark:text-slate-400 font-medium">Hỗ trợ khách hàng</p>
                     </div>
                     
-                    <div class="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100">
-                        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-award text-white text-2xl"></i>
+                    <div class="group text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-500">
+                            <i class="fas fa-award text-white text-2xl group-hover:rotate-12 transition-transform duration-500"></i>
                         </div>
                         <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">5+</h3>
-                        <p class="text-sm text-slate-600 dark:text-slate-400 font-medium">Năm kinh nghiệm</p>
+                        <p class="text-base text-slate-600 dark:text-slate-400 font-medium">Năm kinh nghiệm</p>
                     </div>
                 </div>
             </div>
             
-            <div class="relative">
-                <div class="relative z-10">
-                    <img src="{{ asset('assets/user/images/ab1.jpg') }}" alt="NovaSmart Team" class="rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+            <div class="relative animate-fade-in-up animation-delay-800">
+                <div class="relative z-10 group">
+                    <img src="{{ asset('assets/user/images/ab1.jpg') }}" alt="NovaSmart Team" class="rounded-3xl shadow-2xl transform rotate-3 group-hover:rotate-0 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
-                <div class="absolute -bottom-8 -left-8 bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-blue-100">
+                <div class="absolute -bottom-8 -left-8 bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-blue-100 animate-bounce-slow">
                     <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center animate-pulse">
                             <i class="fas fa-heart text-white text-xl"></i>
                         </div>
                         <div>
@@ -80,12 +78,51 @@
     </div>
 </section>
 
+<!-- Statistics Section -->
+<section class="py-20 bg-white dark:bg-slate-900">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-500">
+                    <i class="fas fa-users text-white text-3xl"></i>
+                </div>
+                <h3 class="text-4xl font-bold text-slate-800 dark:text-white mb-2 counter">50,000+</h3>
+                <p class="text-slate-600 dark:text-slate-400 font-medium">Khách hàng tin tưởng</p>
+            </div>
+            
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-500">
+                    <i class="fas fa-box text-white text-3xl"></i>
+                </div>
+                <h3 class="text-4xl font-bold text-slate-800 dark:text-white mb-2 counter">100,000+</h3>
+                <p class="text-slate-600 dark:text-slate-400 font-medium">Sản phẩm đã bán</p>
+            </div>
+            
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-500">
+                    <i class="fas fa-star text-white text-3xl"></i>
+                </div>
+                <h3 class="text-4xl font-bold text-slate-800 dark:text-white mb-2 counter">4.9</h3>
+                <p class="text-slate-600 dark:text-slate-400 font-medium">Đánh giá trung bình</p>
+            </div>
+            
+            <div class="text-center group">
+                <div class="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-500">
+                    <i class="fas fa-truck text-white text-3xl"></i>
+                </div>
+                <h3 class="text-4xl font-bold text-slate-800 dark:text-white mb-2 counter">24/7</h3>
+                <p class="text-slate-600 dark:text-slate-400 font-medium">Giao hàng toàn quốc</p>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Story Section -->
-<section class="py-24 bg-white dark:bg-slate-900">
+<section class="py-24 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-700">
     <div class="container mx-auto px-4">
         <div class="text-center mb-20">
             <h2 class="text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white mb-6">
-                Câu chuyện của chúng tôi
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Câu chuyện của chúng tôi</span>
             </h2>
             <p class="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
                 Từ một ý tưởng nhỏ đến một thương hiệu được tin tưởng bởi hàng nghìn khách hàng
@@ -99,9 +136,9 @@
                     <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-8">
                         <i class="fas fa-lightbulb text-white text-3xl"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center">Khởi đầu</h3>
+                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center">Khởi đầu (2020)</h3>
                     <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-center">
-                        Năm 2020, chúng tôi bắt đầu với một ý tưởng đơn giản: mang đến những sản phẩm công nghệ chất lượng với giá cả hợp lý cho người Việt Nam.
+                        Năm 2020, chúng tôi bắt đầu với một ý tưởng đơn giản: mang đến những sản phẩm công nghệ chất lượng với giá cả hợp lý cho người Việt Nam. Từ một cửa hàng nhỏ tại Hà Nội, chúng tôi đã xây dựng nền tảng vững chắc với sự tin tưởng của những khách hàng đầu tiên.
                     </p>
                 </div>
             </div>
@@ -112,9 +149,9 @@
                     <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
                         <i class="fas fa-rocket text-white text-3xl"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center">Phát triển</h3>
+                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center">Phát triển (2021-2023)</h3>
                     <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-center">
-                        Với sự tin tưởng của khách hàng, chúng tôi đã mở rộng từ một cửa hàng nhỏ thành chuỗi bán lẻ công nghệ uy tín.
+                        Với sự tin tưởng của khách hàng, chúng tôi đã mở rộng từ một cửa hàng nhỏ thành chuỗi bán lẻ công nghệ uy tín. Chúng tôi đầu tư vào hệ thống quản lý hiện đại, đội ngũ nhân viên chuyên nghiệp và mạng lưới đối tác rộng khắp.
                     </p>
                 </div>
             </div>
@@ -125,9 +162,9 @@
                     <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-8">
                         <i class="fas fa-trophy text-white text-3xl"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center">Thành công</h3>
+                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center">Thành công (2024+)</h3>
                     <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-center">
-                        Ngày nay, NovaSmart tự hào là đối tác tin cậy của hàng nghìn khách hàng và các thương hiệu công nghệ hàng đầu.
+                        Ngày nay, NovaSmart tự hào là đối tác tin cậy của hàng nghìn khách hàng và các thương hiệu công nghệ hàng đầu. Chúng tôi tiếp tục đổi mới và phát triển để mang đến trải nghiệm tốt nhất cho khách hàng.
                     </p>
                 </div>
             </div>
@@ -136,11 +173,16 @@
 </section>
 
 <!-- Values Section -->
-<section class="py-24 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-700">
-    <div class="container mx-auto px-4">
+<section class="py-24 bg-white dark:bg-slate-900 relative overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute inset-0" style="background-image: radial-gradient(circle at 1px 1px, #3b82f6 1px, transparent 0); background-size: 40px 40px;"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 relative z-10">
         <div class="text-center mb-20">
             <h2 class="text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white mb-6">
-                Giá trị cốt lõi
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Giá trị cốt lõi</span>
             </h2>
             <p class="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
                 Những nguyên tắc định hướng mọi hoạt động của chúng tôi
@@ -148,43 +190,43 @@
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div class="group text-center p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+            <div class="group text-center p-8 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 hover:scale-105">
                 <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-500">
-                    <i class="fas fa-shield-alt text-white text-4xl"></i>
+                    <i class="fas fa-shield-alt text-white text-4xl group-hover:rotate-12 transition-transform duration-500"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6">Chất lượng</h3>
                 <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Cam kết cung cấp sản phẩm chính hãng với chất lượng tốt nhất
+                    Cam kết cung cấp sản phẩm chính hãng với chất lượng tốt nhất, đảm bảo mọi sản phẩm đều được kiểm định nghiêm ngặt trước khi đến tay khách hàng.
                 </p>
             </div>
             
-            <div class="group text-center p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+            <div class="group text-center p-8 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 hover:scale-105">
                 <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-500">
-                    <i class="fas fa-handshake text-white text-4xl"></i>
+                    <i class="fas fa-handshake text-white text-4xl group-hover:rotate-12 transition-transform duration-500"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6">Uy tín</h3>
                 <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Xây dựng niềm tin với khách hàng thông qua sự minh bạch và trách nhiệm
+                    Xây dựng niềm tin với khách hàng thông qua sự minh bạch và trách nhiệm. Mọi cam kết đều được thực hiện một cách nghiêm túc và đầy đủ.
                 </p>
             </div>
             
-            <div class="group text-center p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+            <div class="group text-center p-8 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 hover:scale-105">
                 <div class="w-24 h-24 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-500">
-                    <i class="fas fa-heart text-white text-4xl"></i>
+                    <i class="fas fa-heart text-white text-4xl group-hover:rotate-12 transition-transform duration-500"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6">Tận tâm</h3>
                 <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Luôn đặt lợi ích của khách hàng lên hàng đầu trong mọi quyết định
+                    Luôn đặt lợi ích của khách hàng lên hàng đầu trong mọi quyết định. Chúng tôi không chỉ bán sản phẩm mà còn đồng hành cùng khách hàng.
                 </p>
             </div>
             
-            <div class="group text-center p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+            <div class="group text-center p-8 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 hover:scale-105">
                 <div class="w-24 h-24 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-500">
-                    <i class="fas fa-lightbulb text-white text-4xl"></i>
+                    <i class="fas fa-lightbulb text-white text-4xl group-hover:rotate-12 transition-transform duration-500"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6">Sáng tạo</h3>
                 <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Không ngừng đổi mới để mang đến trải nghiệm tốt nhất cho khách hàng
+                    Không ngừng đổi mới để mang đến trải nghiệm tốt nhất cho khách hàng. Chúng tôi luôn tìm kiếm những giải pháp mới và hiệu quả.
                 </p>
             </div>
         </div>
@@ -192,11 +234,11 @@
 </section>
 
 <!-- Team Section -->
-<section class="py-24 bg-white dark:bg-slate-900">
+<section class="py-24 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-700">
     <div class="container mx-auto px-4">
         <div class="text-center mb-20">
             <h2 class="text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white mb-6">
-                Đội ngũ của chúng tôi
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Đội ngũ của chúng tôi</span>
             </h2>
             <p class="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
                 Những con người tài năng và tâm huyết đằng sau thành công của NovaSmart
@@ -212,7 +254,7 @@
                 <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-3">Nguyễn Văn A</h3>
                 <p class="text-blue-600 dark:text-blue-400 font-semibold text-lg mb-4">CEO & Founder</p>
                 <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Với hơn 10 năm kinh nghiệm trong lĩnh vực công nghệ và kinh doanh
+                    Với hơn 10 năm kinh nghiệm trong lĩnh vực công nghệ và kinh doanh. Ông đã dẫn dắt NovaSmart từ một cửa hàng nhỏ trở thành thương hiệu uy tín hàng đầu.
                 </p>
             </div>
             
@@ -224,7 +266,7 @@
                 <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-3">Trần Thị B</h3>
                 <p class="text-green-600 dark:text-green-400 font-semibold text-lg mb-4">CTO</p>
                 <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Chuyên gia công nghệ với kiến thức sâu rộng về hệ thống thông tin
+                    Chuyên gia công nghệ với kiến thức sâu rộng về hệ thống thông tin. Bà đã xây dựng nền tảng công nghệ vững chắc cho NovaSmart.
                 </p>
             </div>
             
@@ -236,8 +278,90 @@
                 <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-3">Lê Văn C</h3>
                 <p class="text-purple-600 dark:text-purple-400 font-semibold text-lg mb-4">Marketing Manager</p>
                 <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Chuyên gia marketing số với nhiều chiến dịch thành công
+                    Chuyên gia marketing số với nhiều chiến dịch thành công. Anh đã giúp NovaSmart tiếp cận và kết nối với hàng nghìn khách hàng.
                 </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-24 bg-white dark:bg-slate-900">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-20">
+            <h2 class="text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white mb-6">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Khách hàng nói gì</span>
+            </h2>
+            <p class="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                Những đánh giá chân thực từ khách hàng đã tin tưởng và sử dụng sản phẩm của NovaSmart
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 p-8 rounded-3xl shadow-lg">
+                <div class="flex items-center mb-6">
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 mb-6 italic">
+                    "NovaSmart thực sự là địa chỉ tin cậy để mua sắm công nghệ. Sản phẩm chất lượng, giá cả hợp lý và dịch vụ hậu mãi tuyệt vời!"
+                </p>
+                <div class="flex items-center">
+                    <img src="{{ asset('assets/user/images/client/01.jpg') }}" alt="Customer" class="w-12 h-12 rounded-full mr-4">
+                    <div>
+                        <h4 class="font-semibold text-slate-800 dark:text-white">Nguyễn Thị D</h4>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Khách hàng thân thiết</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-700 p-8 rounded-3xl shadow-lg">
+                <div class="flex items-center mb-6">
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 mb-6 italic">
+                    "Đội ngũ nhân viên rất chuyên nghiệp và tận tâm. Họ không chỉ bán sản phẩm mà còn tư vấn rất kỹ lưỡng cho khách hàng."
+                </p>
+                <div class="flex items-center">
+                    <img src="{{ asset('assets/user/images/client/02.jpg') }}" alt="Customer" class="w-12 h-12 rounded-full mr-4">
+                    <div>
+                        <h4 class="font-semibold text-slate-800 dark:text-white">Trần Văn E</h4>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Doanh nhân</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-700 p-8 rounded-3xl shadow-lg">
+                <div class="flex items-center mb-6">
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 mb-6 italic">
+                    "Giao hàng nhanh chóng, sản phẩm đúng như mô tả và giá cả rất cạnh tranh. Tôi sẽ tiếp tục ủng hộ NovaSmart!"
+                </p>
+                <div class="flex items-center">
+                    <img src="{{ asset('assets/user/images/client/03.jpg') }}" alt="Customer" class="w-12 h-12 rounded-full mr-4">
+                    <div>
+                        <h4 class="font-semibold text-slate-800 dark:text-white">Lê Thị F</h4>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Sinh viên</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -281,12 +405,77 @@
         transform: translate(0px, 0px) scale(1);
     }
 }
+
+@keyframes fade-in-up {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes gradient {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes bounce-slow {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
 .animate-blob {
     animation: blob 7s infinite;
 }
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+}
+
+.animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+}
+
+.animate-bounce-slow {
+    animation: bounce-slow 3s ease-in-out infinite;
+}
+
+.animation-delay-200 {
+    animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+    animation-delay: 0.4s;
+}
+
+.animation-delay-600 {
+    animation-delay: 0.6s;
+}
+
+.animation-delay-800 {
+    animation-delay: 0.8s;
+}
+
+.animation-delay-1000 {
+    animation-delay: 1s;
+}
+
 .animation-delay-2000 {
     animation-delay: 2s;
 }
+
 .animation-delay-4000 {
     animation-delay: 4s;
 }
