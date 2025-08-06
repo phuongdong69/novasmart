@@ -176,6 +176,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Thêm biến thể cho sản phẩm
     Route::post('products/{product}/variants', [ProductController::class, 'addVariant'])->name('products.addVariant');
+    
+    // Cập nhật biến thể sản phẩm
+    Route::put('products/{product}/variants/{variant}', [ProductController::class, 'updateVariant'])->name('products.updateVariant');
 
     //slideshows
     Route::resource('slideshows', SlideshowController::class);
