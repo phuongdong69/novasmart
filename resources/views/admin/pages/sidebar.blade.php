@@ -87,26 +87,18 @@
                 </a>
             </li>
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ isCurrentRoute('admin.users.*') ? 'bg-blue-500/13 dark:text-white dark:opacity-80' : 'dark:text-white dark:opacity-80' }} text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap rounded-lg px-4 transition-colors"
-                    href="{{ route('admin.users.index') }}">
+                <a class="py-2.7 {{ isCurrentRoute('admin.statuses.*') ? 'bg-blue-500/13 dark:text-white dark:opacity-80' : 'dark:text-white dark:opacity-80' }} text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap rounded-lg px-4 transition-colors"
+                    href="{{ route('admin.statuses.index') }}">
                     <div
                         class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="relative top-0 text-sm leading-normal text-green-600 ni ni-single-02"></i>
+                        <i class="relative top-0 text-sm leading-normal text-green-500 ni ni-badge"></i>
                     </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Quản lý User</span>
+                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Trạng Thái</span>
                 </a>
             </li>
 
-            <li class="mt-0.5 w-full">
-                <a class="py-2.7 {{ isCurrentRoute('admin.roles.*') ? 'bg-blue-500/13 dark:text-white dark:opacity-80' : 'dark:text-white dark:opacity-80' }} text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap rounded-lg px-4 transition-colors"
-                    href="{{ route('admin.roles.index') }}">
-                    <div
-                        class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="relative top-0 text-sm leading-normal text-cyan-500 ni ni-app"></i>
-                    </div>
-                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Chức vụ</span>
-                </a>
-            </li>
+
+
 
             <li class="mt-0.5 w-full">
                 <a class="py-2.7 {{ isCurrentRoute('admin.origins.*') ? 'bg-blue-500/13 dark:text-white dark:opacity-80' : 'dark:text-white dark:opacity-80' }} text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap rounded-lg px-4 transition-colors"
@@ -208,6 +200,16 @@
                     </div>
                     <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Quản lý người dùng</span>
                 </a>
+            <li class="mt-0.5 w-full">
+                <a class="py-2.7 {{ isCurrentRoute('admin.roles.*') ? 'bg-blue-500/13 dark:text-white dark:opacity-80' : 'dark:text-white dark:opacity-80' }} text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap rounded-lg px-4 transition-colors"
+                    href="{{ route('admin.roles.index') }}">
+                    <div
+                        class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                        <i class="relative top-0 text-sm leading-normal text-cyan-500 ni ni-app"></i>
+                    </div>
+                    <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Chức vụ</span>
+                </a>
+            </li>
             </li>
         </ul>
     </div>

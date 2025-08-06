@@ -12,18 +12,23 @@ class VoucherController extends Controller
 {
     public function index()
     {
-        // Lấy ID trạng thái "hết hạn"
-        $expiredStatus = Status::where('type', 'voucher')->where('name', 'Hết hạn')->first();
+        $this->updateExpiredVouchers();
 
-        // Nếu tìm thấy trạng thái hết hạn thì cập nhật các voucher quá hạn
+        $vouchers = Voucher::with('status')->latest()->paginate(10);
+        return view('admin.vouchers.index', compact('vouchers'));
+    }
+
+    protected function updateExpiredVouchers()
+    {
+        $expiredStatus = Status::where('type', 'voucher')
+            ->where('name', 'Hết hạn')
+            ->first();
+
         if ($expiredStatus) {
             Voucher::where('expired_at', '<', now())
                 ->where('status_id', '!=', $expiredStatus->id)
                 ->update(['status_id' => $expiredStatus->id]);
         }
-
-        $vouchers = Voucher::with('status')->latest()->paginate(10);
-        return view('admin.vouchers.index', compact('vouchers'));
     }
 
 
