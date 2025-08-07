@@ -33,6 +33,24 @@
                                 <div>
                                     <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ $news->title }}</h2>
                                     
+                                    <!-- Thông tin tác giả và thời gian -->
+                                    <div class="flex items-center text-slate-400 text-sm mb-6">
+                                        <span class="flex items-center">
+                                            <i class="mdi mdi-account me-1"></i>
+                                            {{ $news->author->name }}
+                                        </span>
+                                        <span class="mx-2">•</span>
+                                        <span class="flex items-center">
+                                            <i class="mdi mdi-clock me-1"></i>
+                                            {{ $news->published_at ? $news->published_at->format('d/m/Y H:i') : $news->created_at->format('d/m/Y H:i') }}
+                                        </span>
+                                        <span class="mx-2">•</span>
+                                        <span class="flex items-center">
+                                            <i class="mdi mdi-eye me-1"></i>
+                                            {{ $news->published_at ? $news->published_at->diffForHumans() : $news->created_at->diffForHumans() }}
+                                        </span>
+                                    </div>
+                                    
                                     @if($news->image)
                                         <div class="mb-6">
                                             <img src="{{ $news->image_url }}" alt="{{ $news->title }}" class="w-full h-64 object-cover rounded-lg">
@@ -114,7 +132,7 @@
                                         <form action="{{ route('admin.news.toggleStatus', $news->id) }}" method="POST">
                                             @csrf
                                             @method('PUT')
-                                            <button type="submit" class="w-full {{ $news->status === 'published' ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-500 hover:bg-green-600' }} text-white text-sm font-bold py-2 px-4 rounded">
+                                            <button type="submit" class="w-full bg-gray-100 hover:bg-gray-200 {{ $news->status === 'published' ? 'text-yellow-600 hover:text-yellow-700' : 'text-green-600 hover:text-green-700' }} text-sm font-bold py-2 px-4 rounded transition-colors">
                                                 @if($news->status === 'published')
                                                     <svg class="h-4 w-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
@@ -134,7 +152,7 @@
                                         <form action="{{ route('admin.news.destroy', $news->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tin tức này?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white text-sm font-bold py-2 px-4 rounded">
+                                            <button type="submit" class="w-full bg-gray-100 hover:bg-gray-200 text-red-600 hover:text-red-700 text-sm font-bold py-2 px-4 rounded transition-colors">
                                                 <svg class="h-4 w-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                                 </svg>
