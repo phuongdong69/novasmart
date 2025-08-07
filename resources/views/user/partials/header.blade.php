@@ -58,13 +58,7 @@
                                 </ul>
                             </li>
 
-                            <li class="has-submenu parent-menu-item">
-                                <a href="javascript:void(0)">Blog</a><span class="submenu-arrow"></span>
-                                <ul class="submenu">
-                                    <li><a href="blogs.html" class="sub-menu-item">Danh sách Blog</a></li>
-                                    <li><a href="blog-detail.html" class="sub-menu-item">Chi tiết Blog</a></li>
-                                </ul>
-                            </li>
+                            <li><a href="{{ route('news.index') }}" class="sub-menu-item">Tin tức</a></li>
 
                             <li><a href="career.html" class="sub-menu-item">Tuyển dụng</a></li>
 
