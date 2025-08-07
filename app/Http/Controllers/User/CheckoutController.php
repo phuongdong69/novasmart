@@ -110,6 +110,7 @@ class CheckoutController extends Controller
             $order = Order::create([
                 'user_id'     => Auth::id(),
                 'voucher_id'  => $voucherId,
+                'discount_amount' => $discount,
                 'payment_id'  => $payment->id,
                 'status_id'   => Status::where('code', 'pending')->first()->id,
                 'name'        => $request->name,
@@ -140,15 +141,30 @@ class CheckoutController extends Controller
 
             // Xóa khỏi giỏ hàng sau khi mua
             $this->clearPurchasedItemsFromCart($variantIds);
+            $subTotal = collect($groupedItems)->sum(fn($item) => $item['price'] * $item['quantity']);
 
-            // Soạn email dạng văn bản
+            // Giả sử $finalTotal đã được tính từ trước (sau khi áp dụng giảm giá)
+            $discountAmount = $subTotal - $finalTotal;
             $body = "Cảm ơn bạn đã đặt hàng tại Nova Smart!\n\n";
             $body .= "🧾 Mã đơn hàng: {$order->order_code}\n";
             $body .= "👤 Tên khách hàng: {$order->name}\n";
             $body .= "📧 Email: {$order->email}\n";
             $body .= "📞 Số điện thoại: {$order->phoneNumber}\n";
             $body .= "🏠 Địa chỉ: {$order->address}\n";
-            $body .= "💵 Tổng tiền: " . number_format($finalTotal, 0, ',', '.') . "₫\n\n";
+
+            // ✅ Hiển thị giá trị chi tiết
+            $body .= "💵 Tạm tính: " . number_format($subTotal, 0, ',', '.') . "₫\n";
+
+            if (!empty($order->voucher)) {
+                $body .= "🎁 Mã giảm giá: {$order->voucher->code}\n";
+            }
+
+            if ($discountAmount > 0) {
+                $body .= "🔻 Số tiền được giảm: -" . number_format($discountAmount, 0, ',', '.') . "₫\n";
+            }
+
+            $body .= "✅ Tổng tiền (sau giảm): " . number_format($finalTotal, 0, ',', '.') . "₫\n\n";
+
             $body .= "🔹 Sản phẩm:\n";
 
             foreach ($groupedItems as $item) {

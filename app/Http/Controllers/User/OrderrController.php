@@ -41,12 +41,17 @@ class OrderrController extends Controller
 
     public function show($id)
     {
-        $order = Order::with(['orderStatus', 'payment', 'orderDetails.productVariant.product'])
+        $order = Order::with(['orderStatus', 'payment', 'voucher', 'orderDetails.productVariant.product'])
             ->where('user_id', Auth::id())
             ->findOrFail($id);
 
-        return view('user.orders.show', compact('order'));
+        // Tính tổng tiền gốc (chưa trừ giảm giá)
+        $subtotal = $order->orderDetails->sum(fn($item) => $item->price * $item->quantity);
+        $discountAmount = $subtotal - $order->total_price;
+
+        return view('user.orders.show', compact('order', 'subtotal', 'discountAmount'));
     }
+
 
     /**
      * Huỷ đơn hàng nếu đang ở trạng thái 'pending'.
@@ -118,7 +123,21 @@ class OrderrController extends Controller
             $body .= "📞 Số điện thoại: {$order->phoneNumber}\n";
             $body .= "🏠 Địa chỉ: {$order->address}\n";
             $body .= "❌ Lý do huỷ: {$order->cancel_reason}\n";
-            $body .= "💵 Tổng tiền: " . number_format($order->total_price, 0, ',', '.') . "₫\n\n";
+
+            // 👉 Tính tạm tính và giảm giá
+            $subTotal = $order->orderDetails->sum(fn($item) => $item->price * $item->quantity);
+            $discountAmount = $subTotal - $order->total_price;
+
+            $body .= "💵 Tạm tính: " . number_format($subTotal, 0, ',', '.') . "₫\n";
+
+            if ($discountAmount > 0) {
+                $voucherCode = $order->voucher->code ?? '';
+                $body .= "🔖 Mã giảm giá: {$voucherCode}\n";
+                $body .= "🧾 Đã giảm: -" . number_format($discountAmount, 0, ',', '.') . "₫\n";
+            }
+
+            $body .= "💰 Tổng tiền (sau giảm): " . number_format($order->total_price, 0, ',', '.') . "₫\n\n";
+
             $body .= "🔹 Các sản phẩm trong đơn hàng:\n";
 
             foreach ($order->orderDetails as $item) {
@@ -138,6 +157,7 @@ class OrderrController extends Controller
                     ->subject("Huỷ đơn hàng thành công - Nova Smart");
             });
 
+
             DB::commit();
             return redirect()->route('user.orders.show', $order->id)->with('success', 'Đã huỷ đơn hàng thành công và gửi email xác nhận.');
         } catch (\Exception $e) {
@@ -148,10 +168,13 @@ class OrderrController extends Controller
     }
 
 
-
     public function confirmReceived($id)
     {
-        $order = Order::with('orderStatus')
+        $order = Order::with([
+            'orderStatus',
+            'orderDetails.productVariant.product',
+            'voucher'
+        ])
             ->where('id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();
@@ -166,8 +189,53 @@ class OrderrController extends Controller
             return back()->with('error', 'Không tìm thấy trạng thái hoàn thành.');
         }
 
+        // ✅ Cập nhật trạng thái
         $order->updateStatus($completedStatus->id, auth()->id(), 'Người dùng xác nhận đã nhận hàng');
 
-        return back()->with('success', 'Cảm ơn bạn đã xác nhận. Đơn hàng đã hoàn tất.');
+        // ✅ Soạn nội dung email
+        $body = "🎉 Bạn đã xác nhận đã nhận đơn hàng tại Nova Smart.\n\n";
+        $body .= "🧾 Mã đơn hàng: {$order->order_code}\n";
+        $body .= "👤 Tên khách hàng: {$order->name}\n";
+        $body .= "📧 Email: {$order->email}\n";
+        $body .= "📞 SĐT: {$order->phoneNumber}\n";
+        $body .= "🏠 Địa chỉ: {$order->address}\n";
+
+        // ✅ Tính tạm tính & giảm giá
+        $subTotal = $order->orderDetails->sum(fn($item) => $item->price * $item->quantity);
+        $discountAmount = $subTotal - $order->total_price;
+
+        $body .= "💵 Tạm tính: " . number_format($subTotal, 0, ',', '.') . "₫\n";
+
+        if ($order->voucher) {
+            $body .= "🎁 Mã giảm giá: {$order->voucher->code}\n";
+        }
+
+        if ($discountAmount > 0) {
+            $body .= "🔻 Số tiền được giảm: -" . number_format($discountAmount, 0, ',', '.') . "₫\n";
+        }
+
+        $body .= "✅ Tổng tiền (sau giảm): " . number_format($order->total_price, 0, ',', '.') . "₫\n";
+
+        $body .= "\n🔹 Các sản phẩm trong đơn hàng:\n";
+
+        foreach ($order->orderDetails as $item) {
+            $variant = $item->productVariant;
+            if ($variant) {
+                $body .= "- {$variant->product->name} ({$variant->name}) × {$item->quantity} = " .
+                    number_format($item->quantity * $item->price, 0, ',', '.') . "₫\n";
+            }
+        }
+
+        $body .= "\n✅ Cảm ơn bạn đã mua sắm tại Nova Smart. Rất mong được phục vụ bạn lần sau!\n\n";
+        $body .= "Trân trọng,\nNova Smart";
+
+        // ✅ Gửi email
+        Mail::raw($body, function ($message) use ($order) {
+            $message->to($order->email, $order->name)
+                ->subject("Xác nhận đã nhận hàng - Nova Smart");
+        });
+
+
+        return back()->with('success', 'Cảm ơn bạn đã xác nhận. Đơn hàng đã hoàn tất và email xác nhận đã được gửi.');
     }
 }
