@@ -38,7 +38,7 @@
                                 style="background-color: {{ $order->orderStatus->color ?? '#999' }};">
                                 {{ $order->orderStatus->name ?? 'Không rõ' }}
                                 @if (!empty($order->cancel_reason))
-                                    - Lý do: ( {{  $order->cancel_reason }} )
+                                    - Lý do: ( {{ $order->cancel_reason }} )
                                 @endif
                             </span>
                         @else
@@ -107,14 +107,35 @@
                 </div>
 
                 {{-- Tổng tiền + nút quay lại + huỷ đơn nếu hợp lệ --}}
-                <div class="flex flex-col md:flex-row justify-between items-center mt-6 gap-4">
-                    <h6 class="text-lg font-semibold text-gray-800">
-                        💰 Tổng tiền:
-                        <span class="text-orange-600">
-                            {{ number_format($order->total_price, 0, ',', '.') }}đ
-                        </span>
-                    </h6>
+                {{-- Tổng tiền + mã giảm giá --}}
+                <div class="bg-gray-50 border p-4 mt-6 rounded-lg">
+                    <p class="font-semibold mb-2">💰 Tóm tắt thanh toán:</p>
 
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Tạm tính:</span>
+                        <span>{{ number_format($subtotal, 0, ',', '.') }}₫</span>
+                    </div>
+
+                    @if ($order->voucher && $discountAmount > 0)
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Mã giảm giá: <span
+                                    class="text-green-600 font-semibold">{{ $order->voucher->code }}</span></span>
+                            <span class="text-red-500">-{{ number_format($discountAmount, 0, ',', '.') }}₫</span>
+                        </div>
+                    @endif
+
+                    <div class="flex justify-between font-bold border-t pt-2 mt-2 text-base">
+                        <span>Tổng thanh toán:</span>
+                        <span class="text-green-600">{{ number_format($order->total_price, 0, ',', '.') }}₫</span>
+                    </div>
+                </div>
+
+
+
+
+
+                {{-- Các nút hành động --}}
+                <div class="flex flex-col md:flex-row justify-between items-center mt-6 gap-4">
                     <div class="flex gap-3">
                         @if ($order->orderStatus && $order->orderStatus->code === 'delivered')
                             <form method="POST" action="{{ route('user.orders.confirm-received', $order->id) }}"
@@ -133,7 +154,6 @@
                         </a>
 
                         @if ($order->orderStatus && $order->orderStatus->code === 'pending')
-                            <!-- Nút mở modal huỷ -->
                             <button type="button"
                                 onclick="document.getElementById('cancelModal').classList.remove('hidden')"
                                 class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
@@ -142,6 +162,7 @@
                         @endif
                     </div>
                 </div>
+
             </div>
         </div>
     </section>
