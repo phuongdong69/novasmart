@@ -28,9 +28,9 @@ class NewsRequest extends FormRequest
             'slug' => 'nullable|string|max:255|unique:news,slug,' . $newsId,
             'content' => 'required|string',
             'excerpt' => 'nullable|string|max:500',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status' => 'required|in:draft,published',
-            'published_at' => 'nullable|date',
+            'product_link' => 'nullable|url',
         ];
     }
 
@@ -42,14 +42,15 @@ class NewsRequest extends FormRequest
         return [
             'title.required' => 'Tiêu đề tin tức là bắt buộc.',
             'title.max' => 'Tiêu đề không được vượt quá 255 ký tự.',
+            'slug.unique' => 'Slug này đã tồn tại, vui lòng chọn slug khác.',
             'content.required' => 'Nội dung tin tức là bắt buộc.',
             'excerpt.max' => 'Tóm tắt không được vượt quá 500 ký tự.',
             'image.image' => 'File phải là hình ảnh.',
-            'image.mimes' => 'Hình ảnh phải có định dạng: jpeg, png, jpg, gif.',
+            'image.mimes' => 'Hình ảnh phải có định dạng: jpeg, png, jpg, gif, webp.',
             'image.max' => 'Kích thước hình ảnh không được vượt quá 2MB.',
             'status.required' => 'Trạng thái là bắt buộc.',
             'status.in' => 'Trạng thái không hợp lệ.',
-            'published_at.date' => 'Ngày xuất bản không hợp lệ.',
+            'product_link.url' => 'Link sản phẩm phải là URL hợp lệ.',
         ];
     }
 }

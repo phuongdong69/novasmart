@@ -14,6 +14,7 @@ use App\Models\Cart;
 use App\Models\Status;
 use App\Models\StatusLog;
 use App\Models\Wishlist;
+use App\Models\News;
 
 class User extends Authenticatable
 {
@@ -76,6 +77,14 @@ class User extends Authenticatable
     public function statusLogs(): MorphMany
     {
         return $this->morphMany(StatusLog::class, 'loggable');
+    }
+
+    /**
+     * Quan hệ: User có nhiều tin tức (là tác giả)
+     */
+    public function news(): HasMany
+    {
+        return $this->hasMany(News::class, 'author_id');
     }
 
     /**

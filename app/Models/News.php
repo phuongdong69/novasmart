@@ -18,7 +18,8 @@ class News extends Model
         'excerpt',
         'status',
         'published_at',
-        'author_id'
+        'author_id',
+        'product_link'
     ];
 
     protected $casts = [
