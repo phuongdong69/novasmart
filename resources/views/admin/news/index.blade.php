@@ -1,6 +1,41 @@
 @extends('admin.layouts.app')
 
 @section('content')
+<!-- Flash Messages -->
+@if(session('success'))
+    @php
+        $isDeleteMessage = str_contains(session('success'), 'xóa') || str_contains(session('success'), 'Đã xóa');
+    @endphp
+    <div class="fixed top-0 left-0 right-0 z-50 {{ $isDeleteMessage ? 'bg-red-500' : 'bg-green-500' }} text-black px-6 py-3 shadow-lg transform transition-all duration-300 ease-in-out" id="flash-message">
+        <div class="flex items-center justify-center max-w-7xl mx-auto">
+            <i class="fas {{ $isDeleteMessage ? 'fa-trash' : 'fa-check-circle' }} mr-2"></i>
+            <span>{{ session('success') }}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-black hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+@endif
+
+@if($errors->any())
+    <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium">Có lỗi xảy ra:</h3>
+                <div class="mt-2 text-sm">
+                    <ul class="list-disc pl-5 space-y-1">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 <div class="w-full px-6 py-6 mx-auto">
     <div class="flex flex-wrap -mx-3">
         <div class="flex-none w-full max-w-full px-3">
@@ -15,14 +50,79 @@
                     </div>
                 </div>
 
+                <!-- Search and Filter -->
+                <div class="p-6 pb-4">
+                    <form method="GET" action="{{ route('admin.news.index') }}" class="flex items-end gap-4">
+                        <!-- Tìm kiếm theo tên tin tức -->
+                        <div class="flex-1">
+                            <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Tìm kiếm</label>
+                            <input type="text" 
+                                   id="search" 
+                                   name="search" 
+                                   value="{{ request('search') }}"
+                                   placeholder="Nhập tên tin tức..."
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Lọc theo tác giả -->
+                        <div class="w-48">
+                            <label for="author" class="block text-sm font-medium text-gray-700 mb-1">Tác giả</label>
+                            <select id="author" name="author" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Tất cả</option>
+                                @foreach($authors as $author)
+                                    <option value="{{ $author->id }}" {{ request('author') == $author->id ? 'selected' : '' }}>
+                                        {{ $author->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Lọc theo trạng thái -->
+                        <div class="w-40">
+                            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
+                            <select id="status" name="status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Tất cả</option>
+                                <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Đã xuất bản</option>
+                                <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Bản nháp</option>
+                            </select>
+                        </div>
+
+                        <!-- Lọc theo ngày xuất bản -->
+                        <div class="w-44">
+                            <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Ngày xuất bản</label>
+                            <input type="date" 
+                                   id="date" 
+                                   name="date" 
+                                   value="{{ request('date') }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-2">
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded">
+                                <i class="mdi mdi-magnify me-1"></i>
+                                Tìm
+                            </button>
+                            <a href="{{ route('admin.news.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded">
+                                <i class="mdi mdi-refresh me-1"></i>
+                                Làm mới
+                            </a>
+                        </div>
+
+                        @if(request('search') || request('author') || request('status') || request('date'))
+                            <div class="text-sm text-gray-600 flex items-center">
+                                <i class="mdi mdi-filter me-1"></i>
+                                {{ $news->total() }} kết quả
+                            </div>
+                        @endif
+                    </form>
+                </div>
+
                 <!-- News List -->
                 <div class="overflow-x-auto">
                     <table class="w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <input type="checkbox" class="rounded border-gray-300">
-                                </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     TIN TỨC
                                 </th>
@@ -43,9 +143,6 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach ($news as $item)
                             <tr class="hover:bg-gray-50" style="transition: background 0.2s;">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="checkbox" class="rounded border-gray-300">
-                                </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
@@ -66,10 +163,7 @@
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-900 cursor-pointer"
                                                  onclick="toggleNewsDetail({{ $item->id }})">
-                                                {{ $item->title }}
-                                            </div>
-                                            <div class="text-sm text-gray-500">
-                                                {{ Str::limit($item->excerpt, 60) }}
+                                                {{ Str::limit($item->title, 30) }}
                                             </div>
                                         </div>
                                     </div>
@@ -121,7 +215,7 @@
                                                 @endif
                                             </button>
                                         </form>
-                                        <form action="{{ route('admin.news.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tin tức này không?')">
+                                        <form action="{{ route('admin.news.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tin tức không?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:text-red-900" title="Xóa">
@@ -135,7 +229,7 @@
                             </tr>
                             <!-- Chi tiết tin tức (ẩn/hiện khi click) -->
                             <tr id="news-detail-{{ $item->id }}" class="hidden">
-                                <td colspan="6" class="px-6 py-4 bg-gray-50">
+                                <td colspan="5" class="px-6 py-4 bg-gray-50">
                                     <div class="bg-white p-4 rounded-lg border">
                                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                             <!-- Nội dung chính -->
@@ -220,6 +314,19 @@
             el.classList.toggle('hidden');
         }
     }
+
+    // Auto hide flash messages after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const flashMessages = document.querySelectorAll('#flash-message');
+        flashMessages.forEach(function(message) {
+            setTimeout(function() {
+                message.style.transform = 'translateY(-100%)';
+                setTimeout(function() {
+                    message.remove();
+                }, 300);
+            }, 5000);
+        });
+    });
 </script>
 @endpush
 @endsection 

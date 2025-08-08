@@ -15,9 +15,9 @@
 
         <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
             @forelse($news as $item)
-            <div class="group">
-                <div class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
-                    <img src="{{ $item->image_url }}" class="group-hover:scale-110 duration-500" alt="{{ $item->title }}">
+            <div class="group bg-white dark:bg-slate-900 rounded-lg shadow-sm dark:shadow-gray-800 overflow-hidden hover:shadow-lg hover:dark:shadow-gray-800 transition-all duration-500">
+                <div class="relative overflow-hidden">
+                    <img src="{{ $item->image_url }}" class="w-full h-48 object-cover group-hover:scale-110 duration-500" alt="{{ $item->title }}">
                     
                     <div class="absolute top-4 start-4">
                         <span class="bg-red-500 text-white text-xs font-bold px-2.5 py-0.5 rounded">
@@ -26,18 +26,21 @@
                     </div>
                 </div>
 
-                <div class="mt-4">
-                    <a href="{{ route('news.show', $item->slug) }}" class="title text-xl font-semibold hover:text-red-500 duration-500">
-                        {{ $item->title }}
+                <div class="p-6">
+                    <a href="{{ route('news.show', $item->slug) }}" class="title text-xl font-semibold hover:text-red-500 duration-500 line-clamp-2 block mb-3">
+                        {{ Str::limit($item->title, 50) }}
                     </a>
-                    <p class="text-slate-400 mt-2">{{ $item->excerpt }}</p>
                     
-                    <div class="flex items-center mt-3">
-                        <span class="text-slate-400 text-sm">
+                    @if($item->excerpt)
+                    <p class="text-slate-400 text-sm line-clamp-3 mb-4">{{ $item->excerpt }}</p>
+                    @endif
+                    
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
+                        <span class="text-slate-400 text-xs">
                             <i class="mdi mdi-account me-1"></i>
                             {{ $item->author->name }}
                         </span>
-                        <span class="text-slate-400 text-sm ms-3">
+                        <span class="text-slate-400 text-xs">
                             <i class="mdi mdi-clock me-1"></i>
                             {{ $item->published_at->diffForHumans() }}
                         </span>
