@@ -11,7 +11,16 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['thumbnails', 'variants'])->latest()->take(8)->get();
+        // Lấy sản phẩm mới nhất có biến thể có sẵn
+        $products = Product::with(['thumbnails', 'variants' => function($q) {
+            $q->where('quantity', '>', 0);
+        }])
+        ->whereHas('variants', function($q) {
+            $q->where('quantity', '>', 0);
+        })
+        ->latest()
+        ->take(8)
+        ->get();
         
         // Lấy id các status đơn hàng hợp lệ
         $statusCodes = ['completed', 'delivered', 'confirmed'];

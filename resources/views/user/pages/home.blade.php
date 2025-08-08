@@ -171,7 +171,7 @@
                             </ul>
                         </div>
                         <div class="mt-4">
-                            <a href="sale.html"
+                            <a href="{{ route('products.list') }}"
                                 class="py-2 px-5 inline-block font-semibold tracking-wide align-middle text-center bg-white text-orange-500 rounded-md"><i
                                     class="mdi mdi-cart-outline"></i> Mua Ngay</a>
                         </div>
@@ -188,7 +188,7 @@
                 </div>
 
                 <div class="md:text-end hidden md:block">
-                    <a href="shop-grid.html" class="text-slate-400 hover:text-orange-500">Xem Thêm Sản Phẩm <i
+                    <a href="{{ route('products.list') }}" class="text-slate-400 hover:text-orange-500">Xem Thêm Sản Phẩm <i
                             class="mdi mdi-arrow-right"></i></a>
                 </div>
             </div><!--end grid-->
@@ -199,9 +199,11 @@
                     <div class="group">
                         <div
                             class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
-                            <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}"
-                                class="group-hover:scale-110 duration-500 w-full h-64 object-cover"
-                                alt="{{ $product->name }}">
+                            <a href="{{ route('products.show', $variant->id) }}">
+                                <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}"
+                                    class="group-hover:scale-110 duration-500 w-full h-64 object-cover"
+                                    alt="{{ $product->name }}">
+                            </a>
                             <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
                                 @if ($variant)
                                     <form action="{{ route('cart.add') }}" method="POST" class="w-full">
@@ -220,10 +222,14 @@
                             </div>
                             <ul
                                 class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
-                                <li><a href="javascript:void(0)"
-                                        class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
-                                            data-feather="heart" class="size-4"></i></a></li>
-                                <li class="mt-1"><a href="#"
+                                <li>
+                                    <button onclick="toggleWishlist({{ $variant->id }}, this)"
+                                        class="wishlist-btn size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow cursor-pointer"
+                                        data-product-variant-id="{{ $variant->id }}">
+                                        <i data-feather="heart" class="size-4"></i>
+                                    </button>
+                                </li>
+                                <li class="mt-1"><a href="{{ route('products.show', $variant->id) }}"
                                         class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
                                             data-feather="eye" class="size-4"></i></a></li>
                                 <li class="mt-1"><a href="javascript:void(0)"
@@ -232,7 +238,7 @@
                             </ul>
                         </div>
                         <div class="mt-4">
-                            <a href="#" class="hover:text-orange-500 text-lg font-medium">{{ $product->name }}</a>
+                            <a href="{{ route('products.show', $variant->id) }}" class="hover:text-orange-500 text-lg font-medium">{{ $product->name }}</a>
                             <div class="flex justify-between items-center mt-1">
                                 <p>
                                     @if ($variant)
@@ -262,7 +268,7 @@
 
             <div class="grid grid-cols-1 mt-6">
                 <div class="text-center md:hidden block">
-                    <a href="shop-grid.html" class="text-slate-400 hover:text-orange-500">Xem Thêm Sản Phẩm <i
+                    <a href="{{ route('products.list') }}" class="text-slate-400 hover:text-orange-500">Xem Thêm Sản Phẩm <i
                             class="mdi mdi-arrow-right"></i></a>
                 </div>
             </div>

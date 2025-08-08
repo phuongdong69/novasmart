@@ -88,36 +88,56 @@
         <div class="container relative">
             <div class="grid lg:grid-cols-12 md:grid-cols-2 grid-cols-1 gap-6">
                 <div class="lg:col-span-5">
-                    <div class="grid md:grid-cols-12 gap-3">
-                        @if ($product->product->thumbnails->count() > 0)
-                            @foreach ($product->product->thumbnails as $index => $thumbnail)
-                                <div class="{{ $index === 0 ? 'md:col-span-12' : 'md:col-span-6' }}">
-                                    <a href="{{ asset('storage/' . $thumbnail->url) }}"
-                                        class="lightbox duration-500 group-hover:scale-105 block"
-                                        title="{{ $product->product->name }}">
-                                        <img src="{{ asset('storage/' . $thumbnail->url) }}"
-                                            class="w-full h-64 object-cover shadow-sm dark:shadow-gray-700 rounded-md hover:scale-105 transition-transform duration-300"
-                                            alt="{{ $product->product->name }}" loading="lazy"
-                                            onerror="this.src='{{ asset('assets/user/images/shop/mens-jecket.jpg') }}'; this.onerror=null;">
-                                    </a>
-                                </div>
-                            @endforeach
-                        @else
-                            <!-- Fallback image if no thumbnails -->
-                            <div class="md:col-span-12">
-                                <img src="{{ asset('assets/user/images/shop/mens-jecket.jpg') }}"
-                                    class="w-full h-64 object-cover shadow-sm dark:shadow-gray-700 rounded-md"
-                                    alt="{{ $product->product->name }}">
+                    <ul class="product-imgs flex list-none items-start gap-4">
+                        <li>
+                            <ul class="img-select list-none space-y-2">
+                                @if ($product->product->thumbnails->count() > 0)
+                                    @foreach ($product->product->thumbnails as $index => $thumbnail)
+                                        <li class="p-px">
+                                            <a href="#" data-id="{{ $index + 1 }}" class="block">
+                                                <img src="{{ asset('storage/' . $thumbnail->url) }}" 
+                                                     class="shadow-sm dark:shadow-gray-800 w-20 h-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity" 
+                                                     alt="{{ $product->product->name }}"
+                                                     onerror="this.src='{{ asset('assets/user/images/shop/mens-jecket.jpg') }}'; this.onerror=null;">
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                @else
+                                    <li class="p-px">
+                                        <a href="#" data-id="1" class="block">
+                                            <img src="{{ asset('assets/user/images/shop/mens-jecket.jpg') }}" 
+                                                 class="shadow-sm dark:shadow-gray-800 w-20 h-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity" 
+                                                 alt="{{ $product->product->name }}">
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </li>
+
+                        <li class="flex-1 overflow-hidden shadow-sm dark:shadow-gray-800 rounded">
+                            <div class="img-showcase flex w-full duration-500">
+                                @if ($product->product->thumbnails->count() > 0)
+                                    @foreach ($product->product->thumbnails as $thumbnail)
+                                        <img src="{{ asset('storage/' . $thumbnail->url) }}" 
+                                             class="min-w-full h-96 object-cover flex-shrink-0" 
+                                             alt="{{ $product->product->name }}"
+                                             onerror="this.src='{{ asset('assets/user/images/shop/mens-jecket.jpg') }}'; this.onerror=null;">
+                                    @endforeach
+                                @else
+                                    <img src="{{ asset('assets/user/images/shop/mens-jecket.jpg') }}" 
+                                         class="min-w-full h-96 object-cover flex-shrink-0" 
+                                         alt="{{ $product->product->name }}">
+                                @endif
                             </div>
-                        @endif
-                    </div>
+                        </li>
+                    </ul>
                 </div>
 
                 <div class="lg:col-span-7">
                     <div class="lg:ms-6 sticky top-20">
                         <h5 class="text-2xl font-semibold">{{ $product->product->name }}</h5>
                         <div class="mt-2">
-                            <span class="text-slate-400 font-semibold me-1">{{ number_format($product->price) }} VNĐ</span>
+                            <span class="text-red-600 font-semibold me-1" style="color: #dc2626 !important;">{{ number_format($product->price) }} VNĐ</span>
 
                             <ul class="list-none inline-block text-orange-400">
                                 <li class="inline"><i class="mdi mdi-star text-lg"></i></li>
@@ -352,7 +372,7 @@
             @if ($relatedVariants->count() > 0)
                 <div class="container lg:mt-24 mt-16">
                     <div class="grid grid-cols-1 mb-6 text-center">
-                        <h3 class="font-semibold text-3xl leading-normal">Các sản phẩm tương tự</h3>
+                        <h3 class="font-semibold text-3xl leading-normal">Các mẫu khác mời bạn tham khảo:</h3>
                     </div>
 
                     <div class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 pt-6">
@@ -496,4 +516,50 @@
     </style>
     @include('user.partials.product-detailjs')
     <script src="{{ asset('assets/user/js/shop-cart.js') }}"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imgs = document.querySelectorAll('.img-select a');
+            const imgBtns = [...imgs];
+            let imgId = 1;
+
+            // Remove active class from all thumbnails
+            function removeActiveClass() {
+                imgBtns.forEach(btn => {
+                    btn.classList.remove('ring-2', 'ring-orange-500');
+                });
+            }
+
+            // Add active class to clicked thumbnail
+            function addActiveClass(clickedBtn) {
+                removeActiveClass();
+                clickedBtn.classList.add('ring-2', 'ring-orange-500');
+            }
+
+            imgBtns.forEach((imgItem) => {
+                imgItem.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    imgId = imgItem.dataset.id;
+                    slideImage();
+                    addActiveClass(imgItem);
+                });
+            });
+
+            function slideImage(){
+                const showcase = document.querySelector('.img-showcase');
+                const firstImg = showcase.querySelector('img:first-child');
+                if (firstImg) {
+                    const displayWidth = firstImg.clientWidth;
+                    showcase.style.transform = `translateX(${- (imgId - 1) * displayWidth}px)`;
+                }
+            }
+
+            // Set first thumbnail as active initially
+            if (imgBtns.length > 0) {
+                addActiveClass(imgBtns[0]);
+            }
+
+            window.addEventListener('resize', slideImage);
+        });
+    </script>
 @endsection

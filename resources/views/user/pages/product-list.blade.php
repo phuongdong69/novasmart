@@ -64,22 +64,28 @@
 
                 <!-- Danh sách sản phẩm -->
                 <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
-                    @forelse($products as $variant)
+                    @forelse($products as $product)
                         @php
-                            $product = $variant->product;
+                            // Lấy biến thể đầu tiên có sẵn của sản phẩm
+                            $firstVariant = $product->variants->first();
+                            
+                            if (!$firstVariant) {
+                                continue; // Bỏ qua sản phẩm không có biến thể
+                            }
+                            
                             $thumbnail = $product->thumbnails->where('is_primary', true)->first();
                             $imageUrl = $thumbnail ? asset('storage/' . $thumbnail->url) : asset('assets/user/images/shop/default-product.jpg');
                             
                             // Lấy các thuộc tính để hiển thị
-                            $attributes = $variant->variantAttributeValues->map(function($vav) {
+                            $attributes = $firstVariant->variantAttributeValues->map(function($vav) {
                                 return $vav->attribute->name . ': ' . $vav->attributeValue->value;
                             })->implode(', ');
-                            $variant = $product->variants->first();
-                            $status = $variant?->status;
+                            
+                            $status = $firstVariant?->status;
 
-                            $isOutOfStock = $variant && (
+                            $isOutOfStock = $firstVariant && (
                             ($status && $status->code === 'out_of_stock' && $status->type === 'product_variant')
-                            || $variant->quantity == 0
+                            || $firstVariant->quantity == 0
                             );
                         @endphp
                         <div class="group">
@@ -87,19 +93,19 @@
                                 <img src="{{ $imageUrl }}" class="group-hover:scale-110 duration-500 w-full h-64 object-cover" alt="{{ $product->name }}">
                                 
                                 <div class="absolute top-4 end-4">
-                                    <a href="{{ route('products.show', $variant->id) }}" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow">
+                                    <a href="{{ route('products.show', $firstVariant->id) }}" class="size-10 inline-flex items-center justify-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow">
                                         <i data-feather="eye" class="size-4"></i>
                                     </a>
                                 </div>
                                 
-                                @if($variant->quantity <= 0)
+                                @if($firstVariant->quantity <= 0)
                                     <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                                         <span class="text-white font-semibold">Hết hàng</span>
                                     </div>
                                 @endif
                             </div>
                             <div class="mt-4">
-                                <a href="{{ route('products.show', $variant->id) }}" class="h5 text-lg font-semibold hover:text-orange-500">{{ $product->name }}</a>
+                                <a href="{{ route('products.show', $firstVariant->id) }}" class="h5 text-lg font-semibold hover:text-orange-500">{{ $product->name }}</a>
                                 
                                 @if($product->brand)
                                     <p class="text-slate-400 mt-1">{{ $product->brand->name }}</p>
@@ -110,12 +116,12 @@
                                 @endif
                                 
                                 <div class="flex justify-between items-center mt-3">
-                                    <span class="text-lg font-semibold">{{ number_format($variant->price) }}₫</span>
+                                    <span class="text-lg font-semibold">{{ number_format($firstVariant->price) }}₫</span>
                                     
                             @if(!$isOutOfStock)
                                 <form action="{{ route('cart.add') }}" method="POST" class="inline">
                                     @csrf
-                                    <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
+                                    <input type="hidden" name="product_variant_id" value="{{ $firstVariant->id }}">
                                     <input type="hidden" name="quantity" value="1">
                                     <button type="submit" class="btn-add-cart py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md hover:bg-orange-500">
                                         Thêm vào giỏ

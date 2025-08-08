@@ -29,9 +29,14 @@
         </div><!--end grid-->
 
         <div class="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-6">
-            @forelse($products as $variant)
+            @forelse($products as $product)
             @php
-                $product = $variant->product;
+                // Lấy biến thể đầu tiên có sẵn của sản phẩm
+                $firstVariant = $product->variants->first();
+                
+                if (!$firstVariant) {
+                    continue; // Bỏ qua sản phẩm không có biến thể
+                }
             @endphp
             <div class="group">
                 <div class="relative overflow-hidden shadow dark:shadow-gray-800 group-hover:shadow-lg group-hover:shadow-orange-500/20 dark:group-hover:shadow-orange-500/20 transition-all duration-500 rounded-2xl">
@@ -39,7 +44,7 @@
                         <img src="{{ $product->thumbnails->where('is_primary', 1)->first()?->url ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/shop/placeholder.jpg') }}" 
                              class="group-hover:scale-110 transition-all duration-500" alt="{{ $product->name }}">
                         
-                        @if($variant->compare_price && $variant->compare_price > $variant->price)
+                        @if($firstVariant->compare_price && $firstVariant->compare_price > $firstVariant->price)
                             <div class="absolute top-4 start-4">
                                 <span class="bg-orange-500 text-white text-[12px] font-bold px-2.5 py-0.5 rounded h-5">Sale</span>
                             </div>
@@ -48,17 +53,17 @@
                     
                     <div class="p-6">
                         <div class="pb-3">
-                            <a href="{{ route('products.show', $product->id) }}" class="h5 text-lg font-semibold hover:text-orange-500 transition-all duration-500">{{ $product->name }}</a>
+                            <a href="{{ route('products.show', $firstVariant->id) }}" class="h5 text-lg font-semibold hover:text-orange-500 transition-all duration-500">{{ $product->name }}</a>
                         </div>
                         
                         <div class="flex justify-between items-center">
                             <div class="flex items-center mb-0">
                                 <span class="text-orange-500 font-semibold text-lg">
-                                    {{ number_format($variant->price) }}đ
+                                    {{ number_format($firstVariant->price) }}đ
                                 </span>
-                                @if($variant->compare_price && $variant->compare_price > $variant->price)
+                                @if($firstVariant->compare_price && $firstVariant->compare_price > $firstVariant->price)
                                     <span class="text-slate-400 text-sm line-through ms-2">
-                                        {{ number_format($variant->compare_price) }}đ
+                                        {{ number_format($firstVariant->compare_price) }}đ
                                     </span>
                                 @endif
                             </div>
@@ -69,7 +74,7 @@
                         </div>
                         
                         <div class="mt-4">
-                            <a href="{{ route('products.show', $product->id) }}" 
+                            <a href="{{ route('products.show', $firstVariant->id) }}" 
                                class="btn bg-orange-500 hover:bg-orange-600 border-orange-500 hover:border-orange-600 text-white rounded-md w-full">
                                 Xem chi tiết
                             </a>
