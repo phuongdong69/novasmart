@@ -39,7 +39,7 @@
 
     {{-- Load JS (gồm cả popup-cart.js nếu đã thêm trong script.blade.php) --}}
     @include('user.partials.script')
-
+    @stack('scripts')
 </body>
 
 </html>

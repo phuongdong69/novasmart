@@ -5,26 +5,54 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Models\{Comment, Rating, Order};
+use App\Models\{Comment, Rating, Order, Status};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ReviewController extends Controller
 {
-    public function historyReviews()
+    public function historyReviews(Request $request)
 {
     $userId = Auth::id();
+    $content = $request->input('content');
 
-    // Lọc rating có status active & type review
-    $ratings = Rating::with(['productVariant.product', 'status'])
+    // Lấy danh sách order_detail_id từ comment nếu có lọc theo content
+    $commentOrderDetailIds = [];
+
+    if (!empty($content)) {
+        $commentOrderDetailIds = Comment::with('status')
+            ->where('user_id', $userId)
+            ->whereHas('status', function ($q) {
+                $q->where('code', 'active')->where('type', 'review');
+            })
+            ->where('content', 'like', '%' . $content . '%')
+            ->pluck('order_detail_id')
+            ->toArray();
+    }
+
+    // Query ratings
+    $ratingsQuery = Rating::with(['productVariant.product', 'status'])
         ->where('user_id', $userId)
         ->whereHas('status', function ($q) {
             $q->where('code', 'active')->where('type', 'review');
-        })
-        ->orderByDesc('created_at')
-        ->get();
+        });
 
-    // Lọc comment khớp rating + status active & type review
+    if ($request->filled('from')) {
+        $ratingsQuery->whereDate('created_at', '>=', $request->from);
+    }
+
+    if ($request->filled('to')) {
+        $ratingsQuery->whereDate('created_at', '<=', $request->to);
+    }
+
+    if (!empty($content)) {
+        $ratingsQuery->whereIn('order_detail_id', $commentOrderDetailIds);
+    }
+
+    // Không giữ query string khi phân trang
+    $ratings = $ratingsQuery->orderByDesc('created_at')->paginate(10);
+
+    // Lấy các comment tương ứng
     $comments = Comment::with('status')
         ->where('user_id', $userId)
         ->whereHas('status', function ($q) {
@@ -36,8 +64,12 @@ class ReviewController extends Controller
             return [$comment->user_id . '-' . $comment->order_detail_id => $comment];
         });
 
-    return view('user.pages.history-review', compact('ratings', 'comments'));
+    return view('user.pages.history-review', [
+        'ratings' => $ratings,
+        'comments' => $comments,
+    ]);
 }
+
 
    public function show(Product $product, Request $request)
 {
@@ -139,6 +171,15 @@ class ReviewController extends Controller
         ], 422);
     }
 
+    // ✅ Lấy status mặc định cho review
+    $status = Status::where('code', 'active')->where('type', 'review')->orderByDesc('id')->first();
+    if (!$status) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Không tìm thấy trạng thái mặc định cho đánh giá/bình luận.'
+        ], 500);
+    }
+
     $ratingModel = null;
     $commentModel = null;
 
@@ -149,6 +190,7 @@ class ReviewController extends Controller
             'order_id' => $order->id,
             'order_detail_id' => $orderDetail->id,
             'rating' => $request->rating,
+            'status_id' => $status->id,
         ]);
 
         Log::info('Đã lưu rating', ['id' => $ratingModel->id]);
@@ -161,12 +203,13 @@ class ReviewController extends Controller
             'order_id' => $order->id,
             'order_detail_id' => $orderDetail->id,
             'content' => $request->content,
+            'status_id' => $status->id,
         ]);
 
         Log::info('Đã lưu comment', ['id' => $commentModel->id]);
     }
 
-    // Tính tổng quan đánh giá
+    // Tính lại tổng quan đánh giá
     $ratings = Rating::where('product_variant_id', $request->product_variant_id)->get();
     $averageRating = round($ratings->avg('rating'), 1);
     $totalRatings = $ratings->count();
@@ -178,7 +221,6 @@ class ReviewController extends Controller
         5 => $ratings->where('rating', 5)->count(),
     ];
 
-    // Trả về phản hồi cho frontend
     return response()->json([
         'success' => true,
         'message' => 'Đánh giá của bạn đã được gửi thành công.',
@@ -197,6 +239,7 @@ class ReviewController extends Controller
         ]
     ]);
 }
+
     public function ratingSummary(Product $product)
     {
         $ratings = $product->ratings;

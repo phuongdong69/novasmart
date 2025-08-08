@@ -15,6 +15,7 @@ class Comment extends Model
         'order_id',
         'order_detail_id',
         'content',
+        'status_id',
     ];
 
     // Người bình luận

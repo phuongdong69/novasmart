@@ -15,6 +15,7 @@ class Rating extends Model
         'order_id',
         'order_detail_id',
         'rating',
+        'status_id',
     ];
 
     // Người đánh giá
