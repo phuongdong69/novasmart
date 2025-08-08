@@ -17,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Product variant API
+Route::get('/product-variant/{id}', [App\Http\Controllers\Api\ProductVariantController::class, 'show']);
