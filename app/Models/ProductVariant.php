@@ -32,4 +32,17 @@ class ProductVariant extends Model
     {
         return $this->hasMany(VariantAttributeValue::class);
     }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+        public function imageUrl()
+    {
+        return $this->image ? asset('storage/' . $this->image) : asset('assets/images/placeholder.png');
+    }
 }

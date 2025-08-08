@@ -9,7 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // 📦 Kiểm tra URL có tham số voucher_applied không
     const urlParams = new URLSearchParams(location.search);
     const isVoucherJustApplied = urlParams.has('voucher_applied');
+    // ✅ Nếu KHÔNG phải vừa áp mã, thì xoá trạng thái tick
+    if (!isVoucherJustApplied) {
+        localStorage.removeItem(CHECKED_KEY);
+        localStorage.removeItem(CHECK_ALL_KEY);
 
+        // ✅ Uncheck toàn bộ checkbox
+        const allCheckboxes = document.querySelectorAll('.item-checkbox');
+        allCheckboxes.forEach(cb => cb.checked = false);
+
+        // ✅ Bỏ tick "chọn tất cả"
+        const checkAll = document.getElementById('check-all');
+        if (checkAll) checkAll.checked = false;
+    }
+    
     // 🧱 Lấy các phần tử cần thiết trong DOM
     const checkboxes = document.querySelectorAll('.item-checkbox');
     const checkAll = document.getElementById('check-all');
@@ -150,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (selectedCount > 0) {
         showSuccessToast(`Đã chọn ${selectedCount} sản phẩm.`);
     } else {
-        showError('Không có sản phẩm nào có thể chọn.');
+        showErrorToast('Không có sản phẩm nào có thể chọn.');
         checkAll.checked = false; // Bỏ tick chọn tất cả nếu không có gì chọn
     }
 }
@@ -235,7 +248,10 @@ if (checkAll) {
             totalCell.textContent = data.item_total;
             updateSelectedIds();
 
-            showSuccessToast(data.message);
+            const productCheckbox = document.querySelector(`.item-checkbox[value="${id}"]`);
+            if (productCheckbox && productCheckbox.checked) {
+                showSuccessToast(data.message);
+            }
         } else {
             errorBox.textContent = data.message || 'Không thể cập nhật.';
             errorBox.classList.remove('hidden');
@@ -278,11 +294,16 @@ if (checkAll) {
         return;
     }
 
-    if (totalQty > 3) {
-        e.preventDefault();
-        showErrorToast('Bạn chỉ có thể đặt tối đa 3 sản phẩm để thanh toán.');
-        return;
-    }
+    // Lấy tổng tiền hiện tại (tạm tính), loại bỏ chữ và định dạng
+const tempValue = document.getElementById('temp-value')?.textContent || '0';
+const totalValue = parseInt(tempValue.replace(/[^\d]/g, ''));
+
+// Giới hạn tối đa 100 triệu
+if (totalValue > 100_000_000) {
+    e.preventDefault();
+    showErrorToast('Tổng giá trị đơn hàng không được vượt quá 100 triệu đồng.');
+    return;
+}
     });
 
     // 🗑️ Xử lý form xoá sản phẩm
@@ -290,7 +311,7 @@ if (checkAll) {
         const selected = [...checkboxes].filter(cb => cb.checked).map(cb => cb.value);
         if (selected.length === 0) {
             e.preventDefault();
-            showError('Vui lòng chọn ít nhất một sản phẩm để xóa.');
+            showErrorToast('Vui lòng chọn ít nhất một sản phẩm để xóa.');
         }
     });
 
@@ -303,8 +324,8 @@ if (checkAll) {
             return { id: cb.value, quantity: parseInt(qty) };
         });
         const code = voucherForm.querySelector('input[name="voucher_code"]')?.value.trim();
-        if (!selectedItems.length) return showError('Phải chọn sản phẩm mới áp dụng mã.');
-        if (!code) return showError('Vui lòng nhập mã giảm giá.');
+        if (!selectedItems.length) return showErrorToast('Phải chọn sản phẩm mới áp dụng mã.');
+        if (!code) return showErrorToast('Vui lòng nhập mã giảm giá.');
 
         saveChecked(selectedItems.map(item => item.id)); // ✅ giữ trạng thái tick
 
@@ -320,7 +341,7 @@ if (checkAll) {
                 url.searchParams.set('voucher_applied', '1');
                 location.href = url.toString(); // Reload để cập nhật
             } else {
-                showError(data.message || 'Áp dụng mã thất bại.');
+                showErrorToast(data.message || 'Áp dụng mã thất bại.');
             }
         });
     });

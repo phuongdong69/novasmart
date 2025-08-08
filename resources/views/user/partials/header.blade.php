@@ -254,7 +254,12 @@
                                     <i data-feather="shopping-bag" class="h-4 w-4 me-2"></i>Quản lý đơn hàng
                                 </a>
                             </li>
-
+                            <li>
+                                <a href="{{ route('user.reviews') }}"
+                                    class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white">
+                                    <i data-feather="star" class="h-4 w-4 me-2"></i>Đánh giá của tôi
+                                </a>
+                            </li>
                             <li>
                                 <a href="{{ url('settings') }}"
                                     class="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-orange-500 dark:hover:text-white">

@@ -29,6 +29,8 @@ use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\User\AboutController;
 use App\Http\Controllers\User\NewsController as UserNewsController;
+use App\Http\Controllers\User\ReviewController;
+
 
 
 /*
@@ -131,12 +133,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     ]);
 
     // Product Thumbnails
-    Route::resource('product-thumbnails', ProductThumbnailController::class)->only(['index', 'create', 'store', 'edit', 'update'])->names([
+    Route::resource('product-thumbnails', ProductThumbnailController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->names([
         'index' => 'product_thumbnail.index',
         'create' => 'product_thumbnail.create',
         'store' => 'product_thumbnail.store',
         'edit' => 'product_thumbnail.edit',
         'update' => 'product_thumbnail.update',
+        'destroy' => 'product_thumbnail.destroy',
     ]);
 
     // Vouchers
@@ -179,6 +182,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Cập nhật trạng thái order
     Route::post('orders/{order}/update-status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update_status');
     Route::resource('statuses', App\Http\Controllers\Admin\StatusController::class);
+    Route::post('admin/orders/{order}/refund', [OrderController::class, 'refund'])->name('admin.orders.refund');
+
     //brands
     Route::resource('brands', BrandController::class);
     Route::resource('orders', OrderController::class);
@@ -196,6 +201,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // News
     Route::put('news/{id}/toggle-status', [NewsController::class, 'toggleStatus'])->name('news.toggleStatus');
     Route::resource('news', NewsController::class);
+    // Reviews
+    Route::resource('reviews', \App\Http\Controllers\Admin\ReviewController::class)->only(['index']);
+    Route::put('reviews/{id}/toggle-status', [\App\Http\Controllers\Admin\ReviewController::class, 'toggleStatus'])->name('reviews.toggleStatus');
 });
 
 /*
@@ -218,6 +226,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/wishlist/remove', [WishlistController::class, 'remove'])->name('wishlist.remove');
     Route::post('/wishlist/check', [WishlistController::class, 'check'])->name('wishlist.check');
     Route::get('/wishlist/count', [WishlistController::class, 'count'])->name('wishlist.count');
+
+    // Đánh giá và bình luận
+    Route::get('/history-reviews', [ReviewController::class, 'historyReviews'])->name('user.reviews');
+    Route::get('/products/{product}', [ReviewController::class, 'show']);
+    Route::post('/review', [ReviewController::class, 'store'])->name('review.store');
+    Route::post('/reviews/submit', [ReviewController::class, 'store'])->name('review.submit');
+    Route::get('/api/product/{product}/rating-summary', [ReviewController::class, 'ratingSummary']);
+    Route::delete('/reviews/{rating}', [ReviewController::class, 'destroy'])->name('user.reviews.destroy');
+
 });
 
 /*

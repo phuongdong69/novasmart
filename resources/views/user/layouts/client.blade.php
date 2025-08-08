@@ -32,7 +32,10 @@
     @include('user.partials.scroll')
 
     {{-- Thêm popup yêu cầu đăng nhập --}}
-    {{-- @include('user.partials.popup') --}}
+    @include('user.partials.popup')
+    @include('user.partials.popup-review')
+
+    {{-- Thêm popup giỏ hàng --}}
 
     {{-- Load JS (gồm cả popup-cart.js nếu đã thêm trong script.blade.php) --}}
     @include('user.partials.script')
