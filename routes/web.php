@@ -20,12 +20,15 @@ use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\SlideshowController;
+use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\User\OrderrController;
 use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\User\AboutController;
+use App\Http\Controllers\User\NewsController as UserNewsController;
 
 
 /*
@@ -37,6 +40,13 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\User\HomeController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// About page
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+
+// News routes
+Route::get('/news', [UserNewsController::class, 'index'])->name('news.index');
+Route::get('/news/{slug}', [UserNewsController::class, 'show'])->name('news.show');
 
 // User-facing product list
 use App\Http\Controllers\User\ProductController as UserProductController;
@@ -182,6 +192,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     //slideshows
     Route::resource('slideshows', SlideshowController::class);
+    
+    // News
+    Route::put('news/{id}/toggle-status', [NewsController::class, 'toggleStatus'])->name('news.toggleStatus');
+    Route::resource('news', NewsController::class);
 });
 
 /*
