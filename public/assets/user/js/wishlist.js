@@ -44,7 +44,7 @@ function toggleWishlist(productVariantId, button) {
                         // Product detail page button with text
                         button.style.backgroundColor = '#f3f4f6';
                         button.style.color = '#374151';
-                        button.querySelector('.wishlist-text').textContent = 'Thêm vào yêu thích';
+                        button.querySelector('.wishlist-text').textContent = 'Yêu thích';
                     } else if (button.querySelector('i')) {
                         // Product detail page button without text
                         button.style.backgroundColor = '#f3f4f6';

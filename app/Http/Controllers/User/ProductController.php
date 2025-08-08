@@ -12,41 +12,49 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ProductVariant::with([
-            'product.brand',
-            'product.origin', 
-            'product.category',
-            'product.thumbnails',
-            'variantAttributeValues.attribute',
-            'variantAttributeValues.attributeValue'
+        $query = Product::with([
+            'brand',
+            'origin', 
+            'category',
+            'thumbnails',
+            'variants' => function($q) {
+                $q->where('quantity', '>', 0)
+                  ->with(['variantAttributeValues.attribute', 'variantAttributeValues.attributeValue']);
+            }
         ]);
 
         // Tìm kiếm theo tên sản phẩm
         if ($request->filled('search')) {
            $search = $request->search;
-            $query->whereHas('product', function (Builder $q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
-            });
+            $query->where('name', 'like', "%{$search}%");
         }
 
         // Lọc theo thương hiệu
         if ($request->filled('brand')) {
-            $brand = $request->brand;
-            $query->whereHas('product.brand', function (Builder $q) use ($brand) {
-                $q->where('name', 'like', '%' . $brand . '%');
-            });
+            $brands = $request->brand;
+            // Nếu brand là array (nhiều brand được chọn)
+            if (is_array($brands)) {
+                $query->whereHas('brand', function (Builder $q) use ($brands) {
+                    $q->whereIn('name', $brands);
+                });
+            } else {
+                // Nếu brand là string (một brand được chọn)
+                $query->whereHas('brand', function (Builder $q) use ($brands) {
+                    $q->where('name', 'like', '%' . $brands . '%');
+                });
+            }
         }
 
         // Lọc theo xuất xứ
         if ($request->filled('origin')) {
-            $query->whereHas('product.origin', function (Builder $q) use ($request) {
+            $query->whereHas('origin', function (Builder $q) use ($request) {
                 $q->where('country', $request->origin);
             });
         }
 
         // Lọc theo màu sắc
         if ($request->filled('color')) {
-            $query->whereHas('variantAttributeValues', function (Builder $q) use ($request) {
+            $query->whereHas('variants.variantAttributeValues', function (Builder $q) use ($request) {
                 $q->whereHas('attribute', function (Builder $attr) {
                     $attr->where('name', 'like', '%màu%');
                 })->whereHas('attributeValue', function (Builder $val) use ($request) {
@@ -57,7 +65,7 @@ class ProductController extends Controller
 
         // Lọc theo kích thước màn hình
         if ($request->filled('screen_size')) {
-            $query->whereHas('variantAttributeValues', function (Builder $q) use ($request) {
+            $query->whereHas('variants.variantAttributeValues', function (Builder $q) use ($request) {
                 $q->whereHas('attribute', function (Builder $attr) {
                     $attr->where('name', 'like', '%màn hình%');
                 })->whereHas('attributeValue', function (Builder $val) use ($request) {
@@ -68,7 +76,7 @@ class ProductController extends Controller
 
         // Lọc theo RAM
         if ($request->filled('ram')) {
-            $query->whereHas('variantAttributeValues', function (Builder $q) use ($request) {
+            $query->whereHas('variants.variantAttributeValues', function (Builder $q) use ($request) {
                 $q->whereHas('attribute', function (Builder $attr) {
                     $attr->where('name', 'like', '%RAM%');
                 })->whereHas('attributeValue', function (Builder $val) use ($request) {
@@ -79,7 +87,7 @@ class ProductController extends Controller
 
         // Lọc theo lưu trữ
         if ($request->filled('storage')) {
-            $query->whereHas('variantAttributeValues', function (Builder $q) use ($request) {
+            $query->whereHas('variants.variantAttributeValues', function (Builder $q) use ($request) {
                 $q->whereHas('attribute', function (Builder $attr) {
                     $attr->where('name', 'like', '%lưu trữ%');
                 })->whereHas('attributeValue', function (Builder $val) use ($request) {
@@ -90,29 +98,41 @@ class ProductController extends Controller
 
         // Lọc theo khoảng giá
         if ($request->filled('price_min')) {
-            $query->where('price', '>=', $request->price_min);
+            $query->whereHas('variants', function (Builder $q) use ($request) {
+                $q->where('price', '>=', $request->price_min);
+            });
         }
         if ($request->filled('price_max')) {
-            $query->where('price', '<=', $request->price_max);
+            $query->whereHas('variants', function (Builder $q) use ($request) {
+                $q->where('price', '<=', $request->price_max);
+            });
         }
 
-        // Chỉ hiển thị sản phẩm có số lượng > 0
-        $query->where('quantity', '>', 0);
+        // Chỉ hiển thị sản phẩm có ít nhất một biến thể có số lượng > 0
+        $query->whereHas('variants', function (Builder $q) {
+            $q->where('quantity', '>', 0);
+        });
 
         // Sắp xếp
         $sort = $request->get('sort', 'latest');
         switch ($sort) {
             case 'price_asc':
-                $query->orderBy('price', 'asc');
+                $query->join('product_variants', 'products.id', '=', 'product_variants.product_id')
+                      ->where('product_variants.quantity', '>', 0)
+                      ->orderBy('product_variants.price', 'asc')
+                      ->select('products.*');
                 break;
             case 'price_desc':
-                $query->orderBy('price', 'desc');
+                $query->join('product_variants', 'products.id', '=', 'product_variants.product_id')
+                      ->where('product_variants.quantity', '>', 0)
+                      ->orderBy('product_variants.price', 'desc')
+                      ->select('products.*');
                 break;
             case 'name_asc':
-                $query->orderBy('product.name', 'asc');
+                $query->orderBy('name', 'asc');
                 break;
             case 'name_desc':
-                $query->orderBy('product.name', 'desc');
+                $query->orderBy('name', 'desc');
                 break;
             default:
                 $query->latest();

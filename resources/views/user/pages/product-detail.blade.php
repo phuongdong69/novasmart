@@ -4,44 +4,7 @@
 @section('meta_description', $product->product->description)
 
 @section('content')
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check wishlist status for this product
-            const wishlistBtn = document.querySelector('.wishlist-btn');
-            if (wishlistBtn && isAuthenticated()) {
-                const productVariantId = wishlistBtn.getAttribute('data-product-variant-id');
-                
-                fetch('/wishlist/check', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({
-                        product_variant_id: productVariantId
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.is_liked) {
-                        wishlistBtn.classList.add('liked');
-                        wishlistBtn.style.backgroundColor = '#ef4444';
-                        wishlistBtn.style.color = 'white';
-                        // Update text if exists
-                        const textElement = wishlistBtn.querySelector('.wishlist-text');
-                        if (textElement) {
-                            textElement.textContent = 'Đã yêu thích';
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error checking wishlist status:', error);
-                });
-            }
-        });
-    </script>
-@endpush
+@include('user.partials.product-detail-styles')
     <!-- Start Hero -->
     @if (session('success'))
         <div id="toast-success" class="custom-toast">
@@ -88,36 +51,56 @@
         <div class="container relative">
             <div class="grid lg:grid-cols-12 md:grid-cols-2 grid-cols-1 gap-6">
                 <div class="lg:col-span-5">
-                    <div class="grid md:grid-cols-12 gap-3">
-                        @if ($product->product->thumbnails->count() > 0)
-                            @foreach ($product->product->thumbnails as $index => $thumbnail)
-                                <div class="{{ $index === 0 ? 'md:col-span-12' : 'md:col-span-6' }}">
-                                    <a href="{{ asset('storage/' . $thumbnail->url) }}"
-                                        class="lightbox duration-500 group-hover:scale-105 block"
-                                        title="{{ $product->product->name }}">
-                                        <img src="{{ asset('storage/' . $thumbnail->url) }}"
-                                            class="w-full h-64 object-cover shadow-sm dark:shadow-gray-700 rounded-md hover:scale-105 transition-transform duration-300"
-                                            alt="{{ $product->product->name }}" loading="lazy"
-                                            onerror="this.src='{{ asset('assets/user/images/shop/mens-jecket.jpg') }}'; this.onerror=null;">
-                                    </a>
-                                </div>
-                            @endforeach
-                        @else
-                            <!-- Fallback image if no thumbnails -->
-                            <div class="md:col-span-12">
-                                <img src="{{ asset('assets/user/images/shop/mens-jecket.jpg') }}"
-                                    class="w-full h-64 object-cover shadow-sm dark:shadow-gray-700 rounded-md"
-                                    alt="{{ $product->product->name }}">
+                    <ul class="product-imgs flex list-none items-start gap-4">
+                        <li>
+                            <ul class="img-select list-none space-y-2">
+                                @if ($product->product->thumbnails->count() > 0)
+                                    @foreach ($product->product->thumbnails as $index => $thumbnail)
+                                        <li class="p-px">
+                                            <a href="#" data-id="{{ $index + 1 }}" class="block">
+                                                <img src="{{ asset('storage/' . $thumbnail->url) }}" 
+                                                     class="shadow-sm dark:shadow-gray-800 w-20 h-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity" 
+                                                     alt="{{ $product->product->name }}"
+                                                     onerror="this.src='{{ asset('assets/user/images/shop/mens-jecket.jpg') }}'; this.onerror=null;">
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                @else
+                                    <li class="p-px">
+                                        <a href="#" data-id="1" class="block">
+                                            <img src="{{ asset('assets/user/images/shop/mens-jecket.jpg') }}" 
+                                                 class="shadow-sm dark:shadow-gray-800 w-20 h-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity" 
+                                                 alt="{{ $product->product->name }}">
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </li>
+
+                        <li class="flex-1 overflow-hidden shadow-sm dark:shadow-gray-800 rounded">
+                            <div class="img-showcase flex w-full duration-500">
+                                @if ($product->product->thumbnails->count() > 0)
+                                    @foreach ($product->product->thumbnails as $thumbnail)
+                                        <img src="{{ asset('storage/' . $thumbnail->url) }}" 
+                                             class="min-w-full h-96 object-cover flex-shrink-0" 
+                                             alt="{{ $product->product->name }}"
+                                             onerror="this.src='{{ asset('assets/user/images/shop/mens-jecket.jpg') }}'; this.onerror=null;">
+                                    @endforeach
+                                @else
+                                    <img src="{{ asset('assets/user/images/shop/mens-jecket.jpg') }}" 
+                                         class="min-w-full h-96 object-cover flex-shrink-0" 
+                                         alt="{{ $product->product->name }}">
+                                @endif
                             </div>
-                        @endif
-                    </div>
+                        </li>
+                    </ul>
                 </div>
 
                 <div class="lg:col-span-7">
                     <div class="lg:ms-6 sticky top-20">
                         <h5 class="text-2xl font-semibold">{{ $product->product->name }}</h5>
                         <div class="mt-2">
-                            <span class="text-slate-400 font-semibold me-1">{{ number_format($product->price) }} VNĐ</span>
+                            <span class="text-red-600 font-semibold me-1" style="color: #dc2626 !important;">{{ number_format($product->price) }} VNĐ</span>
 
                             <ul class="list-none inline-block text-orange-400">
                                 <li class="inline"><i class="mdi mdi-star text-lg"></i></li>
@@ -230,16 +213,17 @@
                                     </div>
                                 </div>
 
-                                <div class="mt-2 flex gap-2">
+                                <div class="mt-4 flex gap-4">
                                     <button type="submit"
-                                        class="btn-add-cart py-2 px-5 inline-block font-semibold tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white">
+                                        class="btn-add-cart py-3 px-6 inline-block font-semibold tracking-wide align-middle text-base text-center rounded-md bg-orange-500 hover:bg-orange-600 text-white transition-all duration-300 shadow-sm hover:shadow-md">
+                                        <i data-feather="shopping-cart" class="size-4 me-2 inline"></i>
                                         Thêm vào giỏ
                                     </button>
                                     <button type="button" onclick="toggleWishlist({{ $product->id }}, this)"
-                                        class="wishlist-btn py-2 px-5 inline-flex items-center justify-center font-semibold tracking-wide align-middle text-base text-center rounded-md bg-gray-100 hover:bg-red-500 text-gray-700 hover:text-white transition-colors duration-300 cursor-pointer"
+                                        class="wishlist-btn py-3 px-6 inline-flex items-center justify-center font-semibold tracking-wide align-middle text-base text-center rounded-md bg-gray-100 text-gray-700 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md"
                                         data-product-variant-id="{{ $product->id }}">
                                         <i data-feather="heart" class="size-4 me-2"></i>
-                                        Yêu thích
+                                        <span class="wishlist-text">Yêu thích</span>
                                     </button>
                                 </div>
                             </form>
@@ -253,6 +237,48 @@
                                 class="py-2 px-2 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-300 text-gray-700 w-full rounded-md cursor-not-allowed">
                                 Liên hệ
                             </span>
+                        @endif
+
+                        <!-- Product Variants Section -->
+                        @if ($relatedVariants->count() > 0)
+                            <div class="mt-6">
+                                <h5 class="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Các biến thể khác:</h5>
+                                <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                                    @foreach ($relatedVariants as $variant)
+                                        @php
+                                            // Lấy tên biến thể hoặc SKU
+                                            $variantName = $variant->sku ?? 'Biến thể ' . $loop->iteration;
+                                            
+                                            // Lấy hình ảnh thumbnail
+                                            $thumbnail = $variant->product->thumbnails->first();
+                                            $imageUrl = $thumbnail ? asset('storage/' . $thumbnail->url) : asset('assets/user/images/shop/mens-jecket.jpg');
+                                        @endphp
+                                        
+                                        <a href="javascript:void(0)" 
+                                           data-variant-id="{{ $variant->id }}"
+                                           class="variant-option border-2 rounded-lg p-3 transition-all duration-300 flex-shrink-0 cursor-pointer
+                                                  {{ $variant->id === $product->id ? 'selected border-green-500 bg-green-50' : 'border-gray-200 hover:border-orange-500 hover:bg-gray-50' }}">
+                                            
+                                            <!-- Hình ảnh -->
+                                            <div class="w-10 h-10 mb-2">
+                                                <img src="{{ $imageUrl }}" 
+                                                     class="w-full h-full object-cover rounded" 
+                                                     alt="{{ $variant->product->name }}"
+                                                     loading="lazy"
+                                                     onerror="this.src='{{ asset('assets/user/images/shop/mens-jecket.jpg') }}'; this.onerror=null;" />
+                                            </div>
+                                            
+                                            <!-- Tên biến thể -->
+                                            <div class="text-xs font-medium text-center text-gray-800 mb-1">{{ $variantName }}</div>
+                                            
+                                            <!-- Giá -->
+                                            <div class="text-xs text-red-600 font-semibold text-center">{{ number_format($variant->price) }} ₫</div>
+                                            
+
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -331,7 +357,7 @@
                                                     class="wishlist-btn inline-flex items-center px-3 py-1 rounded-md text-sm font-medium transition-colors duration-300 cursor-pointer"
                                                     data-product-variant-id="{{ $product->id }}">
                                                     <i data-feather="heart" class="size-4 me-1"></i>
-                                                    <span class="wishlist-text">Thêm vào yêu thích</span>
+                                                    <span class="wishlist-text">Yêu thích</span>
                                                 </button>
                                             </td>
                                         </tr>
@@ -352,7 +378,7 @@
             @if ($relatedVariants->count() > 0)
                 <div class="container lg:mt-24 mt-16">
                     <div class="grid grid-cols-1 mb-6 text-center">
-                        <h3 class="font-semibold text-3xl leading-normal">Các sản phẩm tương tự</h3>
+                        <h3 class="font-semibold text-3xl leading-normal">Các mẫu khác mời bạn tham khảo:</h3>
                     </div>
 
                     <div class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 pt-6">
@@ -414,86 +440,9 @@
         </div>
     </section>
     <!-- End -->
-    <style>
-        .custom-toast {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            min-width: 260px;
-            max-width: 360px;
-            background-color: #16a34a;
-            color: #fff;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            animation: slideIn 0.3s ease-out;
-            font-size: 14px;
-            line-height: 1.4;
-            transition: opacity 0.4s ease-out;
-        }
 
-        .toast-icon {
-            width: 20px;
-            height: 20px;
-            stroke: #fff;
-        }
-
-        .toast-message {
-            flex: 1;
-            font-weight: 600;
-        }
-
-        .toast-close {
-            background: transparent;
-            border: none;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        .toast-close-icon {
-            width: 16px;
-            height: 16px;
-            stroke: #fff;
-        }
-
-        .toast-progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            background-color: #a3e635;
-            animation: progressBar 4s linear forwards;
-            width: 100%;
-            border-bottom-left-radius: 6px;
-            border-bottom-right-radius: 6px;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(50%);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes progressBar {
-            from {
-                width: 100%;
-            }
-
-            to {
-                width: 0%;
-            }
-        }
-    </style>
     @include('user.partials.product-detailjs')
     <script src="{{ asset('assets/user/js/shop-cart.js') }}"></script>
+    
+    @include('user.partials.product-detail-script')
 @endsection

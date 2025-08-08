@@ -43,12 +43,17 @@ class ShopController extends Controller
             abort(404);
         }
 
-        $products = Product::with(['brand', 'category', 'thumbnails'])
-            ->where('brand_id', $brand->id)
-            ->whereHas('status', function($query) {
-                $query->where('code', 'active');
-            })
-            ->paginate(12);
+        $products = Product::with(['brand', 'category', 'thumbnails', 'variants' => function($q) {
+            $q->where('quantity', '>', 0);
+        }])
+        ->where('brand_id', $brand->id)
+        ->whereHas('status', function($query) {
+            $query->where('code', 'active');
+        })
+        ->whereHas('variants', function($q) {
+            $q->where('quantity', '>', 0);
+        })
+        ->paginate(12);
 
         return view('user.pages.products', compact('products', 'brand'));
     }
@@ -64,12 +69,17 @@ class ShopController extends Controller
             abort(404);
         }
 
-        $products = Product::with(['brand', 'category', 'thumbnails'])
-            ->where('category_id', $category->id)
-            ->whereHas('status', function($query) {
-                $query->where('code', 'active');
-            })
-            ->paginate(12);
+        $products = Product::with(['brand', 'category', 'thumbnails', 'variants' => function($q) {
+            $q->where('quantity', '>', 0);
+        }])
+        ->where('category_id', $category->id)
+        ->whereHas('status', function($query) {
+            $query->where('code', 'active');
+        })
+        ->whereHas('variants', function($q) {
+            $q->where('quantity', '>', 0);
+        })
+        ->paginate(12);
 
         return view('user.pages.products', compact('products', 'category'));
     }
@@ -79,10 +89,15 @@ class ShopController extends Controller
      */
     public function allProducts(Request $request)
     {
-        $query = Product::with(['brand', 'category', 'thumbnails'])
-            ->whereHas('status', function($query) {
-                $query->where('code', 'active');
-            });
+        $query = Product::with(['brand', 'category', 'thumbnails', 'variants' => function($q) {
+            $q->where('quantity', '>', 0);
+        }])
+        ->whereHas('status', function($query) {
+            $query->where('code', 'active');
+        })
+        ->whereHas('variants', function($q) {
+            $q->where('quantity', '>', 0);
+        });
 
         // Filter by category
         if ($request->filled('category')) {
@@ -93,9 +108,18 @@ class ShopController extends Controller
 
         // Filter by brand
         if ($request->filled('brand')) {
-            $query->whereHas('brand', function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->brand . '%');
-            });
+            $brands = $request->brand;
+            // Nếu brand là array (nhiều brand được chọn)
+            if (is_array($brands)) {
+                $query->whereHas('brand', function($q) use ($brands) {
+                    $q->whereIn('name', $brands);
+                });
+            } else {
+                // Nếu brand là string (một brand được chọn)
+                $query->whereHas('brand', function($q) use ($brands) {
+                    $q->where('name', 'like', '%' . $brands . '%');
+                });
+            }
         }
 
         $products = $query->paginate(12);
