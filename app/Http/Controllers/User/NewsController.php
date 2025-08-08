@@ -4,7 +4,6 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\News;
-use Illuminate\Http\Request;
 
 class NewsController extends Controller
 {
@@ -26,7 +25,7 @@ class NewsController extends Controller
      */
     public function show($slug)
     {
-        $news = News::with('author')
+        $news = News::with(['author'])
             ->published()
             ->where('slug', $slug)
             ->firstOrFail();
