@@ -109,16 +109,18 @@
                                             </div>
 
                                             <div>
-                                                <label for="published_at" class="block text-sm font-medium text-gray-700 mb-2">
-                                                    Ngày xuất bản
+                                                <label for="product_link" class="block text-sm font-medium text-gray-700 mb-2">
+                                                    Link sản phẩm
                                                 </label>
-                                                <input type="datetime-local" 
-                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('published_at') border-red-500 @enderror" 
-                                                       id="published_at" name="published_at" value="{{ old('published_at') }}">
-                                                @error('published_at')
+                                                <input type="url" 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('product_link') border-red-500 @enderror" 
+                                                       id="product_link" name="product_link" 
+                                                       value="{{ old('product_link') }}" 
+                                                       placeholder="https://example.com/product/123">
+                                                @error('product_link')
                                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                                 @enderror
-                                                <p class="mt-2 text-xs text-gray-500">Để trống để xuất bản ngay lập tức.</p>
+                                                <p class="mt-2 text-xs text-gray-500">Nhập link sản phẩm nếu bài viết giới thiệu về sản phẩm cụ thể.</p>
                                             </div>
                                         </div>
                                     </div>
