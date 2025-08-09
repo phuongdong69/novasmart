@@ -299,7 +299,7 @@ const tempValue = document.getElementById('temp-value')?.textContent || '0';
 const totalValue = parseInt(tempValue.replace(/[^\d]/g, ''));
 
 // Giới hạn tối đa 100 triệu
-if (totalValue > 100_000_000) {
+if (totalValue > 150_000_000) {
     e.preventDefault();
     showErrorToast('Tổng giá trị đơn hàng không được vượt quá 100 triệu đồng.');
     return;

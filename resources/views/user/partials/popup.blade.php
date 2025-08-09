@@ -2,7 +2,7 @@
   <div class="popup-box" onclick="event.stopPropagation()">
     <h3 class="popup-title">Bạn chưa đăng nhập</h3>
     <p class="popup-message">
-      Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng và trải nghiệm nhiều tiện ích hơn trên NovaSmart.
+      Vui lòng đăng nhập để trải nghiệm nhiều tiện ích hơn trên NovaSmart.
     </p>
     <div class="popup-actions">
       <a href="{{ route('register') }}" class="btn btn-outline">Đăng ký</a>

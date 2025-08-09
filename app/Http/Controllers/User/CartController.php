@@ -26,7 +26,7 @@ class CartController extends Controller
         $cart['voucher_value'] = $discount;
         $cart['final'] = max(0, $cart['total_price'] - $discount);
 
-        return view('user.pages.shop-card', compact('cart'));
+        return view('user.pages.shop-cart', compact('cart'));
     }
 
     // Thêm sản phẩm vào giỏ hàng (đăng nhập hoặc không đăng nhập)
