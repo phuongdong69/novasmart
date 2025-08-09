@@ -101,4 +101,8 @@ class User extends Authenticatable
             'note'      => $note,
         ]);
     }
+    public function voucherUsages()
+    {
+        return $this->hasMany(\App\Models\VoucherUsage::class);
+    }
 }

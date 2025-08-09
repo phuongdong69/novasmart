@@ -6,18 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, DB, Log};
 use Illuminate\Support\Str;
-use App\Models\{Order, OrderDetail, ProductVariant, Payment, Voucher, Cart, Status};
+use App\Models\{Order, OrderDetail, ProductVariant, Payment, Voucher, Cart, Status, VoucherUsage};
 use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
-    // Hàm khởi tạo thanh toán VNPay
+    // Khởi tạo thanh toán VNPay
     public function vnpayCheckout(Request $request)
     {
-        // Lấy và chuẩn hóa tổng thanh toán
+        // Tổng thanh toán
         $amount = (int) str_replace('.', '', $request->input('final_total', 0));
-
-        // Kiểm tra tổng tiền hợp lệ
         if ($amount < 5000 || $amount > 100000000) {
             return back()->with('error', 'Số tiền không hợp lệ.');
         }
@@ -28,7 +26,7 @@ class PaymentController extends Controller
             return back()->with('error', 'Không tìm thấy sản phẩm hợp lệ trong session.');
         }
 
-        // Gom nhóm sản phẩm theo variant
+        // Gom nhóm theo variant
         $groupedItems = $selectedItems->groupBy(fn($item) => $item['variant']->id)
             ->map(function ($items) {
                 $first = $items->first();
@@ -39,9 +37,13 @@ class PaymentController extends Controller
                 ];
             })->values()->all();
 
-        // Lưu dữ liệu thanh toán vào session để xử lý sau khi thanh toán xong
         $variantIds = collect($groupedItems)->pluck('product_variant_id')->all();
-        $totalPrice = collect($groupedItems)->sum(fn($item) => $item['price'] * $item['quantity']);
+        $totalPrice = collect($groupedItems)->sum(fn($i) => $i['price'] * $i['quantity']);
+
+        // ✅ Lấy voucher_id đúng nguồn (form hoặc session('voucher.id'))
+        $voucherId = $request->input('voucher_id') ?? (session('voucher')['id'] ?? null);
+
+        // Lưu vào session để dùng ở callback
         session()->put('checkout.selected_items', $groupedItems);
         session()->put('vnpay_order_data', [
             'order_code'  => $request->input('order_code') ?? strtoupper(Str::random(10)),
@@ -50,24 +52,23 @@ class PaymentController extends Controller
             'phoneNumber' => $request->input('phoneNumber'),
             'address'     => $request->input('address'),
             'note'        => $request->input('note'),
-            'voucher_id'  => $request->input('voucher_id') ?? session('voucher_id'),
+            'voucher_id'  => $voucherId,                                    // ✅ fixed
             'variant_ids' => $variantIds,
             'cart'        => $groupedItems,
             'total_price' => $totalPrice,
             'final_total' => $amount,
         ]);
 
-        // Cấu hình thông tin từ file config/vnpay.php
+        // Cấu hình VNPay
         $vnp_TmnCode    = config('vnpay.vnp_TmnCode');
         $vnp_HashSecret = config('vnpay.vnp_HashSecret');
         $vnp_Url        = config('vnpay.vnp_Url');
         $vnp_Returnurl  = config('vnpay.vnp_Returnurl');
 
-        // Tạo dữ liệu gửi đến VNPay
         $inputData = [
             "vnp_Version"    => "2.1.0",
             "vnp_TmnCode"    => $vnp_TmnCode,
-            "vnp_Amount"     => $amount * 100, // Nhân 100 theo yêu cầu VNPay
+            "vnp_Amount"     => $amount * 100,
             "vnp_Command"    => "pay",
             "vnp_CreateDate" => now()->format('YmdHis'),
             "vnp_CurrCode"   => "VND",
@@ -79,28 +80,22 @@ class PaymentController extends Controller
             "vnp_TxnRef"     => session('vnpay_order_data.order_code'),
         ];
 
-        // Sắp xếp dữ liệu và tạo chuỗi ký
         ksort($inputData);
         $hashData   = http_build_query($inputData);
         $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
 
-        // Tạo URL thanh toán và chuyển hướng
-        $paymentUrl = $vnp_Url . '?' . $hashData . '&vnp_SecureHash=' . $secureHash;
-        return redirect($paymentUrl);
+        return redirect($vnp_Url . '?' . $hashData . '&vnp_SecureHash=' . $secureHash);
     }
 
-    // Hàm xử lý khi người dùng thanh toán xong và VNPay gọi lại
+    // Callback từ VNPay
     public function vnpayReturn(Request $request)
     {
-        // Lấy key bảo mật từ config
         $vnp_HashSecret = config('vnpay.vnp_HashSecret');
 
-        // Loại bỏ hash khỏi request để tính toán lại
         $inputData = $request->except(['vnp_SecureHash', 'vnp_SecureHashType']);
         ksort($inputData);
         $secureHash = hash_hmac('sha512', http_build_query($inputData), $vnp_HashSecret);
 
-        // Xác thực thanh toán thành công từ VNPay
         if ($secureHash === $request->input('vnp_SecureHash') && $request->input('vnp_ResponseCode') === '00') {
             DB::beginTransaction();
             try {
@@ -108,19 +103,18 @@ class PaymentController extends Controller
                 $orderCode = $request->input('vnp_TxnRef');
                 $amount = $request->input('vnp_Amount') / 100;
 
-                // Kiểm tra lại dữ liệu từ session
                 if (!$data || ($data['order_code'] ?? '') !== $orderCode) {
                     return redirect()->route('checkout.show')->with('error', 'Không tìm thấy đơn hàng trong session.');
                 }
 
-                // Nếu đơn hàng đã tồn tại -> không tạo lại
+                // Nếu đơn đã tồn tại -> không tạo lại
                 $existingOrder = Order::where('order_code', $orderCode)->first();
                 if ($existingOrder) {
                     DB::commit();
                     return redirect()->route('checkout.success')->with('success', 'Thanh toán thành công!');
                 }
 
-                // Tạo thông tin thanh toán
+                // Tạo thanh toán
                 $payment = Payment::create([
                     'status_id'        => Status::where('code', 'paid')->first()->id,
                     'payment_method'   => 'vnpay',
@@ -129,7 +123,7 @@ class PaymentController extends Controller
                     'note'             => $data['note'],
                 ]);
 
-
+                // Tạo đơn hàng
                 $order = Order::create([
                     'user_id'     => Auth::id(),
                     'voucher_id'  => $data['voucher_id'],
@@ -142,10 +136,9 @@ class PaymentController extends Controller
                     'note'        => $data['note'],
                     'order_code'  => $orderCode,
                     'total_price' => $amount,
-
                 ]);
 
-                // Tạo chi tiết đơn hàng và giảm tồn kho
+                // Chi tiết đơn + trừ tồn
                 foreach ($data['cart'] as $item) {
                     OrderDetail::create([
                         'order_id'           => $order->id,
@@ -154,18 +147,27 @@ class PaymentController extends Controller
                         'price'              => $item['price'],
                     ]);
 
-                    ProductVariant::find($item['product_variant_id'])?->decrement('quantity', $item['quantity']);
+                    ProductVariant::find($item['product_variant_id'])
+                        ?->decrement('quantity', $item['quantity']);
                 }
 
-                // Trừ số lượng voucher nếu có
-                if ($data['voucher_id']) {
+                // Trừ voucher & ✅ Lưu lịch sử sử dụng
+                if (!empty($data['voucher_id'])) {
                     Voucher::where('id', $data['voucher_id'])->decrement('quantity');
+
+                    // ✅ rất quan trọng: ghi nhận voucher đã dùng (mỗi user 1 lần / mã)
+                    if (Auth::check()) {
+                        VoucherUsage::firstOrCreate(
+                            ['voucher_id' => $data['voucher_id'], 'user_id' => Auth::id()],
+                            ['used_at' => now()]
+                        );
+                    }
                 }
 
-                // Xóa các item đã mua khỏi cart
+                // Xoá item đã mua khỏi giỏ
                 $this->clearPurchasedItemsFromCart($data['variant_ids'] ?? []);
 
-                // Soạn email đơn hàng
+                // Soạn email
                 $body = "Cảm ơn bạn đã đặt hàng tại Nova Smart!\n\n";
                 $body .= "🧾 Mã đơn hàng: {$order->order_code}\n";
                 $body .= "👤 Tên khách hàng: {$order->name}\n";
@@ -174,25 +176,28 @@ class PaymentController extends Controller
                 $body .= "🏠 Địa chỉ: {$order->address}\n";
                 $body .= "💵 Tổng tiền: " . number_format($order->total_price, 0, ',', '.') . "₫\n\n";
                 $body .= "🔹 Sản phẩm:\n";
-
                 foreach ($data['cart'] as $item) {
                     $variant = ProductVariant::find($item['product_variant_id']);
                     if ($variant) {
-                        $body .= "- {$variant->product->name} ({$variant->name}) × {$item['quantity']} = " .
-                            number_format($item['quantity'] * $item['price'], 0, ',', '.') . "₫\n";
+                        $body .= "- {$variant->product->name} ({$variant->name}) × {$item['quantity']} = "
+                            . number_format($item['quantity'] * $item['price'], 0, ',', '.') . "₫\n";
                     }
                 }
+                $body .= "\nChúng tôi sẽ sớm xử lý đơn hàng của bạn.\n\nTrân trọng,\nNova Smart";
 
-                $body .= "\nChúng tôi sẽ sớm xử lý đơn hàng của bạn.\n\n";
-                $body .= "Trân trọng,\nNova Smart";
+                // ✅ Commit trước khi gửi mail để không rollback usage nếu mail lỗi
+                DB::commit();
 
-                // Gửi mail thông báo đặt hàng
-                Mail::raw($body, function ($message) use ($order) {
-                    $message->to($order->email, $order->name)
-                        ->subject('Thông báo đặt hàng thành công - Nova Smart');
-                });
+                try {
+                    Mail::raw($body, function ($message) use ($order) {
+                        $message->to($order->email, $order->name)
+                            ->subject('Thông báo đặt hàng thành công - Nova Smart');
+                    });
+                } catch (\Throwable $mailEx) {
+                    Log::warning('Gửi mail thất bại: ' . $mailEx->getMessage());
+                }
 
-                // Xóa session liên quan đến checkout
+                // Dọn session
                 session()->forget([
                     'voucher',
                     'vnpay_order_data',
@@ -200,7 +205,6 @@ class PaymentController extends Controller
                     'checkout.selected_ids',
                 ]);
 
-                DB::commit();
                 return redirect()->route('checkout.success')->with('success', 'Thanh toán VNPay thành công! Đã gửi email xác nhận.');
             } catch (\Throwable $e) {
                 DB::rollBack();
@@ -211,7 +215,7 @@ class PaymentController extends Controller
         return redirect()->route('checkout.show')->with('error', 'Thanh toán thất bại hoặc bị hủy.');
     }
 
-    // Lấy danh sách item đã chọn từ session
+    // Lấy item đã chọn từ session
     private function getSelectedItems()
     {
         $variantIds = session('checkout.selected_ids', []);
@@ -247,7 +251,7 @@ class PaymentController extends Controller
         })->filter()->values();
     }
 
-    // Xoá các item đã mua ra khỏi cart (session hoặc database)
+    // Xoá item đã mua khỏi giỏ
     private function clearPurchasedItemsFromCart(array $variantIdsToRemove): void
     {
         if (Auth::check()) {
@@ -257,14 +261,12 @@ class PaymentController extends Controller
         } else {
             $cart = session('cart', []);
             $updated = [];
-
             foreach ($cart as $item) {
                 $variantId = $item['product_variant_id'] ?? ($item['variant']['id'] ?? null);
                 if (!in_array((int)$variantId, $variantIdsToRemove)) {
                     $updated[$variantId] = $item;
                 }
             }
-
             session()->put('cart', $updated);
         }
     }

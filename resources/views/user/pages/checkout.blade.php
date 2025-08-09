@@ -32,16 +32,16 @@
     $seenIds = [];
 
     foreach ($cartItems as $item) {
-    $variant = is_array($item) ? ($item['variant'] ?? null) : ($item->productVariant ?? null);
-    $quantity = is_array($item) ? ($item['quantity'] ?? 1) : ($item->quantity ?? 1);
+        $variant = is_array($item) ? ($item['variant'] ?? null) : ($item->productVariant ?? null);
+        $quantity = is_array($item) ? ($item['quantity'] ?? 1) : ($item->quantity ?? 1);
 
-    if ($variant && !in_array($variant->id, $seenIds)) {
-    $seenIds[] = $variant->id;
-    $uniqueItems->push([
-    'variant' => $variant,
-    'quantity' => $quantity,
-    ]);
-    }
+        if ($variant && !in_array($variant->id, $seenIds)) {
+            $seenIds[] = $variant->id;
+            $uniqueItems->push([
+                'variant' => $variant,
+                'quantity' => $quantity,
+            ]);
+        }
     }
 
     $total = $uniqueItems->sum(fn($i) => $i['variant']->price * $i['quantity']);
@@ -51,12 +51,12 @@
 
     $discount = 0;
     if ($voucherId) {
-    $voucherModel = \App\Models\Voucher::find($voucherId);
-    if ($voucherModel) {
-    $discount = $voucherModel->discount_type === 'percent'
-    ? round($total * ($voucherModel->discount_value / 100))
-    : min($voucherModel->discount_value, $total);
-    }
+        $voucherModel = \App\Models\Voucher::find($voucherId);
+        if ($voucherModel) {
+            $discount = $voucherModel->discount_type === 'percent'
+                ? round($total * ($voucherModel->discount_value / 100))
+                : min($voucherModel->discount_value, $total);
+        }
     }
 
     $finalTotal = max(0, $total - $discount);
@@ -75,7 +75,11 @@
                         data-vnpay-route="{{ route('payment.vnpay.checkout') }}">
                         @csrf
 
-                        <input type="hidden" name="voucher_id" value="{{ $voucherId }}">
+                        {{-- ✅ Hidden Voucher ID để gửi về controller --}}
+                        @if($voucherId)
+                            <input type="hidden" name="voucher_id" value="{{ $voucherId }}">
+                        @endif
+
                         <input type="hidden" name="final_total" value="{{ (int) $finalTotal }}">
                         <input type="hidden" name="amount" id="amount" value="{{ (int) $finalTotal }}">
 
@@ -137,7 +141,6 @@
                                 <select name="payment_method"
                                     class="form-input w-full py-2 px-3 h-10 border border-gray-300 rounded">
                                     <option value="">-- Chọn phương thức --</option>
-                                    <!-- <option value="cod" {{ old('payment_method') == 'cod' ? 'selected' : '' }}>COD</option> -->
                                     <option value="vnpay" {{ old('payment_method') == 'vnpay' ? 'selected' : '' }}>VNPay</option>
                                 </select>
                                 <span id="payment_method-error" class="text-red-600 text-sm mt-1 hidden"></span>
@@ -150,7 +153,6 @@
                                 </button>
                             </div>
                         </div>
-
                     </form>
                 </div>
             </div>
@@ -166,16 +168,16 @@
                     </div>
 
                     @foreach ($uniqueItems as $item)
-                    <input type="hidden" name="selected_items[]" value="{{ $item['variant']->id }}">
-                    <div class="flex justify-between items-start py-2 border-b">
-                        <div>
-                            <p class="text-sm font-medium">{{ $item['variant']->product->name ?? 'Tên sản phẩm' }}</p>
-                            <p class="text-xs text-gray-500">{{ $item['variant']->name ?? '' }} × {{ $item['quantity'] }}</p>
+                        <input type="hidden" name="selected_items[]" value="{{ $item['variant']->id }}">
+                        <div class="flex justify-between items-start py-2 border-b">
+                            <div>
+                                <p class="text-sm font-medium">{{ $item['variant']->product->name ?? 'Tên sản phẩm' }}</p>
+                                <p class="text-xs text-gray-500">{{ $item['variant']->name ?? '' }} × {{ $item['quantity'] }}</p>
+                            </div>
+                            <p class="text-sm font-semibold whitespace-nowrap">
+                                {{ number_format($item['variant']->price * $item['quantity'], 0, ',', '.') }}₫
+                            </p>
                         </div>
-                        <p class="text-sm font-semibold whitespace-nowrap">
-                            {{ number_format($item['variant']->price * $item['quantity'], 0, ',', '.') }}₫
-                        </p>
-                    </div>
                     @endforeach
 
                     <div class="pt-4 space-y-1 text-sm">
