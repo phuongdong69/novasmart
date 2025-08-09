@@ -21,6 +21,7 @@ class HomeController extends Controller
         ->latest()
         ->take(8)
         ->get();
+        $products = Product::with(['thumbnails', 'variants', 'ratings'])->latest()->take(8)->get();
         
         // Lấy id các status đơn hàng hợp lệ
         $statusCodes = ['completed', 'delivered', 'confirmed'];

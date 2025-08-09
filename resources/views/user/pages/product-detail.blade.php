@@ -1,27 +1,13 @@
 @extends('user.layouts.client')
 @include('user.partials.popup')
+@include('user.partials.popup-review')
+@include('user.partials.toast')
 @section('title', $product->product->name)
 @section('meta_description', $product->product->description)
 
 @section('content')
 @include('user.partials.product-detail-styles')
     <!-- Start Hero -->
-    @if (session('success'))
-        <div id="toast-success" class="custom-toast">
-            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="toast-message">{{ session('success') }}</span>
-            <button class="toast-close" onclick="this.parentElement.remove()">
-                <svg xmlns="http://www.w3.org/2000/svg" class="toast-close-icon" fill="none" stroke="currentColor"
-                    stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-            <div class="toast-progress"></div>
-        </div>
-    @endif
     <section class="relative table w-full py-20 lg:py-24 md:pt-28 bg-gray-50 dark:bg-slate-800">
         <div class="container relative">
             <div class="grid grid-cols-1 mt-14">
@@ -102,13 +88,21 @@
                         <div class="mt-2">
                             <span class="text-red-600 font-semibold me-1" style="color: #dc2626 !important;">{{ number_format($product->price) }} VNĐ</span>
 
+                            @php
+                                $ratings = $product->ratings()->with('user')->orderByDesc('created_at')->get();
+                                $totalRatings = $ratings->count();
+                                $averageRating = round($ratings->avg('rating') ?? 0, 1); // VD: 4.8
+                            @endphp
+
                             <ul class="list-none inline-block text-orange-400">
-                                <li class="inline"><i class="mdi mdi-star text-lg"></i></li>
-                                <li class="inline"><i class="mdi mdi-star text-lg"></i></li>
-                                <li class="inline"><i class="mdi mdi-star text-lg"></i></li>
-                                <li class="inline"><i class="mdi mdi-star text-lg"></i></li>
-                                <li class="inline"><i class="mdi mdi-star text-lg"></i></li>
-                                <li class="inline text-slate-400 font-semibold">4.8 (45)</li>
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <li class="inline">
+                                        <i class="mdi mdi-star{{ $i <= round($averageRating) ? '' : '-outline' }} text-lg"></i>
+                                    </li>
+                                @endfor
+                                <li class="inline text-slate-400 font-semibold ms-1">
+                                    {{ number_format($averageRating, 1) }} ({{ $totalRatings }})
+                                </li>
                             </ul>
                         </div>
 
@@ -366,11 +360,219 @@
                             </table>
                         </div>
 
-                        <div class="hidden" id="review" role="tabpanel" aria-labelledby="review-tab">
-                            <div class="text-center py-8">
-                                <p class="text-slate-400">Chưa có đánh giá nào cho sản phẩm này.</p>
+                       <div id="review" role="tabpanel" aria-labelledby="review-tab">
+
+    @php
+    use Carbon\Carbon;
+    use App\Models\Comment;
+
+    Carbon::setLocale('vi');
+
+    // Chỉ lấy ratings có status active + type review
+    $ratings = $product->ratings()
+        ->with(['user', 'status'])
+        ->whereHas('status', function ($q) {
+            $q->where('code', 'active')->where('type', 'review');
+        })
+        ->orderByDesc('created_at')
+        ->get();
+
+    // Lấy comment có status active + type review, khớp user + order_detail
+    $comments = Comment::with('status')
+        ->whereHas('status', function ($q) {
+            $q->where('code', 'active')->where('type', 'review');
+        })
+        ->whereIn('user_id', $ratings->pluck('user_id'))
+        ->whereIn('order_detail_id', $ratings->pluck('order_detail_id'))
+        ->get()
+        ->mapWithKeys(function ($comment) {
+            return [$comment->user_id . '-' . $comment->order_detail_id => $comment];
+        });
+
+    $totalRatings = $ratings->count();
+    $averageRating = $ratings->avg('rating') ?? 0;
+
+    $ratingBreakdown = [
+        5 => $ratings->where('rating', 5)->count(),
+        4 => $ratings->where('rating', 4)->count(),
+        3 => $ratings->where('rating', 3)->count(),
+        2 => $ratings->where('rating', 2)->count(),
+        1 => $ratings->where('rating', 1)->count(),
+    ];
+
+    $starFilter = request()->query('star');
+    $isReload = request()->header('referer') === request()->fullUrl();
+
+    $currentStar = (in_array($starFilter, ['1','2','3','4','5']) && !$isReload)
+        ? $starFilter
+        : 'all';
+
+    $filteredRatings = $currentStar !== 'all'
+        ? $ratings->filter(fn($r) => $r->rating == $currentStar)->values()
+        : $ratings;
+@endphp
+
+   {{-- Tổng quan đánh giá --}}
+<div class="bg-white rounded-md p-6 shadow border mb-6">
+    <div class="flex flex-row items-center gap-6">
+        {{-- Trái: Trung bình điểm --}}
+        <div class="w-1/3 text-center">
+            <div id="average-rating" class="text-5xl font-bold text-gray-900">
+                {{ number_format($averageRating, 1) }} <span class="text-xl text-gray-500">/5</span>
+            </div>
+
+            <div id="average-rating-icons" class="flex justify-center text-yellow-400 text-xl mt-1">
+                @for ($i = 1; $i <= 5; $i++)
+                    <i class="mdi mdi-star{{ $i <= round($averageRating) ? '' : '-outline' }}"></i>
+                @endfor
+            </div>
+
+            <div id="total-rating-count" class="text-gray-600 mt-1">
+                {{ $totalRatings }} lượt đánh giá
+            </div>
+
+        <button
+            onclick="openReviewModal({{ $product->id }})"
+            class="btn-write-review mt-3 bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-md text-sm"
+            data-product-variant-id="{{ $product->id }}">
+            Viết đánh giá
+        </button>
+        </div>
+
+        {{-- Biểu đồ sao --}}
+        <div class="flex-1 space-y-2">
+            @foreach ([5, 4, 3, 2, 1] as $star)
+                @php
+                    $count = $ratingBreakdown[$star];
+                    $percent = $totalRatings ? ($count / $totalRatings) * 100 : 0;
+                @endphp
+                <div id="star-bar-icon"class="flex items-center gap-2">
+                    <span class="w-4 text-sm font-medium">{{ $star }}</span>
+                    <i class="mdi mdi-star text-yellow-400 text-sm"></i>
+                    <div class="flex-1 bg-gray-200 rounded-full overflow-hidden relative" style="height: 8px;">
+                        <div class="bg-red-600 rounded-full rating-bar" data-star="{{ $star }}" style="width: {{ $percent }}%; height: 100%;"></div>
+                    </div>
+                  
+                    <span class="w-20 text-sm text-gray-500 text-right rating-count" data-star="{{ $star }}">
+                        {{ $count }} đánh giá
+                    </span>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+
+   {{-- Lọc đánh giá --}}
+<div class="bg-white rounded-md p-4 shadow border mb-4">
+    <h4 class="text-base font-semibold mb-3">Lọc đánh giá theo</h4>
+    <div class="flex flex-wrap gap-2" id="review-filter-buttons">
+    @foreach (['all' => 'Tất cả', 5 => '5 sao', 4 => '4 sao', 3 => '3 sao', 2 => '2 sao', 1 => '1 sao'] as $value => $label)
+        <button type="button"
+            data-star="{{ $value }}"
+            class="px-4 py-1 border rounded-full text-sm filter-button
+                {{ $currentStar == $value ? 'bg-blue-100 text-blue-600 border-blue-600' : 'hover:bg-gray-100 text-gray-700' }}">
+            {{ $label }}
+        </button>
+    @endforeach
+</div>
+
+    {{-- Danh sách đánh giá --}}
+    @if ($filteredRatings->count())
+        <div class="bg-white rounded-md p-4 mb-6" id="review-list-container">
+            @foreach ($filteredRatings as $loopIndex => $rating)
+                @php
+                    $user = $rating->user;
+                    $commentKey = $rating->user_id . '-' . $rating->order_detail_id;
+                    $comment = $comments[$commentKey] ?? null;
+                    $initial = $user ? strtoupper(mb_substr($user->name, 0, 1)) : 'U';
+                    $name = $user->name ?? 'Ẩn danh';
+                    $createdTime = $comment?->created_at ?? $rating->created_at;
+                @endphp
+
+                <div class="py-4 review-item {{ $loopIndex > 3 ? 'hidden' : '' }}">
+                    <div class="flex items-start gap-4">
+                        {{-- Avatar --}}
+                        @if ($user && $user->image_user)
+                            <img src="{{ asset('storage/' . $user->image_user) }}" class="w-10 h-10 rounded-full object-cover" alt="{{ $name }}">
+                        @else
+                            <img src="{{ asset('images/default-avatar.png') }}" class="w-10 h-10 rounded-full object-cover" alt="Avatar mặc định">
+                        @endif
+
+                        {{-- Nội dung đánh giá --}}
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 flex-wrap mb-1">
+                                <span class="font-medium text-gray-900">{{ $name }}</span>
+                                <div class="flex items-center text-yellow-500 text-sm">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <i class="mdi mdi-star{{ $i <= $rating->rating ? '' : '-outline' }}"></i>
+                                    @endfor
+                                </div>
+                                <span class="text-sm text-gray-600 font-medium">
+                                    @switch($rating->rating)
+                                        @case(5) - Tuyệt vời @break
+                                        @case(4) - Tốt @break
+                                        @case(3) - Bình thường @break
+                                        @case(2) - Tệ @break
+                                        @case(1) - Rất tệ @break
+                                        @default -
+                                    @endswitch
+                                </span>
                             </div>
+
+                            @if ($comment && $comment->content)
+                                <p class="text-sm text-gray-800 mt-2">{{ $comment->content }}</p>
+                            @endif
+
+                            <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                                <i class="mdi mdi-clock-outline"></i>
+                                Đánh giá đã đăng vào {{ $createdTime->diffForHumans() }}
+                            </p>
                         </div>
+                    </div>
+                </div>
+
+                @if (!$loop->last)
+                    <hr class="my-2 border-gray-200">
+                @endif
+            @endforeach
+        
+        @if ($filteredRatings->count() > 4)
+            <div class="text-center mt-4">
+                <button id="load-more-reviews" class="btn-load-more">
+                    Xem thêm đánh giá
+                </button>
+            </div>
+        @endif
+    </div> {{-- ✅ Đóng div đúng vị trí --}}
+@else
+    <div id="review-list-container" class="text-center text-gray-500 py-6">
+        Không có đánh giá phù hợp.
+    </div>
+@endif
+    </div>
+<template id="review-item-template">
+    <div class="py-4 review-item">
+        <div class="flex items-start gap-4">
+            <div class="user-avatar w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold bg-indigo-900 text-white">
+                <span class="user-initial">?</span>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                    <span class="font-medium text-gray-900 user-name">Tên người dùng</span>
+                    <div class="review-stars flex items-center text-yellow-500 text-sm"></div>
+                    <span class="text-sm text-gray-600 font-medium review-label">Nhãn</span>
+                </div>
+                <p class="text-sm text-gray-800 mt-2 review-content">Nội dung đánh giá</p>
+                <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                    <i class="mdi mdi-clock-outline"></i>
+                    <span class="review-time">Vừa xong</span>
+                </p>
+            </div>
+        </div>
+        <hr class="my-2 border-gray-200">
+    </div>
+</template>
+
                     </div>
                 </div>
             </div>
@@ -441,8 +643,304 @@
     </section>
     <!-- End -->
 
+
     @include('user.partials.product-detailjs')
     <script src="{{ asset('assets/user/js/shop-cart.js') }}"></script>
     
     @include('user.partials.product-detail-script')
+
+    <style>
+        .custom-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    min-width: 260px;
+    max-width: 360px;
+    background-color: #16a34a; /* xanh lá - success */
+    color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+    font-size: 14px;
+    line-height: 1.4;
+    transition: opacity 0.4s ease-out;
+}
+
+.toast-icon {
+    width: 20px;
+    height: 20px;
+    stroke: #fff;
+}
+
+.toast-message {
+    flex: 1;
+    font-weight: 600;
+}
+
+.toast-close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+
+.toast-close-icon {
+    width: 16px;
+    height: 16px;
+    stroke: #fff;
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background-color: #a3e635; /* lime-400 */
+    animation: progressBar 4s linear forwards;
+    width: 100%;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+/* Hiệu ứng */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes progressBar {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
+    }
+}
+
+/* ✅ Style riêng cho toast-error */
+#toast-error {
+    background-color: #dc2626; /* đỏ */
+    color: #fff;
+}
+
+#toast-error .toast-progress {
+    background-color: #f87171; /* đỏ nhạt */
+}
+
+#toast-error .toast-icon,
+#toast-error .toast-close-icon {
+    stroke: #fff;
+}
+/* ⭐ Tổng điểm trung bình */
+#average-rating {
+    font-size: 48px;
+    font-weight: bold;
+    color: #111827; /* text-gray-900 */
+}
+
+#average-rating span {
+    font-size: 20px;
+    color: #9CA3AF; /* text-gray-400 */
+}
+
+/* ⭐ Dãy sao trung bình */
+#average-rating-icons i {
+    font-size: 20px;
+    color: #facc15 !important; /* text-yellow-400 */
+}
+
+/* ⭐ Tổng số lượt đánh giá */
+#total-rating-count {
+    color: #6B7280; /* text-gray-500 */
+    font-size: 14px;
+    margin-top: 0.5rem;
+}
+
+/* ⭐ Nút viết đánh giá */
+.btn-write-review {
+    background-color: #dc2626; /* bg-red-600 */
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-write-review:hover {
+    background-color: #b91c1c; /* hover:bg-red-700 */
+}
+
+/* ⭐ Thanh biểu đồ đánh giá */
+.rating-bar {
+    height: 100%; /* Chiều cao bằng container cha */
+    background-color: #dc2626; /* bg-red-600 */
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* ⭐ Container biểu đồ sao */
+.rating-bar-container {
+    height: 8px;
+    background-color: #e5e7eb; /* bg-gray-200 */
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ⭐ Tổng số lượt đánh giá từng sao */
+.rating-count {
+    font-size: 14px;
+    color: #6B7280; /* text-gray-500 */
+    width: 80px;
+    text-align: right;
+}
+/* ⭐ Container lọc đánh giá */
+#review-filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem; /* tương đương gap-2 */
+}
+
+/* ⭐ Nút lọc mặc định */
+.filter-button {
+    padding: 0.25rem 1rem;      /* tương đương py-1 px-4 */
+    border: 1px solid #d1d5db;  /* border-gray-300 */
+    border-radius: 9999px;      /* rounded-full */
+    font-size: 0.875rem;        /* text-sm */
+    color: #374151;             /* text-gray-700 */
+    background-color: #ffffff; /* bg-white */
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    cursor: pointer;
+}
+
+.filter-button:hover {
+    background-color: #f3f4f6;  /* hover:bg-gray-100 */
+}
+
+/* ⭐ Nút lọc đang được chọn */
+.filter-button.active,
+.filter-button.bg-blue-100.text-blue-600.border-blue-600 {
+    background-color: #dbeafe;  /* bg-blue-100 */
+    border-color: #2563eb;      /* border-blue-600 */
+    color: #2563eb;             /* text-blue-600 */
+}
+
+/* ⭐ Trạng thái focus (tab/enter) */
+.filter-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* ring-blue-500/50 */
+}
+.filter-button {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .filter-button:hover {
+        background-color: #f3f4f6; /* hover:bg-gray-100 */
+    }
+
+    .filter-button.bg-blue-100 {
+        font-weight: 500;
+    }
+
+    /* Box đánh giá */
+    .review-item {
+        transition: background-color 0.3s ease;
+    }
+
+    .review-item:hover {
+        background-color: #f9fafb;
+    }
+
+    /* Badge (tag mô tả) */
+    .review-badges span,
+    .review-item span.badge {
+        background-color: #f3f4f6;
+        color: #374151;
+        font-size: 0.875rem;
+        padding: 2px 8px;
+        border-radius: 6px;
+        display: inline-block;
+        margin-top: 4px;
+    }
+
+    /* Avatar mặc định */
+    .review-item .user-initial {
+        background-color: #312e81; /* indigo-900 */
+        color: white;
+    }
+
+    /* Tên người dùng */
+    .review-item .user-name {
+        font-weight: 600;
+        color: #111827; /* gray-900 */
+    }
+
+    /* Label đánh giá (Tốt, Tuyệt vời...) */
+    .review-item .review-label {
+        color: #6b7280; /* gray-600 */
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    /* Nội dung bình luận */
+    .review-item .review-content {
+        font-size: 0.9375rem;
+        color: #1f2937; /* gray-800 */
+    }
+
+    /* Thời gian */
+    .review-item .review-time {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+
+    /* Icon sao */
+    .mdi-star,
+    .mdi-star-outline {
+        font-size: 16px;
+    }
+
+    /* Đường phân cách */
+    #review-list-container hr {
+        border-color: #e5e7eb; /* border-gray-200 */
+    }
+    .btn-load-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    background-color: #e5e7eb; /* Tailwind bg-gray-200 */
+    color: #000; /* chữ đen */
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 9999px; /* bo tròn full */
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-load-more:hover {
+    background-color: #d1d5db; /* Tailwind bg-gray-300 */
+}
+    </style>
+    @include('user.partials.product-detailjs')
+    <script src="{{ asset('assets/user/js/shop-cart.js') }}"></script>
+    <script src="{{ asset('assets/user/js/review.js') }}"></script>
+    
 @endsection

@@ -64,4 +64,15 @@ class Product extends Model
             'note' => $note,
         ]);
     }
+    public function ratings()
+{
+    return $this->hasManyThrough(
+        \App\Models\Rating::class,
+        \App\Models\ProductVariant::class,
+        'product_id',          
+        'product_variant_id',  
+        'id',                  
+        'id'                   
+    );
+}
 }
