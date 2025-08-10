@@ -26,4 +26,8 @@ class Voucher extends Model
     {
         return $this->belongsTo(Status::class);
     }
+    public function usages()
+    {
+        return $this->hasMany(\App\Models\VoucherUsage::class);
+    }
 }

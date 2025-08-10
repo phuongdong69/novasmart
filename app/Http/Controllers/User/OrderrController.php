@@ -65,7 +65,7 @@ class OrderrController extends Controller
 
     public function cancel(Request $request, $id)
     {
-        $order = Order::with(['orderDetails.productVariant.product', 'payment'])
+        $order = Order::with(['orderDetails.productVariant.product', 'payment', 'voucher'])
             ->where('id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();
@@ -104,10 +104,18 @@ class OrderrController extends Controller
             // Hoàn voucher
             if ($order->voucher_id) {
                 $voucher = Voucher::find($order->voucher_id);
+
+                // Tăng lại số lượng voucher nếu có giới hạn
                 if ($voucher && $voucher->quantity !== null) {
                     $voucher->quantity += 1;
                     $voucher->save();
                 }
+
+                // Xóa bản ghi trong bảng voucher_usages để cho phép dùng lại
+                DB::table('voucher_usages')
+                    ->where('voucher_id', $order->voucher_id)
+                    ->where('user_id', $order->user_id)
+                    ->delete();
             }
 
             // Giả lập hoàn tiền
@@ -157,15 +165,16 @@ class OrderrController extends Controller
                     ->subject("Huỷ đơn hàng thành công - Nova Smart");
             });
 
-
             DB::commit();
-            return redirect()->route('user.orders.show', $order->id)->with('success', 'Đã huỷ đơn hàng thành công và gửi email xác nhận.');
+            return redirect()->route('user.orders.show', $order->id)
+                ->with('success', 'Đã huỷ đơn hàng thành công và gửi email xác nhận.');
         } catch (\Exception $e) {
             DB::rollBack();
             logger('Lỗi huỷ đơn: ' . $e->getMessage());
             return back()->with('error', $e->getMessage());
         }
     }
+
 
 
     public function confirmReceived($id)

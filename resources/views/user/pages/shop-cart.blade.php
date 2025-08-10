@@ -21,7 +21,9 @@
 
         @if (!empty($cart['items']) && count($cart['items']) > 0)
         @php
-        $selectedIds = explode(',', old('selected_ids', request('selected_ids', session('voucher_selected_ids') ? implode(',', session('voucher_selected_ids')) : '')));
+            // selectedIds lấy từ old/request/session
+            $selectedIds = explode(',', old('selected_ids', request('selected_ids', session('voucher_selected_ids') ? implode(',', session('voucher_selected_ids')) : '')));
+            $selectedIds = array_filter(array_map('intval', $selectedIds));
         @endphp
 
         <div class="cart-grid mt-8">
@@ -51,25 +53,38 @@
                     <tbody>
                         @foreach ($cart['items'] as $item)
                         @php
-                        $isObject = is_object($item);
-                        $variant = $isObject ? $item->productVariant : ($item['variant'] ?? null);
-                        $product = $isObject ? $item->productVariant->product : ($item['product'] ?? null);
-                        $quantity = $isObject ? $item->quantity : ($item['quantity'] ?? 1);
-                        $price = $variant->price ?? 0;
-                        $total = $quantity * $price;
-                        $id = $isObject ? $item->id : ($item['variant']->id ?? 0);
-                        $thumbnail = $product->thumbnails->where('is_primary', true)->first();
-                        $imageUrl = $thumbnail ? asset('storage/' . $thumbnail->url) : ($product->image ? asset('storage/' . $product->image) : asset('images/default-product.jpg'));
-                        $isProductInactive = $product->status?->code !== 'active';
-                        $isVariantOutOfStock = $variant->quantity == 0 || $variant->status?->code === 'out_of_stock';
-                        $outOfStock = $isProductInactive || $isVariantOutOfStock;
-                        $statusMessage = '';
-                        if ($isProductInactive) {
-                        $statusMessage = 'Sản phẩm không hoạt động';
-                        } elseif ($isVariantOutOfStock) {
-                        $statusMessage = 'Sản phẩm hết hàng';
-                        }
+                            // HỖ TRỢ cả object (chuẩn controller) và mảng (fallback cũ)
+                            $variant = is_object($item)
+                                ? ($item->variant ?? ($item->productVariant ?? null))
+                                : ($item['variant'] ?? null);
+
+                            $product  = $variant?->product;
+                            $quantity = is_object($item) ? ($item->quantity ?? 1) : ($item['quantity'] ?? 1);
+                            $price    = is_object($item) ? ($item->price ?? ($variant->price ?? 0)) : ($item['price'] ?? ($variant->price ?? 0));
+                            $total    = (int)$quantity * (int)$price;
+
+                            // LUÔN dùng product_variant_id để đồng bộ với controller
+                            $id       = $variant->id ?? 0;
+
+                            // Ảnh
+                            $thumbnail = $product?->thumbnails?->where('is_primary', true)->first();
+                            $imageUrl  = $thumbnail ? asset('storage/' . $thumbnail->url)
+                                                    : ($product?->image ? asset('storage/' . $product->image)
+                                                                        : asset('images/default-product.jpg'));
+
+                            // Trạng thái tồn kho / hoạt động
+                            $isProductInactive   = optional($product?->status)->code !== 'active';
+                            $isVariantOutOfStock = ($variant?->quantity ?? 0) == 0 || optional($variant?->status)->code === 'out_of_stock';
+                            $outOfStock          = $isProductInactive || $isVariantOutOfStock;
+
+                            $statusMessage = '';
+                            if ($isProductInactive) {
+                                $statusMessage = 'Sản phẩm không hoạt động';
+                            } elseif ($isVariantOutOfStock) {
+                                $statusMessage = 'Sản phẩm hết hàng';
+                            }
                         @endphp
+
                         <tr class="border-b border-gray-100 dark:border-gray-800 {{ $outOfStock ? 'row-disabled' : '' }}"
                             data-out-of-stock="{{ $outOfStock ? '1' : '0' }}"
                             title="{{ $statusMessage }}">
@@ -77,27 +92,26 @@
                             <td class="p-4 text-center">
                                 <input type="checkbox"
                                     class="item-checkbox form-checkbox text-orange-500 rounded"
-                                    value="{{ $variant->id }}"
-                                    {{ in_array($variant->id, $selectedIds) ? 'checked' : '' }}
+                                    value="{{ $id }}"
+                                    {{ in_array($id, $selectedIds) ? 'checked' : '' }}
                                     {{ $outOfStock ? 'disabled' : '' }}>
                             </td>
 
                             <td class="p-4">
                                 <div class="flex items-start gap-3">
-                                    <img src="{{ $imageUrl }}" alt="{{ $product->name }}"
+                                    <img src="{{ $imageUrl }}" alt="{{ $product?->name }}"
                                         class="w-20 h-20 rounded-md object-cover border border-gray-200 dark:border-gray-700 shadow-sm">
                                     <div>
-                                        <span class="font-semibold block">{{ $product->name }}</span>
-
+                                        <span class="font-semibold block">{{ $product?->name }}</span>
                                         @if ($outOfStock && $statusMessage)
-                                        <span class="text-xs text-red-500 italic mt-1 block">{{ $statusMessage }}</span>
+                                            <span class="text-xs text-red-500 italic mt-1 block">{{ $statusMessage }}</span>
                                         @endif
                                     </div>
                                 </div>
                             </td>
 
                             <td class="p-4 text-center">
-                                <span class="unit-price" data-price="{{ $price }}">{{ number_format($price, 0, ',', '.') }}₫</span>
+                                <span class="unit-price" data-price="{{ (int)$price }}">{{ number_format((int)$price, 0, ',', '.') }}₫</span>
                             </td>
 
                             <td class="p-4 text-center">
@@ -108,11 +122,11 @@
                                             {{ $outOfStock ? 'disabled' : '' }}>-</button>
                                         <input type="number"
                                             name="quantity"
-                                            value="{{ $quantity }}"
+                                            value="{{ (int)$quantity }}"
                                             readonly
                                             min="1"
-                                            max="{{ $variant->quantity }}"
-                                            data-max="{{ $variant->quantity }}"
+                                            max="{{ (int)($variant->quantity ?? 0) }}"
+                                            data-max="{{ (int)($variant->quantity ?? 0) }}"
                                             class="quantity-input h-9 text-center rounded-md bg-orange-500/5 text-orange-500 w-16"
                                             {{ $outOfStock ? 'disabled' : '' }}>
                                         <button type="button"
@@ -124,7 +138,7 @@
                             </td>
 
                             <td class="p-4 text-end">
-                                <span class="item-total">{{ number_format($total, 0, ',', '.') }}₫</span>
+                                <span class="item-total">{{ number_format((int)$total, 0, ',', '.') }}₫</span>
                             </td>
 
                             <td class="p-4 text-center">
@@ -137,7 +151,6 @@
                                 </form>
                             </td>
                         </tr>
-
                         @endforeach
                     </tbody>
                 </table>
@@ -151,15 +164,15 @@
                 <div class="cart-summary">
                     <h4 class="text-xl font-bold mb-4">Tổng tiền giỏ hàng</h4>
                     @php
-                    $cartTotal = $cart['total_price'] ?? 0;
-                    $voucher = session('voucher') ?? [];
-                    $voucherDiscount = $cart['voucher_value'] ?? ($voucher['discount'] ?? 0);
-                    $finalTotal = $cart['final'] ?? ($cartTotal - $voucherDiscount);
+                        $cartTotal       = $cart['total_price'] ?? 0;
+                        $voucherData     = session('voucher') ?? [];
+                        $voucherDiscount = $cart['voucher_value'] ?? ($voucherData['discount'] ?? 0);
+                        $finalTotal      = $cart['final'] ?? ($cartTotal - $voucherDiscount);
                     @endphp
 
                     <div class="flex justify-between py-1 text-gray-700 dark:text-gray-300">
                         <span>Tạm tính</span>
-                        <span id="temp-value">{{ number_format($cartTotal, 0, ',', '.') }} VNĐ</span>
+                        <span id="temp-value">{{ number_format((int)$cartTotal, 0, ',', '.') }} VNĐ</span>
                     </div>
 
                     @if(session('voucher') && session('voucher_selected_ids') && count(session('voucher_selected_ids')) > 0)
@@ -179,23 +192,23 @@
                         </div>
                         <div class="flex justify-between text-red-600 mt-2">
                             <span>Giảm giá</span>
-                            <span id="discount-display">-{{ number_format($voucherDiscount, 0, ',', '.') }}₫</span>
-                            <span id="discount-value" data-discount="{{ $voucherDiscount }}" class="hidden"></span>
+                            <span id="discount-display">-{{ number_format((int)$voucherDiscount, 0, ',', '.') }}₫</span>
+                            <span id="discount-value" data-discount="{{ (int)$voucherDiscount }}" class="hidden"></span>
                         </div>
                         <span id="voucher-active-flag" data-has-voucher="true" class="hidden"></span>
                     </div>
                     @endif
 
-
                     <div class="flex justify-between font-bold text-lg text-black dark:text-white py-2 border-t border-gray-200 mt-2">
                         <span>Tổng cộng</span>
-                        <span id="total-value">{{ number_format(max($finalTotal, 0), 0, ',', '.') }} VNĐ</span>
+                        <span id="total-value">{{ number_format(max((int)$finalTotal, 0), 0, ',', '.') }} VNĐ</span>
                     </div>
 
                     <div class="mt-6">
+                        {{-- ĐỔI id để tránh trùng --}}
                         <form id="voucher-form" class="relative" action="{{ route('cart.apply-voucher') }}" method="POST">
                             @csrf
-                            <input type="hidden" name="selected_ids" id="selected_ids">
+                            <input type="hidden" name="selected_ids" id="selected_ids_voucher">
                             <input type="text" name="voucher_code"
                                 class="py-3 pe-40 ps-6 w-full h-[50px] rounded-full bg-white border shadow-sm"
                                 placeholder="Mã giảm giá">
@@ -208,7 +221,8 @@
 
                     <form id="cart-actions-form" method="POST" action="{{ route('cart.selected') }}" class="mt-4">
                         @csrf
-                        <input type="hidden" name="selected_ids" id="selected_ids">
+                        {{-- ĐỔI id để tránh trùng --}}
+                        <input type="hidden" name="selected_ids" id="selected_ids_checkout">
                         <button type="submit"
                             class="py-3 px-6 w-full rounded-full bg-orange-500 text-white text-center text-sm font-semibold hover:bg-orange-600 transition">
                             Tiến hành thanh toán
@@ -230,251 +244,75 @@
         @endif
     </div>
 </section>
+
 <style>
-    @media (min-width: 1024px) {
-        .cart-grid {
-            display: flex;
-            gap: 2.5rem;
-            align-items: flex-start;
-            justify-content: center;
-        }
-
-        .cart-left {
-            flex: 0 0 100%;
-        }
-
-        .cart-summary-wrapper {
-            flex: 0 0 35%;
-        }
-    }
-
-    .cart-summary-wrapper {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .cart-summary {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    .cart-summary h4 {
-        font-weight: 700;
-        font-size: 1.25rem;
-        margin-bottom: 1rem;
-        border-bottom: 1px solid #e5e7eb;
-        padding-bottom: 0.75rem;
-        color: #1f2937;
-    }
-
-    .discount-input-wrapper {
-        display: flex;
-        align-items: center;
-        border: 1px solid #d1d5db;
-        border-radius: 9999px;
-        overflow: hidden;
-        background-color: #fff;
-    }
-
-    .discount-input-wrapper input {
-        flex: 1;
-        padding: 0.625rem 1rem;
-        border: none;
-        font-size: 0.875rem;
-        outline: none;
-        background: transparent;
-    }
-
-    .discount-input-wrapper input::placeholder {
-        color: #9ca3af;
-    }
-
-    .discount-input-wrapper button {
-        background-color: #f97316;
-        color: white;
-        font-weight: 600;
-        padding: 0.5rem 1.25rem;
-        font-size: 0.875rem;
-        transition: background-color 0.3s;
-    }
-
-    .discount-input-wrapper button:hover {
-        background-color: #ea580c;
-    }
-
-    #cart-actions-form button {
-        width: 100%;
-        padding: 0.75rem 1.5rem;
-        border-radius: 9999px;
-        font-size: 1rem;
-        font-weight: 600;
-        color: white;
-        background: linear-gradient(to right, #f97316, #fb923c);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-        transition: filter 0.3s;
-    }
-
-    #cart-actions-form button:hover {
-        filter: brightness(1.1);
-    }
-
-    .custom-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
-        font-weight: 600;
-        color: white;
-        border-radius: 9999px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-        transition: filter 0.3s;
-        background: linear-gradient(to right, #f97316, #fb923c);
-        text-decoration: none;
-    }
-
-    .custom-btn:hover {
-        filter: brightness(1.1);
-    }
-
-    .full-width {
-        width: 30%;
-    }
-
-    .back-btn {
-        margin-top: 1rem;
-    }
-
-    .custom-toast {
-        position: fixed;
-        top: 24px;
-        right: 24px;
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 16px;
-        min-width: 260px;
-        max-width: 360px;
-        background-color: #16a34a;
-        /* xanh lá đậm */
-        color: #fff;
-        border-radius: 6px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        animation: slideIn 0.3s ease-out;
-        font-size: 14px;
-        line-height: 1.4;
-    }
-
-    .toast-icon {
-        width: 20px;
-        height: 20px;
-        flex-shrink: 0;
-        stroke: #fff;
-    }
-
-    .toast-message {
-        flex: 1;
-        font-weight: 600;
-        word-break: break-word;
-    }
-
-    .toast-close {
-        background: transparent;
-        border: none;
-        color: #fff;
-        cursor: pointer;
-        transition: opacity 0.2s;
-        padding: 0;
-    }
-
-    .toast-close:hover {
-        opacity: 0.7;
-    }
-
-    .toast-close-icon {
-        width: 16px;
-        height: 16px;
-        stroke: #fff;
-    }
-
-    .toast-progress {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 4px;
-        background-color: #a3e635;
-        /* lime-400 */
-        animation: progressBar 4s linear forwards;
-        width: 100%;
-        border-bottom-left-radius: 6px;
-        border-bottom-right-radius: 6px;
-    }
-    #toast-error {
-    background-color: #dc2626; /* đỏ */
-    }
-
-    #toast-error .toast-progress {
-        background-color: #f87171; /* đỏ nhạt */
-    }
-    /* Animations */
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(50%);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    @keyframes progressBar {
-        from {
-            width: 100%;
-        }
-
-        to {
-            width: 0%;
-        }
-    }
-
-    .tr-out-of-stock {
-        opacity: 0.5;
-        pointer-events: none;
-        position: relative;
-        background-color: #f9fafb;
-    }
-
-    .tr-out-of-stock td {
-        pointer-events: none;
-    }
-
-    .tr-out-of-stock td:last-child {
-        pointer-events: all;
-        /* Cho phép bấm nút XÓA */
-    }
-
-    .row-disabled {
-        opacity: 0.6;
-        background-color: #f9fafb;
-        /* light gray */
-        pointer-events: none;
-    }
-
-    .row-disabled * {
-        pointer-events: none;
-    }
-
-    .row-disabled form,
-    .row-disabled button[type="submit"] {
-        pointer-events: auto;
-        opacity: 1;
-    }
+/* giữ nguyên style của bạn, không đổi */
+@media (min-width: 1024px) {
+    .cart-grid { display: flex; gap: 2.5rem; align-items: flex-start; justify-content: center; }
+    .cart-left { flex: 0 0 100%; }
+    .cart-summary-wrapper { flex: 0 0 35%; }
+}
+.cart-summary-wrapper { display: flex; flex-direction: column; }
+.cart-summary { background: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+.cart-summary h4 { font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.75rem; color: #1f2937; }
+.discount-input-wrapper { display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 9999px; overflow: hidden; background-color: #fff; }
+.discount-input-wrapper input { flex: 1; padding: 0.625rem 1rem; border: none; font-size: 0.875rem; outline: none; background: transparent; }
+.discount-input-wrapper input::placeholder { color: #9ca3af; }
+.discount-input-wrapper button { background-color: #f97316; color: white; font-weight: 600; padding: 0.5rem 1.25rem; font-size: 0.875rem; transition: background-color 0.3s; }
+.discount-input-wrapper button:hover { background-color: #ea580c; }
+#cart-actions-form button { width: 100%; padding: 0.75rem 1.5rem; border-radius: 9999px; font-size: 1rem; font-weight: 600; color: white; background: linear-gradient(to right, #f97316, #fb923c); box-shadow: 0 4px 10px rgba(0,0,0,0.06); transition: filter 0.3s; }
+#cart-actions-form button:hover { filter: brightness(1.1); }
+.custom-btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 600; color: white; border-radius: 9999px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); transition: filter 0.3s; background: linear-gradient(to right, #f97316, #fb923c); text-decoration: none; }
+.custom-btn:hover { filter: brightness(1.1); }
+.full-width { width: 30%; }
+.back-btn { margin-top: 1rem; }
+.custom-toast { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; align-items: center; gap: 12px; padding: 12px 16px; min-width: 260px; max-width: 360px; background-color: #16a34a; color: #fff; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); animation: slideIn 0.3s ease-out; font-size: 14px; line-height: 1.4; }
+.toast-icon { width: 20px; height: 20px; flex-shrink: 0; stroke: #fff; }
+.toast-message { flex: 1; font-weight: 600; word-break: break-word; }
+.toast-close { background: transparent; border: none; color: #fff; cursor: pointer; transition: opacity 0.2s; padding: 0; }
+.toast-close:hover { opacity: 0.7; }
+.toast-close-icon { width: 16px; height: 16px; stroke: #fff; }
+.toast-progress { position: absolute; bottom: 0; left: 0; height: 4px; background-color: #a3e635; animation: progressBar 4s linear forwards; width: 100%; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; }
+#toast-error { background-color: #dc2626; }
+#toast-error .toast-progress { background-color: #f87171; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(50%);} to { opacity: 1; transform: translateX(0);} }
+@keyframes progressBar { from { width: 100%; } to { width: 0%; } }
+.tr-out-of-stock { opacity: 0.5; pointer-events: none; position: relative; background-color: #f9fafb; }
+.tr-out-of-stock td { pointer-events: none; }
+.tr-out-of-stock td:last-child { pointer-events: all; }
+.row-disabled { opacity: 0.6; background-color: #f9fafb; pointer-events: none; }
+.row-disabled * { pointer-events: none; }
+.row-disabled form, .row-disabled button[type="submit"] { pointer-events: auto; opacity: 1; }
 </style>
 
+{{-- JS của bạn --}}
 <script src="{{ asset('assets/user/js/shop-cart.js') }}"></script>
+
+{{-- THÊM: đồng bộ selected ids cho cả 2 form (nếu JS của bạn chưa làm) --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const selectedCheckboxes = document.querySelectorAll('.item-checkbox');
+    const checkAll           = document.getElementById('check-all');
+    const hiddenVoucher      = document.getElementById('selected_ids_voucher');
+    const hiddenCheckout     = document.getElementById('selected_ids_checkout');
+
+    function updateSelectedIds() {
+        const ids = Array.from(selectedCheckboxes)
+            .filter(cb => cb.checked && !cb.disabled)
+            .map(cb => cb.value);
+        if (hiddenVoucher)  hiddenVoucher.value  = ids.join(',');
+        if (hiddenCheckout) hiddenCheckout.value = ids.join(',');
+    }
+
+    if (checkAll) {
+        checkAll.addEventListener('change', () => {
+            selectedCheckboxes.forEach(cb => { if (!cb.disabled) cb.checked = checkAll.checked; });
+            updateSelectedIds();
+        });
+    }
+
+    selectedCheckboxes.forEach(cb => cb.addEventListener('change', updateSelectedIds));
+    updateSelectedIds();
+});
+</script>
 @endsection

@@ -48,7 +48,7 @@
                                 <span style="padding: 6px 12px; background-color: {{ $currentStatus->color ?? '#6b7280' }}; color: white; border-radius: 4px; font-size: 12px; font-weight: 500; display: inline-block; min-width: 80px;">
                                     {{ $currentStatus ? $currentStatus->name : 'Chưa có trạng thái' }}
                                 </span>
-                                @if (!$isCompleted && !$isDelivered && $nextStatus && (!($currentStatus && $currentStatus->code === 'cancelled')))
+                                @if (!$isCompleted && !$isDelivered && $nextStatus && (!($currentStatus && $currentStatus->code === 'refunded')))
                                     <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST" style="display:inline-block; position:absolute; right:8px; top:50%; transform:translateY(-50%);">
                                         @csrf
                                         <input type="hidden" name="status_id" value="{{ $nextStatus->id }}">
