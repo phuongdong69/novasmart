@@ -9,22 +9,10 @@
     <section class="relative md:py-24 py-16">
         {{-- slideshow --}}
         @include('user.partials.slideshow')
-        {{-- @include('user.partials.popup') --}}
+         @include('user.partials.popup')
+         @include('user.partials.toast')
         @if (session('success'))
-        <div id="toast-success" class="custom-toast">
-            <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="toast-message">{{ session('success') }}</span>
-            <button class="toast-close" onclick="this.parentElement.remove()">
-                <svg xmlns="http://www.w3.org/2000/svg" class="toast-close-icon" fill="none" stroke="currentColor"
-                    stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-            <div class="toast-progress"></div>
-        </div>
+        
         @endif
         <div class="container relative md:mt-24 mt-16">
             <div class="grid grid-cols-1 justify-center text-center mb-6">
@@ -119,13 +107,22 @@
                                         Liên hệ
                                     @endif
                                 </p>
-                                <ul class="font-medium text-amber-400 list-none">
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                </ul>
+                                @php
+    $ratings = $product->ratings ?? collect(); // nếu null thì thay bằng collection rỗng
+    $averageRating = round($ratings->avg('rating') ?? 0, 1);
+    $totalRatings = $ratings->count();
+@endphp
+
+<ul class="font-medium text-amber-400 list-none">
+    @for ($i = 1; $i <= 5; $i++)
+        <li class="inline">
+            <i class="mdi mdi-star{{ $i <= round($averageRating) ? '' : '-outline' }}"></i>
+        </li>
+    @endfor
+    @if ($totalRatings > 0)
+        <li class="inline text-slate-400 ms-1">{{ $averageRating }} ({{ $totalRatings }})</li>
+    @endif
+</ul>
                             </div>
                         </div>
                     </div>

@@ -72,6 +72,7 @@
                                     <th class="p-3">Giá</th>
                                     <th class="p-3">Số lượng</th>
                                     <th class="p-3">Tổng</th>
+                                    <th class="p-3"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -98,6 +99,20 @@
                                         <td class="p-3">{{ $item->quantity }}</td>
                                         <td class="p-3">
                                             {{ number_format($item->price * $item->quantity, 0, ',', '.') }}đ
+                                        </td>
+                                         <td class="p-3 text-center">
+                                            @if (
+                                                $order->orderStatus &&
+                                                $order->orderStatus->code === 'completed' &&
+                                                $order->orderStatus->type === 'order' &&
+                                                $product
+                                            )
+                                                <a href="{{ route('products.show', $item->productVariant->id) }}"
+                                                class="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-full hover:bg-blue-700 transition ml-[-10px]"
+                                                title="Viết đánh giá">
+                                                    <i class="mdi mdi-comment-text-outline text-2xl"></i>
+                                                </a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

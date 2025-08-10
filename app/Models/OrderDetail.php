@@ -20,4 +20,13 @@ class OrderDetail extends Model
     {
         return $this->belongsTo(ProductVariant::class);
     }
+    public function comment()
+    {
+        return $this->hasOne(Comment::class);
+    }
+
+    public function rating()
+    {
+        return $this->hasOne(Rating::class);
+    }
 }

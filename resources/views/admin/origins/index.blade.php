@@ -73,7 +73,7 @@
                     <button type="submit"
                       class="px-2.5 py-1.4 text-xs rounded-1.8 font-bold uppercase leading-none text-white
                       {{ $isActive ? 'bg-gradient-to-tl from-emerald-500 to-teal-400' : 'bg-gradient-to-tl from-slate-600 to-slate-300' }}">
-                      {{ $isActive ? 'Hiển thị' : 'Ẩn' }}
+                      {{ $isActive ? 'Hoạt động' : 'Ngừng hoạt động' }}
                     </button>
                   </form>
                 </td>

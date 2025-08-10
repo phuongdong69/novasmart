@@ -2,20 +2,7 @@
 
 @section('content')
 @include('user.partials.popup')
-@if (session('success'))
-    <div id="toast-success" class="custom-toast">
-        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
-        <span class="toast-message">{{ session('success') }}</span>
-        <button class="toast-close" onclick="this.parentElement.remove()">
-            <svg xmlns="http://www.w3.org/2000/svg" class="toast-close-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <div class="toast-progress"></div>
-    </div>
-@endif
+@include('user.partials.toast')
 <section class="relative lg:py-24 py-16">
     <div class="container relative">
         <div class="grid grid-cols-1 mt-14">
