@@ -30,6 +30,108 @@ class CartController extends Controller
         return view('user.pages.shop-cart', compact('cart'));
     }
 
+    public function remove($itemId)
+    {
+        // Nếu đăng nhập: itemId có thể là cart_items.id hoặc product_variant_id
+        if (Auth::check()) {
+            // Tìm theo cart_item_id
+            $item = CartItem::find($itemId);
+
+            // Nếu không thấy, tìm theo product_variant_id trong giỏ của user hiện tại
+            if (!$item) {
+                $item = CartItem::whereHas('cart', fn($q) => $q->where('user_id', Auth::id()))
+                    ->where('product_variant_id', $itemId)
+                    ->first();
+            }
+
+            if (!$item) {
+                return back()->with('error', 'Không tìm thấy sản phẩm trong giỏ.');
+            }
+
+            $cart = $item->cart; // giữ tham chiếu trước khi xóa
+            $variantId = $item->product_variant_id;
+
+            $item->delete();
+
+            // Cập nhật tổng tiền giỏ
+            $this->updateTotalPrice($cart->fresh('items'));
+
+            // Nếu sản phẩm này đang nằm trong danh sách áp mã giảm giá thì loại ra
+            $selected = session('voucher_selected_ids', []);
+            if (in_array($variantId, $selected)) {
+                $selected = array_values(array_diff($selected, [$variantId]));
+                session(['voucher_selected_ids' => $selected]);
+            }
+
+            return back()->with('success', 'Đã xoá sản phẩm khỏi giỏ hàng.');
+        }
+
+        // Guest (giỏ lưu session)
+        $cart = Session::get('cart', []);
+        if (!isset($cart[$itemId])) {
+            return back()->with('error', 'Không tìm thấy sản phẩm trong giỏ.');
+        }
+
+        unset($cart[$itemId]);
+        Session::put('cart', $cart);
+
+        // Nếu sản phẩm này đang nằm trong danh sách áp mã giảm giá thì loại ra
+        $selected = session('voucher_selected_ids', []);
+        if (in_array((int)$itemId, $selected)) {
+            $selected = array_values(array_diff($selected, [(int)$itemId]));
+            session(['voucher_selected_ids' => $selected]);
+        }
+
+        return back()->with('success', 'Đã xoá sản phẩm khỏi giỏ hàng.');
+    }
+    public function removeSelected(Request $request)
+    {
+        // nhận mảng ID hoặc chuỗi "1,2,3"
+        $ids = $request->input('selected_ids', []);
+        if (!is_array($ids)) {
+            $ids = array_filter(array_map('intval', explode(',', $ids)));
+        } else {
+            $ids = array_map('intval', $ids);
+        }
+
+        if (empty($ids)) {
+            return back()->with('error', 'Bạn chưa chọn sản phẩm để xoá.');
+        }
+
+        if (Auth::check()) {
+            // Xoá các item thuộc giỏ của user hiện tại theo product_variant_id
+            $cart = Auth::user()->cart()->with('items')->first();
+            if (!$cart) {
+                return back()->with('error', 'Giỏ hàng không tồn tại.');
+            }
+
+            \App\Models\CartItem::where('cart_id', $cart->id)
+                ->whereIn('product_variant_id', $ids)
+                ->delete();
+
+            // cập nhật tổng tiền
+            $cart->load('items');
+            $this->updateTotalPrice($cart);
+        } else {
+            // Guest: giỏ trong session
+            $cart = Session::get('cart', []);
+            foreach ($ids as $id) {
+                unset($cart[$id]);
+            }
+            Session::put('cart', $cart);
+        }
+
+        // Loại các id vừa xoá khỏi danh sách đang áp voucher (nếu có)
+        $selected = session('voucher_selected_ids', []);
+        if (!empty($selected)) {
+            $selected = array_values(array_diff($selected, $ids));
+            session(['voucher_selected_ids' => $selected]);
+        }
+
+        return back()->with('success', 'Đã xoá các sản phẩm đã chọn khỏi giỏ hàng.');
+    }
+
+
     public function add(Request $request)
     {
         $variant = ProductVariant::findOrFail($request->product_variant_id);
@@ -132,10 +234,10 @@ class CartController extends Controller
 
         $items = Auth::check()
             ? Auth::user()->cart->items()->whereIn('product_variant_id', $variantIds)
-                ->with('productVariant.product')->get()->map(fn($i) => [
-                    'variant' => $i->productVariant,
-                    'quantity' => min($i->quantity, $i->productVariant->quantity)
-                ])
+            ->with('productVariant.product')->get()->map(fn($i) => [
+                'variant' => $i->productVariant,
+                'quantity' => min($i->quantity, $i->productVariant->quantity)
+            ])
             : collect(session('cart', []))->filter(function ($item) use ($variantIds) {
                 $id = $item['product_variant_id'] ?? ($item['variant']['id'] ?? null);
                 return in_array((int) $id, $variantIds);

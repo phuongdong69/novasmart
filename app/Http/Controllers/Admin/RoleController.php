@@ -9,11 +9,17 @@ use Illuminate\Http\Request;
 class RoleController extends Controller
 {
     // Hiển thị danh sách roles
-    public function index()
+    public function index(Request $request)
     {
-        $roles = Role::with('users')
-            ->orderBy('id', 'asc')
-            ->paginate(10);
+        $query = Role::query()->withCount('users'); // ✅ thêm withCount
+
+        // Nếu có tìm kiếm theo tên
+        if ($request->filled('keyword')) {
+            $keyword = trim($request->keyword);
+            $query->where('name', 'like', '%' . $keyword . '%');
+        }
+
+        $roles = $query->orderBy('id', 'asc')->paginate(10)->withQueryString();
 
         return view('admin.roles.index', compact('roles'));
     }
@@ -30,6 +36,9 @@ class RoleController extends Controller
         $request->validate([
             'name' => 'required|unique:roles,name',
             'description' => 'nullable',
+        ], [
+            'name.required' => 'Tên chức vụ không được để trống.',
+            'name.unique'   => 'Tên chức vụ đã tồn tại.',
         ]);
 
         Role::create($request->only('name', 'description'));
@@ -40,7 +49,6 @@ class RoleController extends Controller
     // Hiển thị form sửa
     public function edit($id)
     {
-        // Không cho phép sửa role đang gán cho chính user hiện tại
         if (auth()->user()->role_id == $id) {
             return redirect()->route('admin.roles.index')
                 ->with('error', 'Bạn không thể sửa chức vụ của chính mình.');
@@ -53,7 +61,6 @@ class RoleController extends Controller
     // Cập nhật dữ liệu
     public function update(Request $request, $id)
     {
-        // Không cho phép cập nhật role đang gán cho chính user hiện tại
         if (auth()->user()->role_id == $id) {
             return redirect()->route('admin.roles.index')
                 ->with('error', 'Bạn không thể cập nhật chức vụ của chính mình.');
@@ -62,6 +69,9 @@ class RoleController extends Controller
         $request->validate([
             'name' => 'required|unique:roles,name,' . $id,
             'description' => 'nullable',
+        ], [
+            'name.required' => 'Tên chức vụ không được để trống.',
+            'name.unique'   => 'Tên chức vụ đã tồn tại.',
         ]);
 
         $role = Role::findOrFail($id);

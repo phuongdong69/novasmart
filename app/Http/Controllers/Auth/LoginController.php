@@ -35,7 +35,9 @@ class LoginController extends Controller
 
         if ($user) {
             // Nếu tài khoản bị tạm khóa
-            if ($user->status_id == 13) {
+            $status = \App\Models\Status::find($user->status_id);
+
+            if ($status && $status->code === 'inactive') {
                 return back()->withErrors([
                     'login' => 'Tài khoản của bạn đang bị tạm khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ.',
                 ])->withInput($request->only('email'));

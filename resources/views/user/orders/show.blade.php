@@ -46,6 +46,19 @@
                         @endif
                     </p>
 
+                    <p>
+                        <strong>💳 Trạng thái thanh toán:</strong>
+                        @php $payStatus = $order->payment?->status; @endphp
+                        @if ($payStatus)
+                            <span class="text-white px-2 py-1 rounded text-sm"
+                                style="background-color: {{ $payStatus->color ?? '#6b7280' }};">
+                                {{ $payStatus->name ?? 'Không rõ' }}
+                            </span>
+                        @else
+                            <span class="text-white px-2 py-1 rounded bg-gray-500 text-sm">Chưa có</span>
+                        @endif
+                    </p>
+
                     <p><strong>🕓 Ngày đặt:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
 
                     {{-- Phương thức thanh toán --}}
@@ -100,16 +113,15 @@
                                         <td class="p-3">
                                             {{ number_format($item->price * $item->quantity, 0, ',', '.') }}đ
                                         </td>
-                                         <td class="p-3 text-center">
+                                        <td class="p-3 text-center">
                                             @if (
                                                 $order->orderStatus &&
-                                                $order->orderStatus->code === 'completed' &&
-                                                $order->orderStatus->type === 'order' &&
-                                                $product
-                                            )
+                                                    $order->orderStatus->code === 'completed' &&
+                                                    $order->orderStatus->type === 'order' &&
+                                                    $product)
                                                 <a href="{{ route('products.show', $item->productVariant->id) }}"
-                                                class="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-full hover:bg-blue-700 transition ml-[-10px]"
-                                                title="Viết đánh giá">
+                                                    class="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-full hover:bg-blue-700 transition ml-[-10px]"
+                                                    title="Viết đánh giá">
                                                     <i class="mdi mdi-comment-text-outline text-2xl"></i>
                                                 </a>
                                             @endif

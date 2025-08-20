@@ -2,24 +2,45 @@
 
 namespace Database\Seeders;
 
-use App\Models\Origin;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class OriginSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        $data = [
-            ['country' => 'Việt Nam'],
-            ['country' => 'Hoa Kỳ'],
-            ['country' => 'Nhật Bản'],
-            ['country' => 'Hàn Quốc'],
-            ['country' => 'Pháp'],
+        $now = now();
+
+        // Lấy status "active" cho type = origin
+        $statusActive = DB::table('statuses')
+            ->where('type', 'origin')
+            ->where('code', 'active')
+            ->value('id');
+
+        // Nếu chưa có thì để tạm 1
+        $statusActive = $statusActive ?: 1;
+
+        $origins = [
+            'Việt Nam',
+            'Trung Quốc',
+            'Hàn Quốc',
+            'Nhật Bản',
+            'Mỹ',
+            'Đài Loan',
+            'Thái Lan',
+            'Đức',
+            'Singapore',
         ];
 
-        foreach ($data as $item) {
-            Origin::create($item);
+        foreach ($origins as $country) {
+            DB::table('origins')->updateOrInsert(
+                ['country' => $country],
+                [
+                    'status_id'  => $statusActive,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+            );
         }
     }
 }

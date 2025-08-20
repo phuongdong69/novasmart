@@ -51,47 +51,44 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
-        $statuses = Status::all(); // nếu muốn cho admin chọn trạng thái ban đầu
+        $statuses = Status::all();
         return view('admin.users.create', compact('roles', 'statuses'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email',
             'phoneNumber' => 'required|digits:10|unique:users,phoneNumber',
-            'password' => 'required|string|min:6|confirmed',
-            'role_id' => 'required|exists:roles,id',
+            'password'    => 'required|string|min:6|confirmed',
+            'role_id'     => 'required|exists:roles,id',
         ], [
-            'required' => ':attribute không được để trống',
-            'email' => 'Email không đúng định dạng',
-            'unique' => ':attribute đã tồn tại',
-            'digits' => ':attribute phải gồm 10 chữ số',
+            'required'  => ':attribute không được để trống',
+            'email'     => 'Email không đúng định dạng',
+            'unique'    => ':attribute đã tồn tại',
+            'digits'    => ':attribute phải gồm 10 chữ số',
             'confirmed' => 'Xác nhận mật khẩu không khớp',
-            'exists' => ':attribute không hợp lệ',
+            'exists'    => ':attribute không hợp lệ',
+            'min'       => ':attribute tối thiểu :min ký tự',
         ], [
-            'name' => 'Họ tên',
-            'email' => 'Email',
+            'name'        => 'Họ tên',
+            'email'       => 'Email',
             'phoneNumber' => 'Số điện thoại',
-            'password' => 'Mật khẩu',
-            'role_id' => 'Vai trò',
+            'password'    => 'Mật khẩu',
+            'role_id'     => 'Vai trò',
         ]);
 
-        try {
-            User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'phoneNumber' => $validated['phoneNumber'],
-                'password' => bcrypt($validated['password']),
-                'role_id' => $validated['role_id'],
-                'status_id' => 12, // mặc định đang hoạt động
-            ]);
+        User::create([
+            'name'        => $validated['name'],
+            'email'       => $validated['email'],
+            'phoneNumber' => $validated['phoneNumber'],
+            'password'    => bcrypt($validated['password']),
+            'role_id'     => $validated['role_id'],
+            'status_id'   => Status::where('type','user')->where('code','active')->value('id') ?? 12, // fallback
+        ]);
 
-            return redirect()->route('admin.users.index')->with('success', 'Tạo tài khoản thành công!');
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Đã xảy ra lỗi khi tạo tài khoản. Vui lòng thử lại.'])->withInput();
-        }
+        return redirect()->route('admin.users.index')->with('success', 'Tạo tài khoản thành công!');
     }
 
     public function edit($id)
@@ -99,12 +96,13 @@ class UserController extends Controller
         $currentUser = auth()->user();
         $user = User::findOrFail($id);
 
+        // Chặn sửa người cùng vai
         if ($currentUser->role_id == $user->role_id) {
             return redirect()->back()->with('error', 'Bạn không có quyền chỉnh sửa người dùng có cùng vai trò!');
         }
 
         $roles = Role::all();
-        $statuses = Status::all();
+        $statuses = Status::active()->where('type','user')->get();
 
         return view('admin.users.edit', compact('user', 'roles', 'statuses'));
     }
@@ -114,67 +112,81 @@ class UserController extends Controller
         $currentUser = auth()->user();
         $user = User::findOrFail($id);
 
+        // Chặn sửa người cùng vai
         if ($currentUser->role_id == $user->role_id) {
             return redirect()->back()->with('error', 'Bạn không có quyền cập nhật người dùng có cùng vai trò!');
         }
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users')->ignore($user->id),
-            ],
-            'phoneNumber' => [
-                'required',
-                'digits:10',
-                Rule::unique('users', 'phoneNumber')->ignore($user->id),
-            ],
-            'status_id' => 'nullable|exists:statuses,id',
-        ], [
-            'name.required' => 'Họ tên không được để trống.',
-            'name.string' => 'Họ tên phải là chuỗi ký tự.',
-            'name.max' => 'Họ tên không được vượt quá :max ký tự.',
+        // Validate chung
+        $rules = [
+            'name'        => ['required','string','max:255'],
+            'email'       => ['required','email', Rule::unique('users','email')->ignore($user->id)],
+            'phoneNumber' => ['required','digits:10', Rule::unique('users','phoneNumber')->ignore($user->id)],
+            'status_id'   => ['nullable','exists:statuses,id'],
+        ];
+        $messages = [
+            'required'        => ':attribute không được để trống.',
+            'string'          => ':attribute phải là chuỗi ký tự.',
+            'max'             => ':attribute không được vượt quá :max ký tự.',
+            'email'           => 'Email không đúng định dạng.',
+            'unique'          => ':attribute đã tồn tại.',
+            'digits'          => ':attribute phải gồm :digits chữ số.',
+            'exists'          => ':attribute không hợp lệ.',
+        ];
+        $attributes = [
+            'name'        => 'Họ tên',
+            'email'       => 'Email',
+            'phoneNumber' => 'Số điện thoại',
+            'status_id'   => 'Trạng thái',
+            'role_id'     => 'Vai trò',
+        ];
 
-            'email.required' => 'Email không được để trống.',
-            'email.email' => 'Email không đúng định dạng.',
-            'email.unique' => 'Email đã tồn tại.',
+        // Nếu là admin → cho phép đổi vai trò
+        if ($currentUser->role->name === 'admin') {
+            $rules['role_id'] = ['required','exists:roles,id'];
+        }
 
-            'phoneNumber.required' => 'Số điện thoại không được để trống.',
-            'phoneNumber.digits' => 'Số điện thoại phải gồm 10 chữ số.',
-            'phoneNumber.unique' => 'Số điện thoại đã tồn tại.',
+        $validated = $request->validate($rules, $messages, $attributes);
 
-            'status_id.exists' => 'Trạng thái không hợp lệ.',
-        ]);
+        // Chặn tự hạ quyền chính mình (nếu lỡ sửa bản thân)
+        if ($currentUser->id === $user->id && isset($validated['role_id']) && $validated['role_id'] != $user->role_id) {
+            return back()->withErrors(['role_id' => 'Bạn không thể thay đổi vai trò của chính mình.'])->withInput();
+        }
 
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->phoneNumber = $request->phoneNumber;
+        // Cập nhật thông tin cơ bản
+        $user->name        = $validated['name'];
+        $user->email       = $validated['email'];
+        $user->phoneNumber = $validated['phoneNumber'];
 
+        // Cập nhật trạng thái (và log)
         if ($currentUser->role->name === 'admin' && $request->filled('status_id')) {
-            if ($user->status_id != $request->status_id) {
-                // ✅ Ghi log thay đổi trạng thái
+            if ($user->status_id != $validated['status_id']) {
                 StatusLog::create([
                     'loggable_type' => User::class,
-                    'loggable_id' => $user->id,
-                    'status_id' => $request->status_id,
-                    'user_id' => auth()->id(),
-                    'note' => 'Cập nhật trạng thái bởi admin',
+                    'loggable_id'   => $user->id,
+                    'status_id'     => $validated['status_id'],
+                    'user_id'       => $currentUser->id,
+                    'note'          => 'Cập nhật trạng thái bởi admin',
                 ]);
+                $user->status_id = $validated['status_id'];
             }
+        }
 
-            $user->status_id = $request->status_id;
+        // Cập nhật vai trò (chỉ admin)
+        if ($currentUser->role->name === 'admin' && isset($validated['role_id'])) {
+            // (tuỳ chính sách: có thể chặn hạ quyền từ superadmin -> admin, v.v.)
+            $user->role_id = $validated['role_id'];
         }
 
         $user->save();
 
         return redirect()->route('admin.users.index')->with('success', 'Cập nhật người dùng thành công.');
     }
+
     public function statusLogs($id)
     {
         $user = User::findOrFail($id);
         $logs = $user->statusLogs()->with('status', 'user')->latest()->get();
-
         return view('admin.users.status_logs', compact('user', 'logs'));
     }
 }
