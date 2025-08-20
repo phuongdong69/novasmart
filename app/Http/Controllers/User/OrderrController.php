@@ -25,13 +25,22 @@ class OrderrController extends Controller
 
         $orders = Order::with([
             'orderStatus',
+            'payment.status', // ✅ load luôn payment status
             'orderDetails.productVariant.product'
         ])
             ->where('user_id', $user->id)
             ->when($statusFilter, function ($query, $statusFilter) {
-                $query->whereHas('orderStatus', function ($q) use ($statusFilter) {
-                    $q->where('code', $statusFilter);
-                });
+                if ($statusFilter === 'refunded') {
+                    // lọc theo trạng thái thanh toán
+                    $query->whereHas('payment.status', function ($q) {
+                        $q->where('code', 'refunded');
+                    });
+                } else {
+                    // lọc theo trạng thái đơn hàng
+                    $query->whereHas('orderStatus', function ($q) use ($statusFilter) {
+                        $q->where('code', $statusFilter);
+                    });
+                }
             })
             ->latest()
             ->get();
@@ -39,9 +48,10 @@ class OrderrController extends Controller
         return view('user.orders.index', compact('orders', 'statusFilter'));
     }
 
+
     public function show($id)
     {
-        $order = Order::with(['orderStatus', 'payment', 'voucher', 'orderDetails.productVariant.product'])
+        $order = Order::with(['orderStatus', 'payment.status', 'voucher', 'orderDetails.productVariant.product'])
             ->where('user_id', Auth::id())
             ->findOrFail($id);
 

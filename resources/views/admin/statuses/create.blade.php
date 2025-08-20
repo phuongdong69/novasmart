@@ -76,4 +76,14 @@
             </div>
         </form>
     </div>
+    @if ($errors->any())
+        <div class="md:col-span-2 bg-red-50 border border-red-200 rounded p-3 text-sm text-red-700 mb-2">
+            <ul class="list-disc pl-5">
+                @foreach ($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
 @endsection

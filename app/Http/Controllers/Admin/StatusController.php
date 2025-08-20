@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Status;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StatusController extends Controller
 {
@@ -50,21 +51,92 @@ class StatusController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:100|unique:statuses,code',
-            'type' => 'required|string|max:100',
-            'color' => 'required|string|max:20',
-            'priority' => 'required|integer|min:0',
-            'description' => 'nullable|string|max:1000',
-        ]);
+        $rules = [
+            'name'        => ['required','string','max:255'],
+            'code'        => [
+                'required','string','max:100',
+                Rule::unique('statuses', 'code')
+                    ->where(fn($q) => $q->where('type', $request->type)),
+            ],
+            'type'        => ['required','string','max:100'],
+            'color'       => ['required','string','max:50','regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
+            'priority'    => ['required','integer','min:0'],
+            'description' => ['nullable','string','max:1000'],
+        ];
 
-        // Mặc định là kích hoạt
-        $data['is_active'] = true;
+        $messages = [
+            'required' => ':attribute là bắt buộc.',
+            'string'   => ':attribute phải là chuỗi ký tự.',
+            'max'      => ':attribute không được vượt quá :max ký tự.',
+            'integer'  => ':attribute phải là số nguyên.',
+            'min'      => ':attribute phải lớn hơn hoặc bằng :min.',
+            'unique'   => ':attribute đã tồn tại với loại trạng thái này.',
+            'regex'    => ':attribute không đúng định dạng mã màu hợp lệ (ví dụ: #00ff00).',
+        ];
+
+        $attributes = [
+            'name'        => 'Tên trạng thái',
+            'code'        => 'Mã trạng thái',
+            'type'        => 'Loại trạng thái',
+            'color'       => 'Màu hiển thị',
+            'priority'    => 'Thứ tự ưu tiên',
+            'description' => 'Mô tả',
+        ];
+
+        $data = $request->validate($rules, $messages, $attributes);
+
+        $data['is_active'] = $request->boolean('is_active', true);
 
         Status::create($data);
 
         return redirect()->route('admin.statuses.index')->with('success', 'Tạo trạng thái thành công');
+    }
+
+    /**
+     * Cập nhật trạng thái
+     */
+    public function update(Request $request, Status $status)
+    {
+        $rules = [
+            'name'        => ['required','string','max:255'],
+            'code'        => [
+                'required','string','max:100',
+                Rule::unique('statuses', 'code')
+                    ->ignore($status->id)
+                    ->where(fn($q) => $q->where('type', $request->type)),
+            ],
+            'type'        => ['required','string','max:100'],
+            'color'       => ['required','string','max:50','regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
+            'priority'    => ['required','integer','min:0'],
+            'description' => ['nullable','string','max:1000'],
+        ];
+
+        $messages = [
+            'required' => ':attribute là bắt buộc.',
+            'string'   => ':attribute phải là chuỗi ký tự.',
+            'max'      => ':attribute không được vượt quá :max ký tự.',
+            'integer'  => ':attribute phải là số nguyên.',
+            'min'      => ':attribute phải lớn hơn hoặc bằng :min.',
+            'unique'   => ':attribute đã tồn tại với loại trạng thái này.',
+            'regex'    => ':attribute không đúng định dạng mã màu hợp lệ (ví dụ: #00ff00).',
+        ];
+
+        $attributes = [
+            'name'        => 'Tên trạng thái',
+            'code'        => 'Mã trạng thái',
+            'type'        => 'Loại trạng thái',
+            'color'       => 'Màu hiển thị',
+            'priority'    => 'Thứ tự ưu tiên',
+            'description' => 'Mô tả',
+        ];
+
+        $data = $request->validate($rules, $messages, $attributes);
+
+        $data['is_active'] = $request->boolean('is_active', $status->is_active);
+
+        $status->update($data);
+
+        return redirect()->route('admin.statuses.index')->with('success', 'Cập nhật trạng thái thành công');
     }
 
     /**
@@ -73,25 +145,6 @@ class StatusController extends Controller
     public function edit(Status $status)
     {
         return view('admin.statuses.edit', compact('status'));
-    }
-
-    /**
-     * Cập nhật trạng thái
-     */
-    public function update(Request $request, Status $status)
-    {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:100|unique:statuses,code,' . $status->id,
-            'type' => 'required|string|max:100',
-            'color' => 'required|string|max:20',
-            'priority' => 'required|integer|min:0',
-            'description' => 'nullable|string|max:1000',
-        ]);
-
-        $status->update($data);
-
-        return redirect()->route('admin.statuses.index')->with('success', 'Cập nhật trạng thái thành công');
     }
 
     /**
