@@ -187,40 +187,75 @@
                                     $product->quantity == 0);
                         @endphp
                         @if ($product && !$isOutOfStock)
-                            <form action="{{ route('cart.add') }}" method="POST" class="mt-4 space-y-3">
-                                @csrf
-                                <input type="hidden" name="product_variant_id" value="{{ $product->id }}">
+                            <!-- Product Variants Section -->
+                            @if ($relatedVariants->count() > 0)
+                                <div class="mt-4 mb-4">
+                                    <h5 class="text-lg font-semibold mb-3 text-slate-900 dark:text-white">Các biến thể khác:</h5>
+                                    <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                                        @foreach ($relatedVariants as $variant)
+                                            @php
+                                                // Lấy tên biến thể hoặc SKU
+                                                $variantName = $variant->sku ?? 'Biến thể ' . $loop->iteration;
+                                                
+                                                // Lấy hình ảnh thumbnail
+                                                $thumbnail = $variant->product->thumbnails->first();
+                                                $imageUrl = $thumbnail ? asset('storage/' . $thumbnail->url) : asset('assets/user/images/shop/mens-jecket.jpg');
+                                            @endphp
+                                            
+                                            <a href="javascript:void(0)" 
+                                               data-variant-id="{{ $variant->id }}"
+                                               class="variant-option border-2 rounded-lg p-3 transition-all duration-300 flex-shrink-0 cursor-pointer
+                                                      {{ $variant->id === $product->id ? 'selected border-green-500 bg-green-50' : 'border-gray-200 hover:border-orange-500 hover:bg-gray-50' }}">
+                                                
+                                                <!-- Hình ảnh -->
+                                                <div class="w-10 h-10 mb-2">
+                                                    <img src="{{ $imageUrl }}" 
+                                                         class="w-full h-full object-cover rounded" 
+                                                         alt="{{ $variant->product->name }}"
+                                                         loading="lazy"
+                                                         onerror="this.src='{{ asset('assets/user/images/shop/mens-jecket.jpg') }}'; this.onerror=null;" />
+                                                </div>
+                                                
+                                                <!-- Tên biến thể -->
+                                                <div class="text-xs font-medium text-center text-gray-800 mb-1">{{ $variantName }}</div>
+                                                
+                                                <!-- Giá -->
+                                                <div class="text-xs text-red-600 font-semibold text-center">{{ number_format($variant->price) }} ₫</div>
+                                                
 
-                                <div class="flex items-center">
-                                    <h5 class="text-lg font-semibold me-2">Số lượng:</h5>
-                                    <div class="qty-icons ms-3 space-x-0.5">
-                                        <button type="button"
-                                            onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
-                                            class="size-9 inline-flex items-center justify-center tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white minus">-</button>
-
-                                        <input min="1" name="quantity" value="1" type="number"
-                                            class="h-9 inline-flex items-center justify-center tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white pointer-events-none w-16 ps-4 quantity">
-
-                                        <button type="button"
-                                            onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                                            class="size-9 inline-flex items-center justify-center tracking-wide align-middle text-base text-center rounded-md bg-orange-500/5 hover:bg-orange-500 text-orange-500 hover:text-white plus">+</button>
+                                            </a>
+                                        @endforeach
                                     </div>
                                 </div>
+                            @endif
 
-                                <div class="mt-4 flex gap-4">
+                            <div class="mt-4 flex gap-4">
+                                <form action="{{ route('cart.add') }}" method="POST" class="inline">
+                                    @csrf
+                                    <input type="hidden" name="product_variant_id" value="{{ $product->id }}">
                                     <button type="submit"
                                         class="btn-add-cart py-3 px-6 inline-block font-semibold tracking-wide align-middle text-base text-center rounded-md bg-orange-500 hover:bg-orange-600 text-white transition-all duration-300 shadow-sm hover:shadow-md">
                                         <i data-feather="shopping-cart" class="size-4 me-2 inline"></i>
                                         Thêm vào giỏ
                                     </button>
-                                    <button type="button" onclick="toggleWishlist({{ $product->id }}, this)"
-                                        class="wishlist-btn py-3 px-6 inline-flex items-center justify-center font-semibold tracking-wide align-middle text-base text-center rounded-md bg-gray-100 text-gray-700 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md"
-                                        data-product-variant-id="{{ $product->id }}">
-                                        <i data-feather="heart" class="size-4 me-2"></i>
-                                        <span class="wishlist-text">Yêu thích</span>
+                                </form>
+                                <form action="{{ route('cart.buyNow') }}" method="POST" class="inline">
+                                    @csrf
+                                    <input type="hidden" name="product_variant_id" value="{{ $product->id }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit"
+                                        class="py-3 px-6 inline-block font-semibold tracking-wide align-middle text-base text-center rounded-md bg-red-600 hover:bg-red-700 text-white transition-all duration-300 shadow-sm hover:shadow-md">
+                                        <i data-feather="credit-card" class="size-4 me-2 inline"></i>
+                                        Mua ngay
                                     </button>
-                                </div>
-                            </form>
+                                </form>
+                                <button type="button" onclick="toggleWishlist({{ $product->id }}, this)"
+                                    class="wishlist-btn py-3 px-6 inline-flex items-center justify-center font-semibold tracking-wide align-middle text-base text-center rounded-md bg-gray-100 text-gray-700 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md"
+                                    data-product-variant-id="{{ $product->id }}">
+                                    <i data-feather="heart" class="size-4 me-2"></i>
+                                    <span class="wishlist-text">Yêu thích</span>
+                                </button>
+                            </div>
                         @elseif ($isOutOfStock)
                             <button disabled
                                 class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-300 text-gray-700 w-full rounded-md cursor-not-allowed">
@@ -233,47 +268,7 @@
                             </span>
                         @endif
 
-                        <!-- Product Variants Section -->
-                        @if ($relatedVariants->count() > 0)
-                            <div class="mt-6">
-                                <h5 class="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Các biến thể khác:</h5>
-                                <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                                    @foreach ($relatedVariants as $variant)
-                                        @php
-                                            // Lấy tên biến thể hoặc SKU
-                                            $variantName = $variant->sku ?? 'Biến thể ' . $loop->iteration;
-                                            
-                                            // Lấy hình ảnh thumbnail
-                                            $thumbnail = $variant->product->thumbnails->first();
-                                            $imageUrl = $thumbnail ? asset('storage/' . $thumbnail->url) : asset('assets/user/images/shop/mens-jecket.jpg');
-                                        @endphp
-                                        
-                                        <a href="javascript:void(0)" 
-                                           data-variant-id="{{ $variant->id }}"
-                                           class="variant-option border-2 rounded-lg p-3 transition-all duration-300 flex-shrink-0 cursor-pointer
-                                                  {{ $variant->id === $product->id ? 'selected border-green-500 bg-green-50' : 'border-gray-200 hover:border-orange-500 hover:bg-gray-50' }}">
-                                            
-                                            <!-- Hình ảnh -->
-                                            <div class="w-10 h-10 mb-2">
-                                                <img src="{{ $imageUrl }}" 
-                                                     class="w-full h-full object-cover rounded" 
-                                                     alt="{{ $variant->product->name }}"
-                                                     loading="lazy"
-                                                     onerror="this.src='{{ asset('assets/user/images/shop/mens-jecket.jpg') }}'; this.onerror=null;" />
-                                            </div>
-                                            
-                                            <!-- Tên biến thể -->
-                                            <div class="text-xs font-medium text-center text-gray-800 mb-1">{{ $variantName }}</div>
-                                            
-                                            <!-- Giá -->
-                                            <div class="text-xs text-red-600 font-semibold text-center">{{ number_format($variant->price) }} ₫</div>
-                                            
 
-                                        </a>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
                     </div>
                 </div>
             </div>
@@ -577,71 +572,96 @@
                 </div>
             </div>
 
-            @if ($relatedVariants->count() > 0)
-                <div class="container lg:mt-24 mt-16">
-                    <div class="grid grid-cols-1 mb-6 text-center">
-                        <h3 class="font-semibold text-3xl leading-normal">Các mẫu khác mời bạn tham khảo:</h3>
-                    </div>
 
-                    <div class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 pt-6">
-                        @foreach ($relatedVariants->take(4) as $variant)
-                            <div class="group">
-                                <div
-                                    class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
-                                    @if ($variant->product->thumbnails->count() > 0)
-                                        <img src="{{ asset('storage/' . $variant->product->thumbnails->first()->url) }}"
-                                            class="w-full h-32 object-cover group-hover:scale-110 duration-500"
-                                            alt="{{ $variant->product->name }}" loading="lazy"
-                                            onerror="this.src='{{ asset('assets/user/images/shop/mens-jecket.jpg') }}'; this.onerror=null;">
-                                    @else
-                                        <img src="{{ asset('assets/user/images/shop/mens-jecket.jpg') }}"
-                                            class="w-full h-32 object-cover group-hover:scale-110 duration-500"
-                                            alt="{{ $variant->product->name }}">
-                                    @endif
-
-                                    <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
-                                        <a href="{{ route('products.show', $variant->id) }}"
-                                            class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md">Xem
-                                            chi tiết</a>
-                                    </div>
-
-                                    <ul
-                                        class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
-                                        <li><a href="javascript:void(0)"
-                                                class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
-                                                    data-feather="heart" class="size-4"></i></a></li>
-                                        <li class="mt-1"><a href="{{ route('products.show', $variant->id) }}"
-                                                class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
-                                                    data-feather="eye" class="size-4"></i></a></li>
-                                        <li class="mt-1"><a href="javascript:void(0)"
-                                                class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
-                                                    data-feather="bookmark" class="size-4"></i></a></li>
-                                    </ul>
-                                </div>
-
-                                <div class="mt-4">
-                                    <a href="{{ route('products.show', $variant->id) }}"
-                                        class="hover:text-orange-500 text-lg font-medium">{{ $variant->product->name }}</a>
-                                    <div class="flex justify-between items-center mt-1">
-                                        <p class="font-semibold text-orange-500">{{ number_format($variant->price) }} VNĐ
-                                        </p>
-                                        <ul class="font-medium text-amber-400 list-none">
-                                            <li class="inline"><i class="mdi mdi-star"></i></li>
-                                            <li class="inline"><i class="mdi mdi-star"></i></li>
-                                            <li class="inline"><i class="mdi mdi-star"></i></li>
-                                            <li class="inline"><i class="mdi mdi-star"></i></li>
-                                            <li class="inline"><i class="mdi mdi-star"></i></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
         </div>
     </section>
     <!-- End -->
+
+    <!-- Start Similar Products -->
+    @php
+        $similarProducts = \App\Models\Product::with(['thumbnails', 'brand', 'category', 'variants'])
+            ->where('brand_id', $product->product->brand_id)
+            ->where('id', '!=', $product->product->id)
+            ->take(5)
+            ->get();
+    @endphp
+
+    @if($similarProducts->count() > 0)
+        <section class="relative md:py-24 py-16 bg-gray-50 dark:bg-slate-800">
+            <div class="container relative">
+                <div class="grid grid-cols-1 mb-6 text-center">
+                    <h3 class="font-semibold text-3xl leading-normal">Sản phẩm tương tự</h3>
+                    <p class="text-slate-400 mt-3">Các sản phẩm cùng thương hiệu {{ $product->product->brand->name ?? 'N/A' }}</p>
+                </div>
+
+                <div class="grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6">
+                    @foreach($similarProducts as $similarProduct)
+                        @php
+                            // Lấy biến thể đầu tiên của sản phẩm để hiển thị giá
+                            $firstVariant = $similarProduct->variants->first();
+                        @endphp
+                        <div class="group">
+                            <div class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
+                                @if($similarProduct->thumbnails->count() > 0)
+                                    <img src="{{ asset('storage/' . $similarProduct->thumbnails->first()->url) }}"
+                                         class="w-full h-48 object-cover group-hover:scale-110 duration-500"
+                                         alt="{{ $similarProduct->name }}" loading="lazy"
+                                         onerror="this.src='{{ asset('assets/user/images/shop/mens-jecket.jpg') }}'; this.onerror=null;">
+                                @else
+                                    <img src="{{ asset('assets/user/images/shop/mens-jecket.jpg') }}"
+                                         class="w-full h-48 object-cover group-hover:scale-110 duration-500"
+                                         alt="{{ $similarProduct->name }}">
+                                @endif
+
+                                <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
+                                    <a href="{{ route('products.show', $firstVariant ? $firstVariant->id : '#') }}"
+                                       class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md">
+                                        Xem chi tiết
+                                    </a>
+                                </div>
+
+                                <ul class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
+                                    <li>
+                                        <a href="javascript:void(0)"
+                                           class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow">
+                                            <i data-feather="heart" class="size-4"></i>
+                                        </a>
+                                    </li>
+                                    <li class="mt-1">
+                                        <a href="{{ route('products.show', $firstVariant ? $firstVariant->id : '#') }}"
+                                           class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow">
+                                            <i data-feather="eye" class="size-4"></i>
+                                        </a>
+                                    </li>
+                                    <li class="mt-1">
+                                        <a href="javascript:void(0)"
+                                           class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow">
+                                            <i data-feather="bookmark" class="size-4"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="mt-4">
+                                <a href="{{ route('products.show', $firstVariant ? $firstVariant->id : '#') }}"
+                                   class="hover:text-orange-500 text-lg font-medium">{{ $similarProduct->name }}</a>
+                                <div class="mt-2">
+                                    <p class="font-semibold text-orange-500 text-lg">
+                                        @if($firstVariant)
+                                            {{ number_format($firstVariant->price) }} VNĐ
+                                        @else
+                                            Liên hệ
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+    <!-- End Similar Products -->
 
 
     @include('user.partials.product-detailjs')
@@ -920,24 +940,33 @@
         border-color: #e5e7eb; /* border-gray-200 */
     }
     .btn-load-more {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 10px 20px;
-    background-color: #e5e7eb; /* Tailwind bg-gray-200 */
-    color: #000; /* chữ đen */
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 9999px; /* bo tròn full */
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 20px;
+        background-color: #e5e7eb; /* Tailwind bg-gray-200 */
+        color: #000; /* chữ đen */
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 9999px; /* bo tròn full */
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
 
-.btn-load-more:hover {
-    background-color: #d1d5db; /* Tailwind bg-gray-300 */
-}
+    .btn-load-more:hover {
+        background-color: #d1d5db; /* Tailwind bg-gray-300 */
+    }
+
+    /* Ẩn thanh cuộn cho scroll ngang */
+    .scrollbar-hide {
+        -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        scrollbar-width: none;  /* Firefox */
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;  /* Safari and Chrome */
+    }
     </style>
     @include('user.partials.product-detailjs')
     <script src="{{ asset('assets/user/js/shop-cart.js') }}"></script>

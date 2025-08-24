@@ -203,6 +203,7 @@ class PaymentController extends Controller
                     'vnpay_order_data',
                     'checkout.selected_items',
                     'checkout.selected_ids',
+                    'buy_now',
                 ]);
 
                 return redirect()->route('checkout.success')->with('success', 'Thanh toán VNPay thành công! Đã gửi email xác nhận.');
@@ -218,6 +219,21 @@ class PaymentController extends Controller
     // Lấy item đã chọn từ session
     private function getSelectedItems()
     {
+        // Kiểm tra xem có phải là mua ngay không
+        $buyNowData = session('buy_now');
+        if ($buyNowData) {
+            $variant = ProductVariant::with('product')->find($buyNowData['product_variant_id']);
+            if (!$variant) {
+                return collect();
+            }
+            return collect([
+                [
+                    'variant'  => $variant,
+                    'quantity' => min($buyNowData['quantity'], $variant->quantity),
+                ]
+            ]);
+        }
+
         $variantIds = session('checkout.selected_ids', []);
         if (empty($variantIds)) return collect();
 
@@ -254,6 +270,11 @@ class PaymentController extends Controller
     // Xoá item đã mua khỏi giỏ
     private function clearPurchasedItemsFromCart(array $variantIdsToRemove): void
     {
+        // Nếu là buy_now thì không cần xóa khỏi giỏ hàng
+        if (session('buy_now')) {
+            return;
+        }
+
         if (Auth::check()) {
             $cart = Cart::where('user_id', Auth::id())->first();
             $cart?->items()->whereIn('product_variant_id', $variantIdsToRemove)->delete();

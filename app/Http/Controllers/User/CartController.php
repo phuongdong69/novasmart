@@ -252,6 +252,30 @@ class CartController extends Controller
         return redirect()->route('checkout.show');
     }
 
+    public function buyNow(Request $request)
+    {
+        $variant = ProductVariant::findOrFail($request->product_variant_id);
+        $quantity = max((int) $request->input('quantity', 1), 1);
+
+        if ($variant->quantity <= 0) {
+            return back()->with('error', 'Sản phẩm đã hết hàng.');
+        }
+
+        if ($quantity > $variant->quantity) {
+            return back()->with('error', 'Vượt quá tồn kho.');
+        }
+
+        // Lưu thông tin sản phẩm mua ngay vào session
+        session()->put('buy_now', [
+            'product_variant_id' => $variant->id,
+            'quantity' => $quantity,
+            'price' => $variant->price
+        ]);
+
+        // Chuyển hướng đến trang checkout
+        return redirect()->route('checkout.show');
+    }
+
     public function applyVoucher(Request $request)
     {
         $voucherCode = $request->voucher_code;

@@ -260,6 +260,7 @@ Route::post('/cart/apply-voucher', [CartController::class, 'applyVoucher'])->nam
 |--------------------------------------------------------------------------
 */
 Route::post('/cart/checkout-selected', [CartController::class, 'checkoutSelected'])->name('cart.checkoutSelected');
+Route::post('/cart/buy-now', [CartController::class, 'buyNow'])->name('cart.buyNow');
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.show');
 Route::post('/checkout/store', [CheckoutController::class, 'store'])->name('checkout.store');
