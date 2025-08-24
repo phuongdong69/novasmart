@@ -212,7 +212,7 @@ class CheckoutController extends Controller
 
 
             session()->flash('purchased_variant_ids', $variantIds);
-            session()->forget(['checkout.selected_ids', 'voucher']);
+            session()->forget(['checkout.selected_ids', 'voucher', 'buy_now']);
 
             DB::commit();
             return redirect()->route('checkout.success')->with('success', 'Đặt hàng thành công!');
@@ -234,6 +234,21 @@ class CheckoutController extends Controller
 
     private function getSelectedItems()
     {
+        // Kiểm tra xem có phải là mua ngay không
+        $buyNowData = session('buy_now');
+        if ($buyNowData) {
+            $variant = ProductVariant::with('product')->find($buyNowData['product_variant_id']);
+            if (!$variant) {
+                return collect();
+            }
+            return collect([
+                [
+                    'variant'  => $variant,
+                    'quantity' => min($buyNowData['quantity'], $variant->quantity),
+                ]
+            ]);
+        }
+
         $variantIds = session('checkout.selected_ids', []);
         if (empty($variantIds)) {
             return collect();
@@ -280,6 +295,11 @@ class CheckoutController extends Controller
 
     private function clearPurchasedItemsFromCart(array $variantIdsToRemove): void
     {
+        // Nếu là buy_now thì không cần xóa khỏi giỏ hàng
+        if (session('buy_now')) {
+            return;
+        }
+
         if (Auth::check()) {
             $cart = Cart::where('user_id', Auth::id())->first();
             if ($cart) {

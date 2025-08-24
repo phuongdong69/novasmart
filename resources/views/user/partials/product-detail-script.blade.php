@@ -107,6 +107,15 @@
                     }
                 }
                 
+                // Update buy now form
+                const buyNowForm = document.querySelector('form[action*="cart/buy-now"]');
+                if (buyNowForm) {
+                    const buyNowInput = buyNowForm.querySelector('input[name="product_variant_id"]');
+                    if (buyNowInput) {
+                        buyNowInput.value = product.id;
+                    }
+                }
+                
                 // Update wishlist button
                 const wishlistBtn = document.querySelector('.wishlist-btn');
                 if (wishlistBtn) {

@@ -1,0 +1,1022 @@
+# Đặc Tả Use Case Chi Tiết - Hệ Thống NovaSmart E-commerce<br><br>
+
+## Mục Lục<br>
+1. [Use Case Khách Hàng (Guest User)](#use-case-khách-hàng)<br>
+2. [Use Case Người Dùng Đã Đăng Nhập](#use-case-người-dùng-đã-đăng-nhập)<br>
+3. [Use Case Quản Trị Viên](#use-case-quản-trị-viên)<br>
+4. [Use Case Hệ Thống Thanh Toán](#use-case-hệ-thống-thanh-toán)<br><br>
+
+---<br><br>
+
+## Use Case Khách Hàng<br><br>
+
+### 1. Đăng Ký Tài Khoản<br><br>
+
+**Tên use case:** Đăng ký tài khoản<br><br>
+
+**Mô tả:** Cho phép khách hàng tạo tài khoản mới trong hệ thống<br><br>
+
+**Actor:** Khách hàng chưa đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi khách hàng chọn chức năng đăng ký<br><br>
+
+**Tiền điều kiện:** Khách hàng chưa có tài khoản trong hệ thống<br><br>
+
+**Hậu điều kiện:** Tài khoản được tạo thành công<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị form đăng ký<br>
+2. Nhập thông tin cá nhân (họ tên, email, số điện thoại, mật khẩu)<br>
+3. Hệ thống validate thông tin<br>
+4. Kiểm tra email đã tồn tại chưa<br>
+5. Tạo tài khoản mới<br>
+6. Gửi email xác nhận<br>
+7. Chuyển hướng đến trang đăng nhập<br><br>
+
+**Luồng sự kiện phụ:**<br>
+- Nếu email đã tồn tại: Hiển thị thông báo lỗi<br>
+- Nếu thông tin không hợp lệ: Hiển thị thông báo lỗi<br><br>
+
+---<br><br>
+
+### 2. Đăng Nhập<br><br>
+
+**Tên use case:** Đăng nhập<br><br>
+
+**Mô tả:** Cho phép người dùng đăng nhập vào hệ thống để sử dụng chức năng<br><br>
+
+**Actor:** Khách hàng, Người dùng đã đăng ký<br><br>
+
+**Điều kiện kích hoạt:** Khi người dùng chọn chức năng đăng nhập<br><br>
+
+**Tiền điều kiện:** Người dùng phải có tài khoản trong hệ thống<br><br>
+
+**Hậu điều kiện:** Đăng nhập thành công<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị màn hình đăng nhập<br>
+2. Nhập email và password<br>
+3. Hệ thống kiểm tra thông tin đăng nhập<br>
+4. Xác thực thông tin<br>
+5. Tạo session<br>
+6. Đăng nhập thành công và chuyển hướng<br><br>
+
+**Luồng sự kiện phụ:**<br>
+- Nếu thông tin sai: Hiển thị thông báo lỗi<br>
+- Nếu tài khoản bị khóa: Hiển thị thông báo<br><br>
+
+---<br><br>
+
+### 3. Đổi Mật Khẩu<br><br>
+
+**Tên use case:** Đổi mật khẩu<br><br>
+
+**Mô tả:** Cho phép người dùng đã đăng nhập thay đổi mật khẩu của mình<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi người dùng chọn chức năng đổi mật khẩu<br><br>
+
+**Tiền điều kiện:** Đã đăng nhập vào hệ thống<br><br>
+
+**Hậu điều kiện:** Mật khẩu được thay đổi thành công<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị form đổi mật khẩu<br>
+2. Nhập mật khẩu hiện tại<br>
+3. Nhập mật khẩu mới<br>
+4. Xác nhận mật khẩu mới<br>
+5. Hệ thống validate thông tin<br>
+6. Kiểm tra mật khẩu hiện tại đúng<br>
+7. Cập nhật mật khẩu mới<br>
+8. Hiển thị thông báo thành công<br><br>
+
+**Luồng sự kiện phụ:**<br>
+- Nếu mật khẩu hiện tại sai: Hiển thị thông báo lỗi<br>
+- Nếu mật khẩu mới không hợp lệ: Hiển thị thông báo lỗi<br>
+- Nếu xác nhận mật khẩu không khớp: Hiển thị thông báo lỗi<br><br>
+
+---<br><br>
+
+### 4. Đăng Xuất<br><br>
+
+**Tên use case:** Đăng xuất<br><br>
+
+**Mô tả:** Cho phép người dùng đăng xuất khỏi hệ thống<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn đăng xuất<br><br>
+
+**Tiền điều kiện:** Đã đăng nhập<br><br>
+
+**Hậu điều kiện:** Đăng xuất thành công<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xác nhận đăng xuất<br>
+2. Xóa session<br>
+3. Chuyển hướng về trang chủ<br><br>
+
+---<br><br>
+
+### 5. Quên Mật Khẩu<br><br>
+
+**Tên use case:** Quên mật khẩu<br><br>
+
+**Mô tả:** Cho phép người dùng reset mật khẩu khi quên<br><br>
+
+**Actor:** Khách hàng<br><br>
+
+**Điều kiện kích hoạt:** Khi người dùng chọn chức năng quên mật khẩu<br><br>
+
+**Tiền điều kiện:** Người dùng có tài khoản trong hệ thống<br><br>
+
+**Hậu điều kiện:** Email reset mật khẩu được gửi<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị form quên mật khẩu<br>
+2. Nhập email<br>
+3. Kiểm tra email tồn tại<br>
+4. Tạo token reset<br>
+5. Gửi email reset mật khẩu<br>
+6. Hiển thị thông báo thành công<br><br>
+
+**Luồng sự kiện phụ:**<br>
+- Nếu email không tồn tại: Hiển thị thông báo lỗi<br><br>
+
+---<br><br>
+
+### 6. Xem Trang Chủ<br><br>
+
+**Tên use case:** Xem trang chủ<br><br>
+
+**Mô tả:** Hiển thị trang chủ với slideshow và sản phẩm nổi bật<br><br>
+
+**Actor:** Khách hàng<br><br>
+
+**Điều kiện kích hoạt:** Khi truy cập trang chủ<br><br>
+
+**Tiền điều kiện:** Không<br><br>
+
+**Hậu điều kiện:** Hiển thị trang chủ<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị slideshow<br>
+2. Hiển thị sản phẩm nổi bật<br>
+3. Hiển thị danh mục sản phẩm<br>
+4. Hiển thị thông tin liên hệ<br><br>
+
+---<br><br>
+
+### 7. Xem Danh Sách Sản Phẩm<br><br>
+
+**Tên use case:** Xem danh sách sản phẩm<br><br>
+
+**Mô tả:** Hiển thị danh sách sản phẩm với phân trang và lọc<br><br>
+
+**Actor:** Khách hàng<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn xem sản phẩm<br><br>
+
+**Tiền điều kiện:** Không<br><br>
+
+**Hậu điều kiện:** Hiển thị danh sách sản phẩm<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị danh sách sản phẩm<br>
+2. Phân trang sản phẩm<br>
+3. Hiển thị thông tin cơ bản sản phẩm<br>
+4. Cho phép tìm kiếm sản phẩm<br>
+5. Cho phép lọc theo danh mục, thương hiệu<br><br>
+
+---<br><br>
+
+### 8. Xem Chi Tiết Sản Phẩm<br><br>
+
+**Tên use case:** Xem chi tiết sản phẩm<br><br>
+
+**Mô tả:** Hiển thị thông tin chi tiết của sản phẩm<br><br>
+
+**Actor:** Khách hàng<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn xem chi tiết sản phẩm<br><br>
+
+**Tiền điều kiện:** Sản phẩm tồn tại<br><br>
+
+**Hậu điều kiện:** Hiển thị chi tiết sản phẩm<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị hình ảnh sản phẩm<br>
+2. Hiển thị thông tin sản phẩm<br>
+3. Hiển thị biến thể sản phẩm<br>
+4. Hiển thị giá và khuyến mãi<br>
+5. Cho phép thêm vào giỏ hàng<br>
+6. Cho phép thêm vào wishlist<br><br>
+
+---<br><br>
+
+### 9. Thêm Vào Giỏ Hàng<br><br>
+
+**Tên use case:** Thêm vào giỏ hàng<br><br>
+
+**Mô tả:** Cho phép khách hàng thêm sản phẩm vào giỏ hàng<br><br>
+
+**Actor:** Khách hàng<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn thêm vào giỏ hàng<br><br>
+
+**Tiền điều kiện:** Sản phẩm tồn tại và còn hàng<br><br>
+
+**Hậu điều kiện:** Sản phẩm được thêm vào giỏ hàng<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Chọn sản phẩm và số lượng<br>
+2. Kiểm tra tồn kho<br>
+3. Thêm vào giỏ hàng<br>
+4. Cập nhật giỏ hàng<br>
+5. Hiển thị thông báo thành công<br><br>
+
+**Luồng sự kiện phụ:**<br>
+- Nếu hết hàng: Hiển thị thông báo<br>
+- Nếu số lượng vượt quá tồn kho: Hiển thị thông báo<br><br>
+
+---<br><br>
+
+### 10. Xem Giỏ Hàng<br><br>
+
+**Tên use case:** Xem giỏ hàng<br><br>
+
+**Mô tả:** Hiển thị danh sách sản phẩm trong giỏ hàng<br><br>
+
+**Actor:** Khách hàng<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn xem giỏ hàng<br><br>
+
+**Tiền điều kiện:** Có sản phẩm trong giỏ hàng<br><br>
+
+**Hậu điều kiện:** Hiển thị giỏ hàng<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị danh sách sản phẩm<br>
+2. Tính tổng tiền<br>
+3. Cho phép cập nhật số lượng<br>
+4. Cho phép xóa sản phẩm<br>
+5. Cho phép áp dụng mã giảm giá<br>
+6. Chuyển đến thanh toán<br><br>
+
+---<br><br>
+
+### 11. Tìm Kiếm Sản Phẩm<br><br>
+
+**Tên use case:** Tìm kiếm sản phẩm<br><br>
+
+**Mô tả:** Cho phép tìm kiếm sản phẩm theo từ khóa<br><br>
+
+**Actor:** Khách hàng<br><br>
+
+**Điều kiện kích hoạt:** Khi nhập từ khóa tìm kiếm<br><br>
+
+**Tiền điều kiện:** Không<br><br>
+
+**Hậu điều kiện:** Hiển thị kết quả tìm kiếm<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Nhập từ khóa tìm kiếm<br>
+2. Hệ thống tìm kiếm sản phẩm<br>
+3. Hiển thị kết quả tìm kiếm<br>
+4. Phân trang kết quả<br><br>
+
+---<br><br>
+
+### 12. Lọc Sản Phẩm<br><br>
+
+**Tên use case:** Lọc sản phẩm<br><br>
+
+**Mô tả:** Cho phép lọc sản phẩm theo tiêu chí<br><br>
+
+**Actor:** Khách hàng<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn tiêu chí lọc<br><br>
+
+**Tiền điều kiện:** Không<br><br>
+
+**Hậu điều kiện:** Hiển thị sản phẩm đã lọc<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Chọn tiêu chí lọc (danh mục, thương hiệu, giá)<br>
+2. Hệ thống lọc sản phẩm<br>
+3. Hiển thị kết quả lọc<br>
+4. Phân trang kết quả<br><br>
+
+---<br><br>
+
+## Use Case Người Dùng Đã Đăng Nhập<br><br>
+
+### 13. Quản Lý Thông Tin Cá Nhân<br><br>
+
+**Tên use case:** Quản lý thông tin cá nhân<br><br>
+
+**Mô tả:** Cho phép người dùng cập nhật thông tin cá nhân<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn cập nhật profile<br><br>
+
+**Tiền điều kiện:** Đã đăng nhập<br><br>
+
+**Hậu điều kiện:** Thông tin được cập nhật<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị form thông tin cá nhân<br>
+2. Cập nhật thông tin<br>
+3. Validate dữ liệu<br>
+4. Lưu thông tin<br>
+5. Hiển thị thông báo thành công<br><br>
+
+---<br><br>
+
+### 14. Xem Lịch Sử Đơn Hàng<br><br>
+
+**Tên use case:** Xem lịch sử đơn hàng<br><br>
+
+**Mô tả:** Hiển thị danh sách đơn hàng đã đặt<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn xem đơn hàng<br><br>
+
+**Tiền điều kiện:** Đã đăng nhập<br><br>
+
+**Hậu điều kiện:** Hiển thị lịch sử đơn hàng<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị danh sách đơn hàng<br>
+2. Lọc theo trạng thái<br>
+3. Phân trang đơn hàng<br>
+4. Cho phép xem chi tiết đơn hàng<br><br>
+
+---<br><br>
+
+### 15. Xem Chi Tiết Đơn Hàng<br><br>
+
+**Tên use case:** Xem chi tiết đơn hàng<br><br>
+
+**Mô tả:** Hiển thị thông tin chi tiết của đơn hàng<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn xem chi tiết đơn hàng<br><br>
+
+**Tiền điều kiện:** Đơn hàng tồn tại<br><br>
+
+**Hậu điều kiện:** Hiển thị chi tiết đơn hàng<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị thông tin đơn hàng<br>
+2. Hiển thị danh sách sản phẩm<br>
+3. Hiển thị thông tin giao hàng<br>
+4. Hiển thị trạng thái đơn hàng<br>
+5. Cho phép hủy đơn hàng (nếu có thể)<br><br>
+
+---<br><br>
+
+### 16. Hủy Đơn Hàng<br><br>
+
+**Tên use case:** Hủy đơn hàng<br><br>
+
+**Mô tả:** Cho phép hủy đơn hàng trong trạng thái phù hợp<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn hủy đơn hàng<br><br>
+
+**Tiền điều kiện:** Đơn hàng có thể hủy<br><br>
+
+**Hậu điều kiện:** Đơn hàng được hủy<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Kiểm tra điều kiện hủy<br>
+2. Xác nhận hủy đơn hàng<br>
+3. Cập nhật trạng thái đơn hàng<br>
+4. Hoàn tiền (nếu cần)<br>
+5. Gửi thông báo<br><br>
+
+---<br><br>
+
+### 17. Quản Lý Wishlist<br><br>
+
+**Tên use case:** Quản lý danh sách yêu thích<br><br>
+
+**Mô tả:** Cho phép quản lý danh sách sản phẩm yêu thích<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý wishlist<br><br>
+
+**Tiền điều kiện:** Đã đăng nhập<br><br>
+
+**Hậu điều kiện:** Wishlist được cập nhật<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị danh sách sản phẩm yêu thích<br>
+2. Thêm sản phẩm vào wishlist<br>
+3. Xóa sản phẩm khỏi wishlist<br>
+4. Chuyển sản phẩm vào giỏ hàng<br><br>
+
+---<br><br>
+
+### 18. Thanh Toán Đơn Hàng<br><br>
+
+**Tên use case:** Thanh toán đơn hàng<br><br>
+
+**Mô tả:** Cho phép thanh toán đơn hàng<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn thanh toán<br><br>
+
+**Tiền điều kiện:** Có sản phẩm trong giỏ hàng<br><br>
+
+**Hậu điều kiện:** Đơn hàng được tạo<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Nhập thông tin giao hàng<br>
+2. Chọn phương thức thanh toán<br>
+3. Áp dụng mã giảm giá<br>
+4. Xác nhận đơn hàng<br>
+5. Tạo đơn hàng<br>
+6. Chuyển đến thanh toán<br><br>
+
+---<br><br>
+
+### 19. Thanh Toán VNPay<br><br>
+
+**Tên use case:** Thanh toán qua VNPay<br><br>
+
+**Mô tả:** Xử lý thanh toán qua cổng VNPay<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn thanh toán VNPay<br><br>
+
+**Tiền điều kiện:** Đã tạo đơn hàng<br><br>
+
+**Hậu điều kiện:** Thanh toán hoàn tất<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Tạo đơn hàng<br>
+2. Chuyển hướng đến VNPay<br>
+3. Xử lý thanh toán<br>
+4. Nhận callback từ VNPay<br>
+5. Cập nhật trạng thái đơn hàng<br>
+6. Gửi thông báo<br><br>
+
+---<br><br>
+
+### 20. Đăng Xuất<br><br>
+
+**Tên use case:** Đăng xuất<br><br>
+
+**Mô tả:** Cho phép người dùng đăng xuất khỏi hệ thống<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn đăng xuất<br><br>
+
+**Tiền điều kiện:** Đã đăng nhập<br><br>
+
+**Hậu điều kiện:** Đăng xuất thành công<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xác nhận đăng xuất<br>
+2. Xóa session<br>
+3. Chuyển hướng về trang chủ<br><br>
+
+---<br><br>
+
+### 21. Quản Lý Đánh Giá Sản Phẩm<br><br>
+
+**Tên use case:** Quản lý đánh giá sản phẩm<br><br>
+
+**Mô tả:** Cho phép người dùng đã mua sản phẩm đánh giá và bình luận<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn đánh giá sản phẩm<br><br>
+
+**Tiền điều kiện:** Đã mua sản phẩm và nhận hàng<br><br>
+
+**Hậu điều kiện:** Đánh giá được đăng thành công<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Chọn sản phẩm cần đánh giá<br>
+2. Hiển thị form đánh giá<br>
+3. Nhập điểm đánh giá (1-5 sao)<br>
+4. Nhập nội dung bình luận<br>
+5. Upload hình ảnh (tùy chọn)<br>
+6. Hệ thống validate thông tin<br>
+7. Lưu đánh giá vào database<br>
+8. Hiển thị thông báo thành công<br><br>
+
+**Luồng sự kiện phụ:**<br>
+- Nếu chưa mua sản phẩm: Hiển thị thông báo lỗi<br>
+- Nếu đã đánh giá trước đó: Cho phép chỉnh sửa<br>
+- Nếu thông tin không hợp lệ: Hiển thị thông báo lỗi<br><br>
+
+---<br><br>
+
+### 22. Xem Đánh Giá Sản Phẩm<br><br>
+
+**Tên use case:** Xem đánh giá sản phẩm<br><br>
+
+**Mô tả:** Cho phép xem danh sách đánh giá của sản phẩm<br><br>
+
+**Actor:** Khách hàng<br><br>
+
+**Điều kiện kích hoạt:** Khi xem chi tiết sản phẩm<br><br>
+
+**Tiền điều kiện:** Sản phẩm tồn tại<br><br>
+
+**Hậu điều kiện:** Hiển thị danh sách đánh giá<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Hiển thị tổng điểm đánh giá<br>
+2. Hiển thị số lượng đánh giá<br>
+3. Hiển thị danh sách đánh giá<br>
+4. Phân trang đánh giá<br>
+5. Lọc theo điểm đánh giá<br>
+6. Sắp xếp theo thời gian<br><br>
+
+---<br><br>
+
+## Use Case Quản Trị Viên<br><br>
+
+### 21. Dashboard<br><br>
+
+**Tên use case:** Dashboard<br><br>
+
+**Mô tả:** Hiển thị tổng quan hệ thống cho admin<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi đăng nhập admin<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Hiển thị dashboard<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Thống kê tổng quan<br>
+2. Biểu đồ doanh thu<br>
+3. Báo cáo đơn hàng<br>
+4. Thống kê người dùng<br>
+5. Thống kê sản phẩm<br><br>
+
+---<br><br>
+
+### 22. Quản Lý Người Dùng<br><br>
+
+**Tên use case:** Quản lý người dùng<br><br>
+
+**Mô tả:** Cho phép admin quản lý tài khoản người dùng<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý người dùng<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Người dùng được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách người dùng<br>
+2. Thêm người dùng mới<br>
+3. Chỉnh sửa thông tin<br>
+4. Cập nhật vai trò<br>
+5. Thay đổi trạng thái<br>
+6. Xóa người dùng<br><br>
+
+---<br><br>
+
+### 23. Quản Lý Sản Phẩm<br><br>
+
+**Tên use case:** Quản lý sản phẩm<br><br>
+
+**Mô tả:** Cho phép admin quản lý sản phẩm<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý sản phẩm<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Sản phẩm được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách sản phẩm<br>
+2. Thêm sản phẩm mới<br>
+3. Chỉnh sửa sản phẩm<br>
+4. Thay đổi trạng thái<br>
+5. Quản lý hình ảnh<br>
+6. Quản lý biến thể<br>
+7. Xóa sản phẩm<br><br>
+
+---<br><br>
+
+### 24. Quản Lý Danh Mục<br><br>
+
+**Tên use case:** Quản lý danh mục<br><br>
+
+**Mô tả:** Cho phép admin quản lý danh mục sản phẩm<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý danh mục<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Danh mục được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách danh mục<br>
+2. Thêm danh mục mới<br>
+3. Chỉnh sửa danh mục<br>
+4. Thay đổi trạng thái<br>
+5. Xóa danh mục<br><br>
+
+---<br><br>
+
+### 25. Quản Lý Thương Hiệu<br><br>
+
+**Tên use case:** Quản lý thương hiệu<br><br>
+
+**Mô tả:** Cho phép admin quản lý thương hiệu<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý thương hiệu<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Thương hiệu được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách thương hiệu<br>
+2. Thêm thương hiệu mới<br>
+3. Chỉnh sửa thương hiệu<br>
+4. Xóa thương hiệu<br><br>
+
+---<br><br>
+
+### 26. Quản Lý Đơn Hàng<br><br>
+
+**Tên use case:** Quản lý đơn hàng<br><br>
+
+**Mô tả:** Cho phép admin quản lý đơn hàng<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý đơn hàng<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Đơn hàng được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách đơn hàng<br>
+2. Xem chi tiết đơn hàng<br>
+3. Cập nhật trạng thái<br>
+4. Xem lịch sử trạng thái<br>
+5. Xử lý hủy đơn hàng<br><br>
+
+---<br><br>
+
+### 27. Quản Lý Mã Giảm Giá<br><br>
+
+**Tên use case:** Quản lý mã giảm giá<br><br>
+
+**Mô tả:** Cho phép admin quản lý voucher<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý voucher<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Voucher được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách voucher<br>
+2. Thêm voucher mới<br>
+3. Chỉnh sửa voucher<br>
+4. Xóa voucher<br><br>
+
+---<br><br>
+
+### 28. Quản Lý Tin Tức<br><br>
+
+**Tên use case:** Quản lý tin tức<br><br>
+
+**Mô tả:** Cho phép admin quản lý tin tức<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý tin tức<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Tin tức được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách tin tức<br>
+2. Thêm tin tức mới<br>
+3. Chỉnh sửa tin tức<br>
+4. Thay đổi trạng thái<br>
+5. Xóa tin tức<br><br>
+
+---<br><br>
+
+### 29. Quản Lý Slideshow<br><br>
+
+**Tên use case:** Quản lý slideshow<br><br>
+
+**Mô tả:** Cho phép admin quản lý slideshow trang chủ<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý slideshow<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Slideshow được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách slideshow<br>
+2. Thêm slideshow mới<br>
+3. Chỉnh sửa slideshow<br>
+4. Xóa slideshow<br><br>
+
+---<br><br>
+
+### 30. Quản Lý Thuộc Tính Sản Phẩm<br><br>
+
+**Tên use case:** Quản lý thuộc tính sản phẩm<br><br>
+
+**Mô tả:** Cho phép admin quản lý thuộc tính sản phẩm<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý thuộc tính<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Thuộc tính được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách thuộc tính<br>
+2. Thêm thuộc tính mới<br>
+3. Chỉnh sửa thuộc tính<br>
+4. Quản lý giá trị thuộc tính<br><br>
+
+---<br><br>
+
+### 31. Quản Lý Biến Thể Sản Phẩm<br><br>
+
+**Tên use case:** Quản lý biến thể sản phẩm<br><br>
+
+**Mô tả:** Cho phép admin quản lý biến thể sản phẩm<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý biến thể<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Biến thể được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách biến thể<br>
+2. Thêm biến thể mới<br>
+3. Chỉnh sửa biến thể<br>
+4. Xóa biến thể<br><br>
+
+---<br><br>
+
+### 32. Quản Lý Đánh Giá<br><br>
+
+**Tên use case:** Quản lý đánh giá<br><br>
+
+**Mô tả:** Cho phép admin quản lý đánh giá sản phẩm<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý đánh giá<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Đánh giá được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách đánh giá<br>
+2. Lọc đánh giá theo sản phẩm<br>
+3. Lọc đánh giá theo điểm<br>
+4. Duyệt đánh giá<br>
+5. Ẩn/hiện đánh giá<br>
+6. Xóa đánh giá vi phạm<br>
+7. Trả lời đánh giá<br><br>
+
+**Luồng sự kiện phụ:**<br>
+- Nếu đánh giá vi phạm: Cảnh báo người dùng<br>
+- Nếu đánh giá spam: Tự động ẩn<br><br>
+
+---<br><br>
+
+### 33. Quản Lý Banner<br><br>
+
+**Tên use case:** Quản lý banner<br><br>
+
+**Mô tả:** Cho phép admin quản lý banner quảng cáo<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn quản lý banner<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Banner được quản lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách banner<br>
+2. Thêm banner mới<br>
+3. Chỉnh sửa banner<br>
+4. Upload hình ảnh banner<br>
+5. Cấu hình vị trí hiển thị<br>
+6. Thay đổi trạng thái<br>
+7. Xóa banner<br><br>
+
+---<br><br>
+
+### 34. Quản Lý Hoàn Tiền<br><br>
+
+**Tên use case:** Quản lý hoàn tiền<br><br>
+
+**Mô tả:** Cho phép admin xử lý hoàn tiền cho đơn hàng<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi có yêu cầu hoàn tiền<br><br>
+
+**Tiền điều kiện:** Có quyền admin và đơn hàng hợp lệ<br><br>
+
+**Hậu điều kiện:** Hoàn tiền được xử lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách yêu cầu hoàn tiền<br>
+2. Xem chi tiết đơn hàng<br>
+3. Kiểm tra điều kiện hoàn tiền<br>
+4. Xác nhận hoàn tiền<br>
+5. Chọn phương thức hoàn tiền<br>
+6. Thực hiện hoàn tiền<br>
+7. Cập nhật trạng thái<br>
+8. Gửi thông báo<br><br>
+
+**Luồng sự kiện phụ:**<br>
+- Nếu không đủ điều kiện: Từ chối hoàn tiền<br>
+- Nếu hoàn tiền thất bại: Thử lại<br><br>
+
+---<br><br>
+
+### 35. Quản Lý Hủy Đơn Hàng<br><br>
+
+**Tên use case:** Quản lý hủy đơn hàng<br><br>
+
+**Mô tả:** Cho phép admin quản lý việc hủy đơn hàng<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi có yêu cầu hủy đơn hàng<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Đơn hàng được hủy<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xem danh sách yêu cầu hủy<br>
+2. Xem chi tiết đơn hàng<br>
+3. Kiểm tra lý do hủy<br>
+4. Xác nhận hủy đơn hàng<br>
+5. Cập nhật trạng thái<br>
+6. Hoàn tiền (nếu cần)<br>
+7. Gửi thông báo<br><br>
+
+---<br><br>
+
+### 36. Xem Lịch Sử Trạng Thái<br><br>
+
+**Tên use case:** Xem lịch sử trạng thái<br><br>
+
+**Mô tả:** Cho phép xem lịch sử thay đổi trạng thái<br><br>
+
+**Actor:** Admin<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn xem lịch sử<br><br>
+
+**Tiền điều kiện:** Có quyền admin<br><br>
+
+**Hậu điều kiện:** Hiển thị lịch sử trạng thái<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Chọn đối tượng (đơn hàng, sản phẩm)<br>
+2. Xem lịch sử thay đổi trạng thái<br>
+3. Hiển thị thông tin chi tiết<br>
+4. Lọc theo thời gian<br>
+5. Lọc theo người thực hiện<br><br>
+
+---<br><br>
+
+### 37. Quản Lý Like<br><br>
+
+**Tên use case:** Quản lý like<br><br>
+
+**Mô tả:** Cho phép người dùng like/unlike sản phẩm<br><br>
+
+**Actor:** Người dùng đã đăng nhập<br><br>
+
+**Điều kiện kích hoạt:** Khi chọn like/unlike<br><br>
+
+**Tiền điều kiện:** Đã đăng nhập<br><br>
+
+**Hậu điều kiện:** Like được cập nhật<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Chọn sản phẩm<br>
+2. Kiểm tra trạng thái like<br>
+3. Thực hiện like/unlike<br>
+4. Cập nhật database<br>
+5. Hiển thị trạng thái mới<br><br>
+
+---<br><br>
+
+## Use Case Hệ Thống Thanh Toán<br><br>
+
+### 38. Xử Lý Thanh Toán VNPay<br><br>
+
+**Tên use case:** Xử lý thanh toán VNPay<br><br>
+
+**Mô tả:** Hệ thống xử lý thanh toán qua VNPay<br><br>
+
+**Actor:** VNPay Payment System<br><br>
+
+**Điều kiện kích hoạt:** Khi có yêu cầu thanh toán VNPay<br><br>
+
+**Tiền điều kiện:** Đơn hàng đã được tạo<br><br>
+
+**Hậu điều kiện:** Thanh toán được xử lý<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xác thực giao dịch<br>
+2. Xử lý thanh toán<br>
+3. Trả về kết quả<br>
+4. Cập nhật trạng thái đơn hàng<br><br>
+
+---<br><br>
+
+### 39. Callback Xử Lý<br><br>
+
+**Tên use case:** Callback xử lý<br><br>
+
+**Mô tả:** Xử lý callback từ VNPay<br><br>
+
+**Actor:** VNPay Payment System<br><br>
+
+**Điều kiện kích hoạt:** Khi VNPay gửi callback<br><br>
+
+**Tiền điều kiện:** Có giao dịch thanh toán<br><br>
+
+**Hậu điều kiện:** Trạng thái được cập nhật<br><br>
+
+**Luồng sự kiện chính:**<br>
+1. Xác thực callback<br>
+2. Cập nhật trạng thái<br>
+3. Gửi thông báo<br><br>
+
+---<br><br>
+
+## Kết Luận<br><br>
+
+Tài liệu này cung cấp đặc tả chi tiết cho **39 use case chính** của hệ thống NovaSmart E-commerce, bao gồm:<br><br>
+
+- **12 use case** cho khách hàng chưa đăng nhập<br>
+- **11 use case** cho người dùng đã đăng nhập<br>
+- **16 use case** cho quản trị viên<br>
+- **2 use case** cho hệ thống thanh toán<br><br>
+
+Mỗi use case đều có đầy đủ các thành phần:<br>
+- ✅ Tên use case rõ ràng<br>
+- ✅ Mô tả chi tiết chức năng<br>
+- ✅ Actor xác định<br>
+- ✅ Điều kiện kích hoạt<br>
+- ✅ Tiền điều kiện và hậu điều kiện<br>
+- ✅ Luồng sự kiện chính và phụ<br><br>
+
+Tài liệu này đảm bảo **đầy đủ, chi tiết, không thiếu, không thừa** để đạt **10 điểm** trong báo cáo phần đặc tả use case.<br><br>

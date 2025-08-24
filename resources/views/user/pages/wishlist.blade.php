@@ -42,14 +42,10 @@
                                             Hết Hàng
                                         </button>
                                     @else
-                                        <form action="{{ route('cart.add') }}" method="POST" class="w-full">
-                                            @csrf
-                                            <input type="hidden" name="product_variant_id" value="{{ $variant->id }}">
-                                            <button type="submit"
-                                                 class="btn-add-cart py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md">
-                                                Thêm Vào Giỏ
-                                            </button>
-                                        </form>
+                                        <a href="{{ route('products.show', $variant->id) }}"
+                                            class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md hover:bg-slate-800 transition-colors">
+                                            Xem Chi Tiết
+                                        </a>
                                     @endif
                                 @else
                                     <span
@@ -91,7 +87,7 @@
                             <div class="flex justify-between items-center mt-1">
                                 <p>
                                     @if ($variant)
-                                        {{ number_format($variant->price, 0, ',', '.') }}₫
+                                        <span class="text-red-600 font-semibold">{{ number_format($variant->price, 0, ',', '.') }}₫</span>
                                         @if ($variant->compare_price && $variant->compare_price > $variant->price)
                                             <del
                                                 class="text-slate-400">{{ number_format($variant->compare_price, 0, ',', '.') }}₫</del>
@@ -100,12 +96,21 @@
                                         Liên hệ
                                     @endif
                                 </p>
+                                @php
+                                    $ratings = $product->ratings ?? collect();
+                                    $averageRating = round($ratings->avg('rating') ?? 0, 1);
+                                    $totalRatings = $ratings->count();
+                                @endphp
+
                                 <ul class="font-medium text-amber-400 list-none">
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
-                                    <li class="inline"><i class="mdi mdi-star"></i></li>
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <li class="inline">
+                                            <i class="mdi mdi-star{{ $i <= round($averageRating) ? '' : '-outline' }}"></i>
+                                        </li>
+                                    @endfor
+                                    @if ($totalRatings > 0)
+                                        <li class="inline text-slate-400 ms-1">{{ $averageRating }} ({{ $totalRatings }})</li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>

@@ -103,22 +103,37 @@
                                 @endif
                                 
                                 <div class="flex justify-between items-center mt-3">
-                                    <span class="text-lg font-semibold">{{ number_format($firstVariant->price) }}₫</span>
+                                    <span class="text-red-600 font-semibold text-lg">{{ number_format($firstVariant->price) }}₫</span>
                                     
-                            @if(!$isOutOfStock)
-                                <form action="{{ route('cart.add') }}" method="POST" class="inline">
-                                    @csrf
-                                    <input type="hidden" name="product_variant_id" value="{{ $firstVariant->id }}">
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn-add-cart py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md hover:bg-orange-500">
-                                        Thêm vào giỏ
-                                    </button>
-                                </form>
-                            @else
-                                <button disabled class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-400 text-white w-full rounded-md cursor-not-allowed">
-                                Hết hàng
-                            </button>
-                            @endif
+                                    @php
+                                        $ratings = $product->ratings ?? collect();
+                                        $averageRating = round($ratings->avg('rating') ?? 0, 1);
+                                        $totalRatings = $ratings->count();
+                                    @endphp
+
+                                    <ul class="font-medium text-amber-400 list-none">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <li class="inline">
+                                                <i class="mdi mdi-star{{ $i <= round($averageRating) ? '' : '-outline' }}"></i>
+                                            </li>
+                                        @endfor
+                                        @if ($totalRatings > 0)
+                                            <li class="inline text-slate-400 ms-1">{{ $averageRating }} ({{ $totalRatings }})</li>
+                                        @endif
+                                    </ul>
+                                </div>
+
+                                <div class="mt-3">
+                                    @if(!$isOutOfStock)
+                                        <a href="{{ route('products.show', $firstVariant->id) }}" 
+                                           class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-slate-900 text-white w-full rounded-md hover:bg-slate-800 transition-colors">
+                                            Xem Chi Tiết
+                                        </a>
+                                    @else
+                                        <button disabled class="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-gray-400 text-white w-full rounded-md cursor-not-allowed">
+                                            Hết hàng
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>

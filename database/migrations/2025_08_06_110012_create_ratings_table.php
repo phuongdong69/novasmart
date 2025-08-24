@@ -11,20 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ratings', function (Blueprint $table) {
-            $table->id();
-            
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('status_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_variant_id')->constrained()->onDelete('cascade'); 
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('order_detail_id')->constrained()->onDelete('cascade');
-            
-            $table->tinyInteger('rating')->unsigned()->comment('Từ 1 đến 5 sao');
-            $table->timestamps();
+        if (!Schema::hasTable('ratings')) {
+            Schema::create('ratings', function (Blueprint $table) {
+                $table->id();
+                
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->foreignId('status_id')->constrained()->onDelete('cascade');
+                $table->foreignId('product_variant_id')->constrained()->onDelete('cascade'); 
+                $table->foreignId('order_id')->constrained()->onDelete('cascade');
+                $table->foreignId('order_detail_id')->constrained()->onDelete('cascade');
+                
+                $table->tinyInteger('rating')->unsigned()->comment('Từ 1 đến 5 sao');
+                $table->timestamps();
 
-            $table->unique(['user_id', 'order_detail_id'], 'unique_rating_per_order_detail');
-        });
+                $table->unique(['user_id', 'order_detail_id'], 'unique_rating_per_order_detail');
+            });
+        }
     }
 
     /**
@@ -32,6 +34,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ratings');
+        if (Schema::hasTable('ratings')) {
+            Schema::dropIfExists('ratings');
+        }
     }
 };

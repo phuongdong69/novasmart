@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('brands', function (Blueprint $table) {
-            $table->unsignedBigInteger('category_id')->nullable()->after('name');
-            // Nếu cần liên kết khóa ngoại:
-            // $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
-        });
+        if (!Schema::hasColumn('brands', 'category_id')) {
+            Schema::table('brands', function (Blueprint $table) {
+                $table->unsignedBigInteger('category_id')->nullable()->after('name');
+                // Nếu cần liên kết khóa ngoại:
+                // $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
+            });
+        }
     }
 
     /**
@@ -23,8 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('brands', function (Blueprint $table) {
-            $table->dropColumn('category_id');
-        });
+        if (Schema::hasColumn('brands', 'category_id')) {
+            Schema::table('brands', function (Blueprint $table) {
+                $table->dropColumn('category_id');
+            });
+        }
     }
 }; 
