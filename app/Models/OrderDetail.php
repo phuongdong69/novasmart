@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class OrderDetail extends Model
+{
+    protected $fillable = [
+    'order_id', 'product_variant_id', 'quantity', 'price'
+];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function productVariant()
+    {
+        return $this->belongsTo(ProductVariant::class);
+    }
+    public function comment()
+    {
+        return $this->hasOne(Comment::class);
+    }
+
+    public function rating()
+    {
+        return $this->hasOne(Rating::class);
+    }
+}

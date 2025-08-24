@@ -24,10 +24,13 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'role_id' => \App\Models\Role::factory(), // Tạo role ngẫu nhiên, đảm bảo RoleFactory đã tồn tại
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => bcrypt('password'), // Mật khẩu mặc định là 'password'
+            'phoneNumber' => fake()->phoneNumber(),
+            'image_user' => fake()->imageUrl(200, 200, 'people', true), // URL ảnh ngẫu nhiên
+            'address' => fake()->address(),
             'remember_token' => Str::random(10),
         ];
     }
@@ -37,7 +40,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }
