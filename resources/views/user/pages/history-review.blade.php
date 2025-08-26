@@ -62,7 +62,7 @@
                             <th class="px-5 py-3 text-left">Đánh giá</th>
                             <th class="px-5 py-3 text-left">Nội dung</th>
                             <th class="px-5 py-3 text-left">Ngày đánh giá</th>
-                            <th class="px-5 py-3 text-center">Xoá</th>
+                            <th class="px-5 py-3 text-left">Xoá</th>
                         </tr>
                     </thead>
                     <tbody>
