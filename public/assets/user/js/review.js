@@ -60,6 +60,7 @@ document.querySelectorAll(".btn-write-review").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
         e.preventDefault();
         const variantId = btn.getAttribute("data-product-variant-id");
+        const orderDetailId = btn.getAttribute("data-order-detail-id");
 
         if (!window.isLoggedIn) {
             popupLogin?.classList.remove("hidden");
@@ -72,11 +73,11 @@ document.querySelectorAll(".btn-write-review").forEach((btn) => {
 
             if (!data.success) {
                 showErrorToast(data.message || "Bạn chưa đủ điều kiện để đánh giá.");
-                return; // ❌ KHÔNG mở modal
+                return; 
             }
 
-            // ✅ Chỉ mở modal khi đủ điều kiện
-            openReviewModal(parseInt(variantId));
+            // ✅ mở modal kèm orderDetailId
+            openReviewModal(parseInt(variantId), orderDetailId);
         } catch (err) {
             console.error(err);
             showErrorToast("Có lỗi khi kiểm tra quyền đánh giá.");
@@ -165,27 +166,29 @@ if (form) {
             const data = await res.json();
 
             if (data.success) {
-                closeReviewModal();
-                showSuccessToast(data.message || "Gửi đánh giá thành công!");
+    closeReviewModal();
+    showSuccessToast(data.message || "Gửi đánh giá thành công!");
 
-                const variantId = form.querySelector("input[name='product_variant_id']")?.value;
+    const variantId = form.querySelector("input[name='product_variant_id']")?.value;
+    const orderDetailId = form.querySelector("input[name='order_detail_id']")?.value;
 
-                if (data.data && variantId) {
-    await refreshReviewByAllFilter(); // ✅ RESET VỀ FILTER "TẤT CẢ"
+    // ✅ Ẩn nút viết review/bình luận real-time
+    if (orderDetailId) {
+        const btn = document.querySelector(`.btn-write-review[data-order-detail-id="${orderDetailId}"]`);
+        if (btn) {
+            btn.style.display = "none";
+        }
+    }
 
-    // ✅ KHÔNG cần clone và prepend thủ công để tránh bị trùng đánh giá
-
-    // ✅ Reset form và sao lại giao diện chấm sao
+    // Reset form
     form.reset();
     document.querySelectorAll("#review-stars i").forEach((i) => {
         i.classList.remove("mdi-star");
         i.classList.add("mdi-star-outline");
     });
 
-    // ✅ Cập nhật tổng quan nếu có
     const { summary } = data.data;
     if (summary) updateRatingSummary(summary);
-}
             } else {
                 showErrorToast(data.message || "Đã có lỗi xảy ra.");
             }
@@ -322,11 +325,14 @@ function updateRatingSummary(summary) {
 // =============================
 // Modal
 // =============================
-function openReviewModal(productVariantId) {
+function openReviewModal(productVariantId, orderDetailId) {
     const modal = document.getElementById("review-modal");
-    const input = document.getElementById("review-product-id");
-    if (modal && input) {
-        input.value = productVariantId;
+    const inputProduct = document.getElementById("review-product-id");
+    const inputOrderDetail = document.getElementById("review-order-detail-id");
+
+    if (modal && inputProduct && inputOrderDetail) {
+        inputProduct.value = productVariantId;
+        inputOrderDetail.value = orderDetailId;
         modal.classList.add("active");
     }
 }
