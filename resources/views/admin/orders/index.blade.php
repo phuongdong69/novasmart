@@ -72,60 +72,64 @@
                                 @endif
                             </td>
 
+                            {{-- =============================== --}}
+                            {{-- ✅ FIX: Cột TRẠNG THÁI THANH TOÁN --}}
+                            {{-- - Chỉ coi là "đã thanh toán" khi code === 'paid' --}}
+                            {{-- - Chỉ hiện nút Hoàn tiền khi: đơn đã hủy + payment đang paid --}}
+                            {{-- =============================== --}}
                             <td class="px-4 py-2 text-center" style="position:relative;">
                                 @php
-                                    // Lấy status thanh toán hiện tại
-                                    $currentPaymentStatus = $order->payment?->status;
+                                    $payment      = $order->payment ?? null;
+                                    $payStatus    = $payment?->status;
+                                    $payCode      = $payStatus->code ?? null;        // 'paid' | 'pending' | 'refunded' | ...
+                                    $orderStatus  = $order->orderStatus ?? ($order->status ?? null);
+                                    $orderCode    = $orderStatus?->code ?? null;
 
-                                    // Đơn đã huỷ? (nhận cả orderStatus hoặc status)
-                                    $orderStatus = $order->orderStatus ?? ($order->status ?? null);
-                                    $isCancelled =
-                                        ($orderStatus?->code ?? '') === 'cancelled' ||
-                                        str_contains(mb_strtolower((string) $orderStatus?->name), 'hủy');
+                                    // Đơn đã hủy?
+                                    $isCancelled = $orderCode === 'cancelled'
+                                        || str_contains(mb_strtolower((string)$orderStatus?->name), 'huỷ')
+                                        || str_contains(mb_strtolower((string)$orderStatus?->name), 'hủy');
 
-                                    // Thanh toán đang "đã thanh toán"?
-                                    $isPaid =
-                                        ($currentPaymentStatus?->code ?? '') === 'paid' ||
-                                        str_contains(
-                                            mb_strtolower((string) $currentPaymentStatus?->name),
-                                            'thanh toán',
-                                        );
+                                    // Chỉ coi là "ĐÃ THANH TOÁN" khi code === 'paid'
+                                    $isPaid = $payCode === 'paid';
 
-                                    // Lấy status "refunded" (nút dùng id này để submit)
+                                    // Lấy status refunded (nếu có) để submit form
                                     $refundStatus = \App\Models\Status::where('type', 'payment')
                                         ->where('code', 'refunded')
                                         ->first();
                                 @endphp
 
                                 {{-- Badge trạng thái thanh toán --}}
-                                <span class="px-2 py-1 rounded text-white text-xs font-semibold"
-                                    style="background-color: {{ $currentPaymentStatus->color ?? '#6b7280' }};">
-                                    {{ $currentPaymentStatus->name ?? 'Chưa có' }}
-                                </span>
+                                @if ($payCode === 'paid')
+                                    <span class="px-2 py-1 rounded text-white text-xs font-semibold"
+                                          style="background-color:#059669;">Đã thanh toán</span>
+                                @elseif ($payCode === 'refunded')
+                                    <span class="px-2 py-1 rounded text-white text-xs font-semibold"
+                                          style="background-color:#475569;">Hoàn tiền</span>
+                                @else
+                                    <span class="px-2 py-1 rounded text-white text-xs font-semibold"
+                                          style="background-color:#f59e0b;">Chưa thanh toán</span>
+                                @endif
 
-                                {{-- Nút chuyển sang ĐÃ HOÀN TIỀN (chỉ hiện khi đơn đã huỷ + thanh toán đã thanh toán) --}}
-                                @if ($isCancelled && $isPaid)
-                                    @if ($refundStatus)
-                                        <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST"
-                                            class="inline-block"
-                                            style="position:absolute; right:8px; top:50%; transform:translateY(-50%);"
-                                            onsubmit="return confirm('Xác nhận chuyển sang ĐÃ HOÀN TIỀN và gửi email cho khách?')">
-                                            @csrf
-                                            {{-- dùng cùng route update_status, controller bắt field này để cập nhật payment --}}
-                                            <input type="hidden" name="payment_status_id" value="{{ $refundStatus->id }}">
-                                            <button type="submit"
-                                                class="px-2 py-1 rounded text-white text-xs font-semibold"
-                                                style="background: linear-gradient(90deg,#f43f5e 0%,#ef4444 100%);">
-                                                Hoàn tiền
-                                            </button>
-                                        </form>
-                                    @else
-                                        {{-- Thiếu status refunded trong DB --}}
-                                        <span class="ml-2 text-xs text-red-500">Thiếu trạng thái "refunded" (payment)</span>
-                                    @endif
+                                {{-- Nút HOÀN TIỀN: chỉ hiện khi đơn đã huỷ + payment đang paid --}}
+                                @if ($isCancelled && $isPaid && $refundStatus)
+                                    <form action="{{ route('admin.orders.update_status', $order->id) }}"
+                                          method="POST" class="inline-block"
+                                          style="position:absolute; right:8px; top:50%; transform:translateY(-50%);"
+                                          onsubmit="return confirm('Xác nhận chuyển sang ĐÃ HOÀN TIỀN và gửi email cho khách?')">
+                                        @csrf
+                                        <input type="hidden" name="payment_status_id" value="{{ $refundStatus->id }}">
+                                        <button type="submit"
+                                            class="px-2 py-1 rounded text-white text-xs font-semibold"
+                                            style="background: linear-gradient(90deg,#f43f5e 0%,#ef4444 100%);">
+                                            Hoàn tiền
+                                        </button>
+                                    </form>
                                 @endif
                             </td>
-
+                            {{-- =============================== --}}
+                            {{-- ✅ Hết phần FIX --}}
+                            {{-- =============================== --}}
 
                             <td class="px-4 py-2 text-center">
                                 {{ $order->created_at ? $order->created_at->format('d/m/Y') : '-' }}</td>
