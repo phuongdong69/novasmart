@@ -79,11 +79,14 @@
                             <tr class="bg-gray-50 hover:bg-gray-100 transition">
                                 <td class="px-5 py-4 align-middle">
                                     <div class="flex items-center gap-3">
-                                        <img src="{{ $imagePath }}"
-                                             alt="{{ $product->name ?? 'Ảnh sản phẩm' }}"
-                                             class="w-12 h-12 object-cover rounded-md shadow-sm border">
-                                        <a href="#"
-                                           class="text-gray-800 font-medium hover:text-orange-600 truncate max-w-[150px]">
+                                        
+                                        <a href="{{ $product ? route('products.show', $product->id) : '#' }}">
+                                            <img src="{{ $imagePath }}"
+                                                alt="{{ $product->name ?? 'Ảnh sản phẩm' }}"
+                                                class="w-12 h-12 object-cover rounded-md shadow-sm border">
+                                        </a>
+                                        <a href="{{ $product ? route('products.show', $product->id) : '#' }}"
+                                        class="text-gray-800 font-medium hover:text-orange-600 truncate max-w-[150px]">
                                             {{ $product->name ?? 'Sản phẩm không tồn tại' }}
                                         </a>
                                     </div>
