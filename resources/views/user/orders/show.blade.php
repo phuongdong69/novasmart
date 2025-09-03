@@ -114,16 +114,14 @@
                                             {{ number_format($item->price * $item->quantity, 0, ',', '.') }}đ
                                         </td>
                                         <td class="p-3 text-center">
-                                            @if (
-                                                $order->orderStatus &&
-                                                    $order->orderStatus->code === 'completed' &&
-                                                    $order->orderStatus->type === 'order' &&
-                                                    $product)
+                                            @if ($order->orderStatus && $order->orderStatus->code === 'completed' && $order->orderStatus->type === 'order' && $product)
                                                 <a href="{{ route('products.show', $item->productVariant->id) }}"
-                                                    class="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-full hover:bg-blue-700 transition ml-[-10px]"
+                                                    class="inline-flex items-center justify-center w-10 h-10 bg-blue-600 rounded-full hover:bg-blue-700 transition"
                                                     title="Viết đánh giá">
-                                                    <i class="mdi mdi-comment-text-outline text-2xl"></i>
+                                                    <i class="mdi mdi-comment-text-outline text-xl"></i>
                                                 </a>
+                                            @else
+                                                <span class="inline-block w-10 h-10"></span> {{-- giữ chỗ, không cho cột xê dịch --}}
                                             @endif
                                         </td>
                                     </tr>

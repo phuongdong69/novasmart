@@ -56,22 +56,33 @@ document.addEventListener("DOMContentLoaded", () => {
         const toast = document.getElementById(id);
         if (toast) setTimeout(() => toast.remove(), 4000);
     });
-
-    document.querySelectorAll(".btn-write-review").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+document.querySelectorAll(".btn-write-review").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
         e.preventDefault();
         const variantId = btn.getAttribute("data-product-variant-id");
 
         if (!window.isLoggedIn) {
-            closeReviewModal(); // 🔒 Đảm bảo modal review bị đóng nếu đang mở
-            popupLogin?.classList.remove("hidden"); // ✅ Chỉ hiện login
+            popupLogin?.classList.remove("hidden");
             return;
         }
 
-        openReviewModal(parseInt(variantId)); // ✅ Chỉ mở nếu đã đăng nhập
-    });
-    });
+        try {
+            const res = await fetch(`/check-review/${variantId}`);
+            const data = await res.json();
 
+            if (!data.success) {
+                showErrorToast(data.message || "Bạn chưa đủ điều kiện để đánh giá.");
+                return; // ❌ KHÔNG mở modal
+            }
+
+            // ✅ Chỉ mở modal khi đủ điều kiện
+            openReviewModal(parseInt(variantId));
+        } catch (err) {
+            console.error(err);
+            showErrorToast("Có lỗi khi kiểm tra quyền đánh giá.");
+        }
+    });
+});
     document.body.addEventListener("click", (e) => {
         const popup = document.getElementById("review-modal");
         const box = popup?.querySelector(".popup-box");

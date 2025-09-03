@@ -427,7 +427,7 @@
             </div>
 
         <button
-            onclick="openReviewModal({{ $product->id }})"
+            type="button"
             class="btn-write-review mt-3 bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-md text-sm"
             data-product-variant-id="{{ $product->id }}">
             Viết đánh giá

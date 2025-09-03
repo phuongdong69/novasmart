@@ -70,6 +70,53 @@ class ReviewController extends Controller
     ]);
 }
 
+public function check($variantId)
+{
+    $user = Auth::user();
+
+    if (!$user) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Bạn cần đăng nhập để viết đánh giá.'
+        ], 401);
+    }
+
+    // 1. Kiểm tra đã mua sản phẩm chưa (đơn hàng completed)
+    $hasPurchased = \App\Models\Order::where('user_id', $user->id)
+        ->whereHas('orderStatus', fn($q) => $q->where('code', 'completed'))
+        ->whereHas('orderDetails', fn($q) =>
+            $q->where('product_variant_id', $variantId)
+        )
+        ->exists();
+
+    if (!$hasPurchased) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Bạn chưa mua sản phẩm này nên không thể đánh giá.'
+        ]);
+    }
+
+    // 2. Kiểm tra đã đánh giá hoặc bình luận chưa
+    $alreadyReviewed = \App\Models\Rating::where('user_id', $user->id)
+        ->where('product_variant_id', $variantId)
+        ->exists();
+
+    $alreadyCommented = \App\Models\Comment::where('user_id', $user->id)
+        ->where('product_variant_id', $variantId)
+        ->exists();
+
+    if ($alreadyReviewed || $alreadyCommented) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Bạn đã viết đánh giá cho sản phẩm này rồi.'
+        ]);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Bạn có thể viết đánh giá.'
+    ]);
+}
 
    public function show(Product $product, Request $request)
 {
