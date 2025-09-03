@@ -7,6 +7,7 @@
         <form id="review-form" action="{{ route('review.submit') }}" method="POST">
             @csrf
             <input type="hidden" name="product_variant_id" id="review-product-id">
+            <input type="hidden" name="order_detail_id" id="review-order-detail-id">
             <input type="hidden" name="rating" id="review-rating" value="5">
 
             <div class="mb-4">

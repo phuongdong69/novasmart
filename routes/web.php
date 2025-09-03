@@ -234,6 +234,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/reviews/submit', [ReviewController::class, 'store'])->name('review.submit');
     Route::get('/api/product/{product}/rating-summary', [ReviewController::class, 'ratingSummary']);
     Route::delete('/reviews/{rating}', [ReviewController::class, 'destroy'])->name('user.reviews.destroy');
+    Route::get('/check-review/{variantId}', [ReviewController::class, 'check'])->name('review.check');
 
 });
 

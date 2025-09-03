@@ -96,6 +96,10 @@
                                             $product && $product->thumbnails
                                                 ? $product->thumbnails->where('is_primary', true)->first()
                                                 : null;
+                                                 // Kiểm tra đã đánh giá chưa (theo order_detail_id)
+                                        $hasReviewed = \App\Models\Rating::where('order_detail_id', $item->id)
+                                                        ->where('user_id', Auth::id())
+                                                        ->exists();
                                     @endphp
                                     <tr class="border-t">
                                         <td class="p-3">
@@ -114,18 +118,26 @@
                                             {{ number_format($item->price * $item->quantity, 0, ',', '.') }}đ
                                         </td>
                                         <td class="p-3 text-center">
-                                            @if (
-                                                $order->orderStatus &&
-                                                    $order->orderStatus->code === 'completed' &&
-                                                    $order->orderStatus->type === 'order' &&
-                                                    $product)
-                                                <a href="{{ route('products.show', $item->productVariant->id) }}"
-                                                    class="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-full hover:bg-blue-700 transition ml-[-10px]"
-                                                    title="Viết đánh giá">
-                                                    <i class="mdi mdi-comment-text-outline text-2xl"></i>
-                                                </a>
-                                            @endif
-                                        </td>
+                                    @if (
+                                        $order->orderStatus &&
+                                        $order->orderStatus->code === 'completed' &&
+                                        $order->orderStatus->type === 'order' &&
+                                        $product &&
+                                        !$hasReviewed
+                                    )
+                                        <button 
+                                            type="button"
+                                            class="btn-write-review inline-flex items-center justify-center w-10 h-10 bg-blue-600 rounded-full hover:bg-blue-700 transition"
+                                            data-product-variant-id="{{ $item->productVariant->id }}"
+                                            data-order-detail-id="{{ $item->id }}"
+                                            title="Viết đánh giá"
+                                        >
+                                            <i class="mdi mdi-comment-text-outline text-xl"></i>
+                                        </button>
+                                    @else
+                                        <span class="inline-block w-10 h-10"></span>
+                                    @endif
+                                </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -193,29 +205,111 @@
             </div>
         </div>
     </section>
+<style>
+        .custom-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    min-width: 260px;
+    max-width: 360px;
+    background-color: #16a34a; /* xanh lá - success */
+    color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+    font-size: 14px;
+    line-height: 1.4;
+    transition: opacity 0.4s ease-out;
+}
 
-    <!-- Modal nhập lý do huỷ -->
-    @if ($order->orderStatus && $order->orderStatus->code === 'pending')
-        <div id="cancelModal" class="hidden fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
+.toast-icon {
+    width: 20px;
+    height: 20px;
+    stroke: #fff;
+}
 
-            <div class="bg-white p-6 rounded-lg shadow max-w-md w-full">
-                <h2 class="text-lg font-semibold mb-4">Nhập lý do huỷ đơn hàng</h2>
-                <form method="POST" action="{{ route('user.orders.cancel', $order->id) }}">
-                    @csrf
-                    <textarea name="note" rows="4" required
-                        class="w-full border rounded p-2 focus:outline-none focus:ring focus:border-blue-400"
-                        placeholder="Vui lòng nhập lý do..."></textarea>
-                    <div class="flex justify-end mt-4 gap-3">
-                        <button type="button" onclick="document.getElementById('cancelModal').classList.add('hidden')"
-                            class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">
-                            Hủy
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-                            Xác nhận huỷ
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    @endif
+.toast-message {
+    flex: 1;
+    font-weight: 600;
+}
+
+.toast-close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+
+.toast-close-icon {
+    width: 16px;
+    height: 16px;
+    stroke: #fff;
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background-color: #a3e635; /* lime-400 */
+    animation: progressBar 4s linear forwards;
+    width: 100%;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+/* Hiệu ứng */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes progressBar {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
+    }
+}
+
+/* ✅ Style riêng cho toast-error */
+#toast-error {
+    background-color: #dc2626; /* đỏ */
+    color: #fff;
+}
+
+#toast-error .toast-progress {
+    background-color: #f87171; /* đỏ nhạt */
+}
+
+#toast-error .toast-icon,
+#toast-error .toast-close-icon {
+    stroke: #fff;
+}
+</style>
+{{-- Popup & Toast đặt cuối content --}}
+@include('user.partials.popup-review')
+@include('user.partials.toast')
+
 @endsection
+
+@push('scripts')
+<script>
+    window.isLoggedIn = {{ Auth::check() ? 'true' : 'false' }};
+</script>
+<script src="{{ asset('assets/user/js/review.js') }}"></script>
+@endpush

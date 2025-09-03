@@ -93,9 +93,9 @@
                     </li>
 
 
-                    <li><a href="sale.html" class="sub-menu-item">Bán</a></li>
+                    <li><a href="{{ route('news.index') }}" class="sub-menu-item">Tin tức</a></li>
 
-                    <li><a href="contact.html" class="sub-menu-item">Liên hệ</a></li>
+                    <li><a href="{{ route('about') }}" class="sub-menu-item">Về chúng tôi</a></li>
                 </ul>
             </div>
         </div>
