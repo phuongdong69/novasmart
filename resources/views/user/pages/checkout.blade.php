@@ -141,6 +141,7 @@
                                 <select name="payment_method"
                                     class="form-input w-full py-2 px-3 h-10 border border-gray-300 rounded">
                                     <option value="">-- Chọn phương thức --</option>
+                                    <option value="cod" {{ old('payment_method') == 'cod' ? 'selected' : '' }}>COD </option>
                                     <option value="vnpay" {{ old('payment_method') == 'vnpay' ? 'selected' : '' }}>VNPay</option>
                                     <option value="cod" {{ old('payment_method') == 'cod' ? 'selected' : '' }}>COD</option>
                                 </select>

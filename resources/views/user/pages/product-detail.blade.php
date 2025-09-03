@@ -288,7 +288,7 @@
                                 <button
                                     class="px-4 py-2 text-start text-base font-semibold rounded-md w-full mt-3 duration-500"
                                     id="addinfo-tab" data-tabs-target="#addinfo" type="button" role="tab"
-                                    aria-controls="addinfo" aria-selected="false">Thông tin bổ sung</button>
+                                    aria-controls="addinfo" aria-selected="false">Thông tin sản phẩm</button>
                             </li>
                             <li role="presentation">
                                 <button
@@ -338,19 +338,56 @@
                                         <td class="text-slate-400 pt-4">{{ $product->quantity }} sản phẩm</td>
                                     </tr>
 
-                                    @auth
-                                        <tr class="bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-gray-700">
-                                            <td class="font-semibold pt-4">Yêu thích</td>
-                                            <td class="text-slate-400 pt-4">
-                                                <button onclick="toggleWishlist({{ $product->id }}, this)"
-                                                    class="wishlist-btn inline-flex items-center px-3 py-1 rounded-md text-sm font-medium transition-colors duration-300 cursor-pointer"
-                                                    data-product-variant-id="{{ $product->id }}">
-                                                    <i data-feather="heart" class="size-4 me-1"></i>
-                                                    <span class="wishlist-text">Yêu thích</span>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @endauth
+                                    @php
+                                        // Lấy tất cả các thuộc tính của sản phẩm hiện tại
+                                        $productAttributes = $product->variantAttributeValues
+                                            ->map(function ($attrValue) {
+                                                return [
+                                                    'name' => $attrValue->attribute->name ?? 'Thuộc tính',
+                                                    'value' => $attrValue->attributeValue->value ?? 'N/A',
+                                                    'type' => $attrValue->attribute->name ?? ''
+                                                ];
+                                            })
+                                            ->filter(function ($attr) {
+                                                return !empty($attr['name']) && !empty($attr['value']);
+                                            })
+                                            ->unique('name')
+                                            ->sortBy('name');
+                                    @endphp
+
+                                    @if($productAttributes->count() > 0)
+                                        @foreach ($productAttributes as $attribute)
+                                            <tr class="bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-gray-700">
+                                                <td class="font-semibold pt-4">{{ $attribute['name'] }}</td>
+                                                <td class="text-slate-400 pt-4">
+                                                    @php
+                                                        $isColorAttribute = str_contains(strtolower($attribute['name']), 'màu') || 
+                                                                           str_contains(strtolower($attribute['name']), 'color') ||
+                                                                           str_contains(strtolower($attribute['name']), 'màu sắc');
+                                                        $isSizeAttribute = str_contains(strtolower($attribute['name']), 'size') || 
+                                                                          str_contains(strtolower($attribute['name']), 'kích thước') ||
+                                                                          str_contains(strtolower($attribute['name']), 'size');
+                                                    @endphp
+                                                    
+                                                    @if($isColorAttribute)
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-6 h-6 rounded-full border border-gray-300 shadow-sm" 
+                                                                 style="background-color: {{ $attribute['value'] }};"></div>
+                                                            <span class="font-medium">{{ $attribute['value'] }}</span>
+                                                        </div>
+                                                    @elseif($isSizeAttribute)
+                                                        <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded-md font-medium text-sm">
+                                                            {{ strtoupper($attribute['value']) }}
+                                                        </span>
+                                                    @else
+                                                        <span class="font-medium">{{ $attribute['value'] }}</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+
+
                                 </tbody>
                             </table>
                         </div>
