@@ -69,6 +69,37 @@ class OrderController extends Controller
             // ----- Giao hàng thành công -----
             if ($status->code === 'delivered') {
                 $this->sendDeliveredMail($order);
+
+                // ================================================================
+                // 🔁 Auto set trạng thái THANH TOÁN = "paid" khi ĐƠN HÀNG = "delivered"
+                // ---------------------------------------------------------------
+                // - Chỉ chạy nếu đơn đã có bản ghi payment.
+                // - Tránh ghi đè các trạng thái "nhạy cảm" như refunded.
+                // - Tìm status "paid" theo type = 'payment' để đúng ngữ nghĩa hệ thống.
+                // - Không loại bỏ/đổi chỗ bất kỳ logic hiện có nào khác.
+                // ================================================================
+                if ($order->payment) { // Có bản ghi thanh toán thì mới xét tự động
+                    // Lấy status "paid" trong nhóm trạng thái thanh toán (type = payment)
+                    $paidPaymentStatus = Status::where('type', 'payment')->where('code', 'paid')->first();
+
+                    if ($paidPaymentStatus) { // Đảm bảo có cấu hình status "paid"
+                        // Lấy code hiện tại của thanh toán (nếu có)
+                        $currentPayCode = optional($order->payment->status)->code;
+
+                        // Chỉ cập nhật nếu CHƯA phải 'paid' và KHÔNG phải 'refunded'
+                        // -> Tránh ghi đè khi đã hoàn tiền hoặc đã paid trước đó
+                        if (!in_array($currentPayCode, ['paid', 'refunded'])) {
+                            // Cập nhật status_id sang "paid"
+                            $order->payment->update([
+                                'status_id' => $paidPaymentStatus->id,
+                            ]);
+                        }
+                    }
+                    // Nếu không tìm thấy status "paid" thì bỏ qua lặng lẽ để tránh lỗi runtime.
+                }
+                // ================================================================
+                // 🔁 Hết phần auto set thanh toán khi giao hàng
+                // ================================================================
             }
         }
 
