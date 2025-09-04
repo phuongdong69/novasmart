@@ -1,37 +1,94 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Thêm Product Thumbnail')
+
 @section('content')
-<div class="max-w-xl mx-auto py-8">
-    <h1 class="text-2xl font-bold mb-6">Thêm Product Thumbnail</h1>
-    <form action="{{ route('admin.product_thumbnail.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow rounded-lg p-6 space-y-4">
-        @csrf
-        <div>
-            <label for="product_id" class="block font-medium mb-1">Product ID</label>
-            <input type="number" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" id="product_id" name="product_id" required>
+<div class="w-full px-6 py-6 mx-auto">
+    <div class="flex flex-wrap -mx-3">
+        <div class="w-full max-w-full px-3 flex-0">
+            <div class="relative flex flex-col min-w-0 break-words bg-white border-0 dark:bg-slate-850 dark:shadow-soft-dark-xl shadow-soft-xl rounded-2xl bg-clip-border">
+                <div class="p-6 pb-0 mb-0 border-b-0 rounded-t-2xl">
+                    <div class="flex flex-wrap -mx-3">
+                        <div class="flex items-center w-full max-w-full px-3 shrink-0">
+                            <div class="w-full">
+                                <h6 class="mb-1 font-semibold leading-normal dark:text-white">Thêm Product Thumbnail</h6>
+                                <p class="mb-0 leading-normal text-sm dark:text-white dark:opacity-60">
+                                    Thêm ảnh thumbnail cho sản phẩm
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-auto p-6">
+                    <form action="{{ route('admin.product_thumbnail.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        
+                        <div class="mb-4">
+                            <label for="product_id" class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Product ID</label>
+                            <input type="number" 
+                                   class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:border-slate-600 dark:text-white @error('product_id') border-red-500 @enderror" 
+                                   id="product_id" name="product_id" value="{{ old('product_id') }}" required>
+                            @error('product_id')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="product_variant_id" class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Product Variant ID</label>
+                            <input type="number" 
+                                   class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:border-slate-600 dark:text-white @error('product_variant_id') border-red-500 @enderror" 
+                                   id="product_variant_id" name="product_variant_id" value="{{ old('product_variant_id') }}" required>
+                            @error('product_variant_id')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="url" class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Ảnh</label>
+                            <input type="file" 
+                                   class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:border-slate-600 dark:text-white @error('url') border-red-500 @enderror" 
+                                   id="url" name="url" accept="image/*" required>
+                            @error('url')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Định dạng: JPEG, PNG, JPG, GIF. Kích thước tối đa: 2MB</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="is_primary" class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Ảnh chính</label>
+                            <select class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:border-slate-600 dark:text-white @error('is_primary') border-red-500 @enderror" 
+                                    id="is_primary" name="is_primary" required>
+                                <option value="1" {{ old('is_primary') == '1' ? 'selected' : '' }}>Có</option>
+                                <option value="0" {{ old('is_primary') == '0' ? 'selected' : '' }}>Không</option>
+                            </select>
+                            @error('is_primary')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="sort_order" class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Thứ tự</label>
+                            <input type="number" 
+                                   class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:border-slate-600 dark:text-white @error('sort_order') border-red-500 @enderror" 
+                                   id="sort_order" name="sort_order" value="{{ old('sort_order', 0) }}" min="0">
+                            @error('sort_order')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="flex justify-end gap-4">
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-6 rounded">
+                                Lưu
+                            </button>
+                            <a href="{{ route('admin.product_thumbnail.index') }}"
+                                class="border border-slate-400 text-slate-700 hover:bg-slate-100 hover:text-slate-900 text-sm font-medium py-2 px-6 rounded transition-all duration-150">
+                                Quay lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="product_variant_id" class="block font-medium mb-1">Product Variant ID</label>
-            <input type="number" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" id="product_variant_id" name="product_variant_id" required>
-        </div>
-        <div>
-            <label for="url" class="block font-medium mb-1">Ảnh</label>
-            <input type="file" class="w-full border rounded px-3 py-2" id="url" name="url" accept="image/*" required>
-        </div>
-        <div>
-            <label for="is_primary" class="block font-medium mb-1">Ảnh chính</label>
-            <select class="w-full border rounded px-3 py-2" id="is_primary" name="is_primary" required>
-                <option value="1">Có</option>
-                <option value="0">Không</option>
-            </select>
-        </div>
-        <div>
-            <label for="sort_order" class="block font-medium mb-1">Thứ tự</label>
-            <input type="number" class="w-full border rounded px-3 py-2" id="sort_order" name="sort_order">
-        </div>
-        <div class="flex gap-2">
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Lưu</button>
-            <a href="{{ route('admin.product_thumbnail.index') }}" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">Quay lại</a>
-        </div>
-    </form>
+    </div>
 </div>
 @endsection 

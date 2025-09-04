@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaSmart Complete Database ERD</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 2000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        
+        .diagram-container {
+            position: relative;
+            width: 1900px;
+            height: 1400px;
+            border: 2px solid #ddd;
+            margin: 0 auto;
+            background: #fafafa;
+            background-image: 
+                linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,.05) 1px, transparent 1px);
+            background-size: 25px 25px;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        
+        .table {
+            position: absolute;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            min-width: 200px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+            font-size: 11px;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        .table:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            z-index: 50;
+        }
+        
+        .table.dragging {
+            opacity: 0.8;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            z-index: 1000 !important;
+        }
+        
+        .table-header {
+            color: white;
+            padding: 10px 12px;
+            font-weight: bold;
+            font-size: 13px;
+            border-radius: 6px 6px 0 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .table-body {
+            padding: 8px 12px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .field {
+            margin: 3px 0;
+            padding: 3px 6px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            font-size: 10px;
+        }
+        
+        .field-icon {
+            width: 14px;
+            height: 14px;
+            margin-right: 8px;
+            border-radius: 3px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .pk { background: #ffebee; border-left: 3px solid #f44336; }
+        .pk .field-icon { background: #f44336; }
+        .pk .field-icon::after { content: 'PK'; }
+        
+        .fk { background: #e8f5e8; border-left: 3px solid #4caf50; }
+        .fk .field-icon { background: #4caf50; }
+        .fk .field-icon::after { content: 'FK'; }
+        
+        .regular { background: #f9f9f9; border-left: 3px solid #9e9e9e; }
+        .regular .field-icon { background: #9e9e9e; }
+        .regular .field-icon::after { content: '•'; }
+        
+        .unique { background: #fff3e0; border-left: 3px solid #ff9800; }
+        .unique .field-icon { background: #ff9800; }
+        .unique .field-icon::after { content: 'UQ'; }
+        
+        /* Group Colors */
+        .core { border-color: #2196f3; }
+        .core .table-header { background: linear-gradient(135deg, #2196f3, #1976d2); }
+        
+        .products { border-color: #9c27b0; }
+        .products .table-header { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
+        
+        .attributes { border-color: #4caf50; }
+        .attributes .table-header { background: linear-gradient(135deg, #4caf50, #388e3c); }
+        
+        .commerce { border-color: #ff9800; }
+        .commerce .table-header { background: linear-gradient(135deg, #ff9800, #f57c00); }
+        
+        .features { border-color: #e91e63; }
+        .features .table-header { background: linear-gradient(135deg, #e91e63, #c2185b); }
+        
+        .content { border-color: #8bc34a; }
+        .content .table-header { background: linear-gradient(135deg, #8bc34a, #689f38); }
+        
+        .system { border-color: #607d8b; }
+        .system .table-header { background: linear-gradient(135deg, #607d8b, #455a64); }
+        
+        /* SVG Connections */
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .connection-line {
+            stroke: #666;
+            stroke-width: 2;
+            fill: none;
+            opacity: 0.6;
+        }
+        
+        .connection-arrow {
+            fill: #666;
+            opacity: 0.6;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-size: 12px;
+            z-index: 100;
+            max-width: 250px;
+        }
+        
+        .legend h4 {
+            margin: 0 0 15px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .legend-section {
+            margin-bottom: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        .stats {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ NovaSmart Complete Database ERD</h1>
+        <div class="subtitle">Comprehensive Entity Relationship Diagram - 39 Tables, 100+ Relationships</div>
+        
+        <div class="diagram-container" id="diagram">
+            <!-- Legend -->
+            <!-- Control Panel -->
+            <div class="controls">
+                <button onclick="resetLayout()" class="control-btn">🔄 Reset Layout</button>
+                <button onclick="saveLayout()" class="control-btn">💾 Save Layout</button>
+                <button onclick="toggleRelationships()" class="control-btn">🔗 Toggle Lines</button>
+                <button onclick="refreshERD()" class="control-btn">🔃 Refresh</button>
+            </div>
+            
+            <div class="legend">
+                <h4>📋 Database Legend</h4>
+                
+                <div class="legend-section">
+                    <strong>Field Types:</strong>
+                    <div class="legend-item">
+                        <div class="field-icon pk"></div>
+                        <span>Primary Key</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="field-icon fk"></div>
+                        <span>Foreign Key</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="field-icon unique"></div>
+                        <span>Unique</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="field-icon regular"></div>
+                        <span>Regular Field</span>
+                    </div>
+                </div>
+                
+                <div class="legend-section">
+                    <strong>Table Groups:</strong>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #2196f3, #1976d2);"></div>
+                        <span>Core System</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #9c27b0, #7b1fa2);"></div>
+                        <span>Products</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #4caf50, #388e3c);"></div>
+                        <span>Attributes</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #ff9800, #f57c00);"></div>
+                        <span>Commerce</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #e91e63, #c2185b);"></div>
+                        <span>Features</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #8bc34a, #689f38);"></div>
+                        <span>Content</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #607d8b, #455a64);"></div>
+                        <span>System</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SVG for connections -->
+            <svg class="connections" id="connections">
+                <defs>
+                    <marker id="arrowhead" markerWidth="12" markerHeight="8" 
+                            refX="11" refY="4" orient="auto">
+                        <polygon points="0 0, 12 4, 0 8" class="connection-arrow" />
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">39</div>
+                <div class="stat-label">Total Tables</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">7</div>
+                <div class="stat-label">Module Groups</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100+</div>
+                <div class="stat-label">Relationships</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">200+</div>
+                <div class="stat-label">Database Fields</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1</div>
+                <div class="stat-label">New Returns Table</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="erd_data.js"></script>
+    <script>
+        let isInitialized = false;
+        
+        function initializeERD() {
+            if (isInitialized) return;
+            isInitialized = true;
+            
+            const diagram = document.getElementById('diagram');
+            const svg = document.getElementById('connections');
+            
+            // Clear existing content first
+            const existingTables = diagram.querySelectorAll('.table');
+            existingTables.forEach(table => table.remove());
+            
+            // Create tables
+            Object.entries(tables).forEach(([tableName, tableData]) => {
+                createTable(tableName, tableData, diagram);
+            });
+            
+            // Create relationships
+            setTimeout(() => {
+                relationships.forEach(rel => {
+                    createRelationship(rel, svg);
+                });
+            }, 100);
+        }
+        
+        function createTable(name, data, container) {
+            const table = document.createElement('div');
+            table.className = `table ${data.group}`;
+            table.id = `table-${name}`;
+            table.style.left = data.x + 'px';
+            table.style.top = data.y + 'px';
+            table.style.cursor = 'move';
+            
+            const header = document.createElement('div');
+            header.className = 'table-header';
+            header.textContent = name;
+            header.style.cursor = 'move';
+            
+            const body = document.createElement('div');
+            body.className = 'table-body';
+            
+            data.fields.forEach(field => {
+                const fieldDiv = document.createElement('div');
+                fieldDiv.className = `field ${field.type}`;
+                fieldDiv.innerHTML = `
+                    <div class="field-icon"></div>
+                    <span>${field.name}</span>
+                `;
+                body.appendChild(fieldDiv);
+            });
+            
+            table.appendChild(header);
+            table.appendChild(body);
+            container.appendChild(table);
+            
+            // Make table draggable
+            makeDraggable(table);
+        }
+        
+        function createRelationship(rel, svg) {
+            const fromTable = document.getElementById(`table-${rel.from}`);
+            const toTable = document.getElementById(`table-${rel.to}`);
+            
+            if (!fromTable || !toTable) return;
+            
+            const fromRect = fromTable.getBoundingClientRect();
+            const toRect = toTable.getBoundingClientRect();
+            const svgRect = svg.getBoundingClientRect();
+            
+            const fromX = fromRect.left + fromRect.width/2 - svgRect.left;
+            const fromY = fromRect.top + fromRect.height/2 - svgRect.top;
+            const toX = toRect.left + toRect.width/2 - svgRect.left;
+            const toY = toRect.top + toRect.height/2 - svgRect.top;
+            
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const path = `M ${fromX} ${fromY} Q ${(fromX + toX)/2} ${(fromY + toY)/2 - 50} ${toX} ${toY}`;
+            line.setAttribute('d', path);
+            line.setAttribute('class', 'connection-line');
+            line.setAttribute('marker-end', 'url(#arrowhead)');
+            
+            svg.appendChild(line);
+        }
+        
+        function makeDraggable(element) {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+            
+            element.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                initialX = parseInt(element.style.left);
+                initialY = parseInt(element.style.top);
+                
+                element.classList.add('dragging');
+                document.body.style.userSelect = 'none';
+                
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                
+                const newX = Math.max(0, Math.min(initialX + deltaX, 1700));
+                const newY = Math.max(0, Math.min(initialY + deltaY, 1200));
+                
+                element.style.left = newX + 'px';
+                element.style.top = newY + 'px';
+                
+                // Update relationships in real-time
+                updateRelationships();
+            });
+            
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    element.classList.remove('dragging');
+                    document.body.style.userSelect = '';
+                }
+            });
+        }
+        
+        function updateRelationships() {
+            const svg = document.getElementById('connections');
+            // Clear existing relationships
+            const lines = svg.querySelectorAll('.connection-line');
+            lines.forEach(line => line.remove());
+            
+            // Redraw all relationships
+            relationships.forEach(rel => {
+                createRelationship(rel, svg);
+            });
+        }
+        
+        let relationshipsVisible = true;
+        
+        function resetLayout() {
+            Object.entries(tables).forEach(([tableName, tableData]) => {
+                const table = document.getElementById(`table-${tableName}`);
+                if (table) {
+                    table.style.left = tableData.x + 'px';
+                    table.style.top = tableData.y + 'px';
+                }
+            });
+            updateRelationships();
+        }
+        
+        function saveLayout() {
+            const layout = {};
+            Object.keys(tables).forEach(tableName => {
+                const table = document.getElementById(`table-${tableName}`);
+                if (table) {
+                    layout[tableName] = {
+                        x: parseInt(table.style.left),
+                        y: parseInt(table.style.top)
+                    };
+                }
+            });
+            localStorage.setItem('novasmart_erd_layout', JSON.stringify(layout));
+            alert('✅ Layout đã được lưu!');
+        }
+        
+        function loadLayout() {
+            const savedLayout = localStorage.getItem('novasmart_erd_layout');
+            if (savedLayout) {
+                const layout = JSON.parse(savedLayout);
+                Object.entries(layout).forEach(([tableName, position]) => {
+                    const table = document.getElementById(`table-${tableName}`);
+                    if (table) {
+                        table.style.left = position.x + 'px';
+                        table.style.top = position.y + 'px';
+                    }
+                });
+                updateRelationships();
+            }
+        }
+        
+        function toggleRelationships() {
+            const svg = document.getElementById('connections');
+            if (relationshipsVisible) {
+                svg.style.display = 'none';
+                relationshipsVisible = false;
+            } else {
+                svg.style.display = 'block';
+                relationshipsVisible = true;
+            }
+        }
+        
+        function refreshERD() {
+            isInitialized = false;
+            const diagram = document.getElementById('diagram');
+            const svg = document.getElementById('connections');
+            
+            // Clear all existing content
+            const existingTables = diagram.querySelectorAll('.table');
+            existingTables.forEach(table => table.remove());
+            
+            const existingLines = svg.querySelectorAll('.connection-line');
+            existingLines.forEach(line => line.remove());
+            
+            // Reinitialize
+            initializeERD();
+        }
+        
+        // Single initialization point
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeERD();
+            setTimeout(loadLayout, 200);
+        });
+    </script>
+</body>
+</html>

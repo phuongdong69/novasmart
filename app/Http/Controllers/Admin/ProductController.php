@@ -17,7 +17,7 @@ class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */
+     */  
     public function index()
     {
         $products = Product::with([
@@ -94,7 +94,7 @@ class ProductController extends Controller
         // Thêm biến thể nếu có
         if ($request->has('variants')) {
             $existingSkus = $product->variants()->pluck('sku')->toArray();
-            foreach ($request->input('variants') as $variant) {
+            foreach ($request->input('variants') as $index => $variant) {
                 if (!empty($variant['sku']) && in_array($variant['sku'], $existingSkus)) {
                     return back()->withErrors(['variants' => 'SKU biến thể ' . $variant['sku'] . ' đã tồn tại cho sản phẩm này!'])->withInput();
                 }
@@ -108,6 +108,18 @@ class ProductController extends Controller
                     $variant['status_id'] = (isset($variant['quantity']) && $variant['quantity'] > 0) ? $inStockStatusId : $outOfStockStatusId;
                 }
                 $productVariant = $product->variants()->create($variant);
+
+                // Lưu ảnh cho biến thể nếu được tải lên
+                if ($request->hasFile("variants.$index.image")) {
+                    $variantImage = $request->file("variants.$index.image");
+                    $path = $variantImage->store('product_thumbnails', 'public');
+                    $product->thumbnails()->create([
+                        'url' => $path,
+                        'product_variant_id' => $productVariant->id,
+                        'is_primary' => false,
+                        'sort_order' => 0,
+                    ]);
+                }
                 if (!$productVariant) {
                     Log::error('Không tạo được biến thể', [$variant]);
                     continue;
@@ -313,6 +325,7 @@ class ProductController extends Controller
             'sku' => 'required|string|max:255|unique:product_variants,sku',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'attributes' => 'nullable|array',
             'attributes.*.attribute_id' => 'required_with:attributes|exists:attributes,id',
             'attributes.*.value' => 'required_with:attributes|exists:attribute_values,id',
@@ -331,6 +344,17 @@ class ProductController extends Controller
                 'quantity' => $request->quantity,
                 'status_id' => $statusId,
             ]);
+
+            // Lưu ảnh nếu được tải lên
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('product_thumbnails', 'public');
+                $product->thumbnails()->create([
+                    'url' => $path,
+                    'product_variant_id' => $variant->id,
+                    'is_primary' => false,
+                    'sort_order' => 0,
+                ]);
+            }
 
             // Thêm thuộc tính cho biến thể nếu có
             if ($request->has('attributes')) {
@@ -368,6 +392,7 @@ class ProductController extends Controller
             'sku' => 'required|string|max:255|unique:product_variants,sku,' . $variant->id,
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'attributes' => 'nullable|array',
             'attributes.*.attribute_id' => 'required_with:attributes|exists:attributes,id',
             'attributes.*.value' => 'required_with:attributes|exists:attribute_values,id',
@@ -386,6 +411,17 @@ class ProductController extends Controller
                 'quantity' => $request->quantity,
                 'status_id' => $statusId,
             ]);
+
+            // Lưu ảnh nếu được tải lên
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('product_thumbnails', 'public');
+                $variant->product->thumbnails()->create([
+                    'url' => $path,
+                    'product_variant_id' => $variant->id,
+                    'is_primary' => false,
+                    'sort_order' => 0,
+                ]);
+            }
 
             // Xóa các thuộc tính cũ
             $variant->variantAttributeValues()->delete();

@@ -68,6 +68,17 @@ class OrderController extends Controller
 
             // ----- Giao hàng thành công -----
             if ($status->code === 'delivered') {
+                // Tự động chuyển trạng thái thanh toán sang "đã thanh toán" nếu đang là "chưa thanh toán"
+                if ($order->payment) {
+                    $currentPayCode = optional($order->payment->status)->code;
+                    if ($currentPayCode === 'unpaid' || $currentPayCode === null) {
+                        $paidStatusId = Status::where('type', 'payment')->where('code', 'paid')->value('id');
+                        if ($paidStatusId) {
+                            $order->payment->update(['status_id' => $paidStatusId]);
+                        }
+                    }
+                }
+
                 $this->sendDeliveredMail($order);
 
                 // ================================================================
