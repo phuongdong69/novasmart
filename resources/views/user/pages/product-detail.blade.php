@@ -627,7 +627,7 @@
         <section class="relative md:py-24 py-16 bg-gray-50 dark:bg-slate-800">
             <div class="container relative">
                 <div class="grid grid-cols-1 mb-6 text-center">
-                    <h3 class="font-semibold text-3xl leading-normal">Sản phẩm tương tự</h3>
+                    <h3 class="font-semibold text-3xl leading-normal">Các sản phẩm khác mời bạn tham khảo</h3>
                     <p class="text-slate-400 mt-3">Các sản phẩm cùng thương hiệu {{ $product->product->brand->name ?? 'N/A' }}</p>
                 </div>
 
