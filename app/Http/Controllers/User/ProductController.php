@@ -29,6 +29,13 @@ class ProductController extends Controller
             $query->where('name', 'like', "%{$search}%");
         }
 
+        // Lọc theo danh mục
+        if ($request->filled('category')) {
+            $query->whereHas('category', function (Builder $q) use ($request) {
+                $q->where('name', 'like', '%' . $request->category . '%');
+            });
+        }
+
         // Lọc theo thương hiệu
         if ($request->filled('brand')) {
             $brands = $request->brand;

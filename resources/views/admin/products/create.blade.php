@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-
+@section('title', 'Thêm mới sản phẩm')
 @section('content')
 <style>
 /* Đảm bảo các nút hiển thị đúng */

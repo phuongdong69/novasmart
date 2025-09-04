@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-
+@section('title', 'Quản lý đơn hàng')
 @section('content')
     <div class="w-full px-6 py-6 mx-auto">
         <h1 class="text-2xl font-bold mb-6">Quản lý đơn hàng</h1>

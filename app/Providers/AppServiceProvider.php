@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Models\ProductVariant;
+use App\Models\Category;
+use App\Models\Brand;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -58,7 +60,25 @@ class AppServiceProvider extends ServiceProvider
             $cart['total_price'] = $total;
         }
 
-        $view->with('cart', $cart);
+        // Lấy dữ liệu cho mega menu - tất cả categories (kể cả chưa có sản phẩm)
+        $menuCategories = Category::with(['brands' => function($query) {
+                $query->whereHas('products');
+            }])
+            ->orderBy('name')
+            ->get();
+
+        // Lấy top brands có nhiều sản phẩm nhất
+        $topBrands = Brand::whereHas('products')
+            ->withCount('products')
+            ->orderByDesc('products_count')
+            ->take(5)
+            ->get();
+
+        $view->with([
+            'cart' => $cart,
+            'menuCategories' => $menuCategories,
+            'topBrands' => $topBrands
+        ]);
     });
 }
 }
