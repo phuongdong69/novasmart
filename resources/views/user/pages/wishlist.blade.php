@@ -28,11 +28,19 @@
                     <div class="group wishlist-item">
                         <div
                             class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
-                            <a href="{{ route('products.show', $variant->id) }}">
-                                <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}"
-                                    class="group-hover:scale-110 duration-500 w-full h-64 object-cover"
-                                    alt="{{ $product->name }}">
-                            </a>
+                            @if($variant)
+                                <a href="{{ route('products.show', $variant->id) }}">
+                                    <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}"
+                                        class="group-hover:scale-110 duration-500 w-full h-64 object-cover"
+                                        alt="{{ $product->name }}">
+                                </a>
+                            @else
+                                <div>
+                                    <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}"
+                                        class="group-hover:scale-110 duration-500 w-full h-64 object-cover"
+                                        alt="{{ $product->name }}">
+                                </div>
+                            @endif
 
                             <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
                                 @if ($variant)

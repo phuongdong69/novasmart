@@ -35,11 +35,19 @@
                     <div class="group">
                         <div
                             class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
-                            <a href="{{ route('products.show', $variant->id) }}">
-                                <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}"
-                                    class="group-hover:scale-110 duration-500 w-full h-64 object-cover"
-                                    alt="{{ $product->name }}">
-                            </a>
+                            @if($variant)
+                                <a href="{{ route('products.show', $variant->id) }}">
+                                    <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}"
+                                        class="group-hover:scale-110 duration-500 w-full h-64 object-cover"
+                                        alt="{{ $product->name }}">
+                                </a>
+                            @else
+                                <div>
+                                    <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}"
+                                        class="group-hover:scale-110 duration-500 w-full h-64 object-cover"
+                                        alt="{{ $product->name }}">
+                                </div>
+                            @endif
 
                             <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
                                 @if ($variant)
@@ -66,15 +74,19 @@
                             <ul
                                 class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
                                 <li>
-                                    <button onclick="toggleWishlist({{ $variant->id }}, this)"
-                                        class="wishlist-btn size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow cursor-pointer"
-                                        data-product-variant-id="{{ $variant->id }}">
-                                        <i data-feather="heart" class="size-4"></i>
-                                    </button>
+                                    @if($variant)
+                                        <button onclick="toggleWishlist({{ $variant->id }}, this)"
+                                            class="wishlist-btn size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow cursor-pointer"
+                                            data-product-variant-id="{{ $variant->id }}">
+                                            <i data-feather="heart" class="size-4"></i>
+                                        </button>
+                                    @endif
                                 </li>
-                                <li class="mt-1"><a href="{{ route('products.show', $variant->id) }}"
-                                        class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
-                                            data-feather="eye" class="size-4"></i></a></li>
+                                @if($variant)
+                                    <li class="mt-1"><a href="{{ route('products.show', $variant->id) }}"
+                                            class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
+                                                data-feather="eye" class="size-4"></i></a></li>
+                                @endif
                                 <li class="mt-1"><a href="javascript:void(0)"
                                         class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
                                             data-feather="bookmark" class="size-4"></i></a></li>
@@ -90,7 +102,11 @@
                         </div>
 
                         <div class="mt-4">
-                            <a href="{{ route('products.show', $variant->id) }}" class="hover:text-orange-500 text-lg font-medium">{{ $product->name }}</a>
+                            @if($variant)
+                                <a href="{{ route('products.show', $variant->id) }}" class="hover:text-orange-500 text-lg font-medium">{{ $product->name }}</a>
+                            @else
+                                <span class="text-lg font-medium text-gray-500">{{ $product->name }}</span>
+                            @endif
                             <div class="flex justify-between items-center mt-1">
                                 <p>
                                     @if ($variant)
@@ -183,11 +199,19 @@
                     <div class="group">
                         <div
                             class="relative overflow-hidden shadow-sm dark:shadow-gray-800 group-hover:shadow-lg group-hover:dark:shadow-gray-800 rounded-md duration-500">
-                            <a href="{{ route('products.show', $variant->id) }}">
-                                <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}"
-                                    class="group-hover:scale-110 duration-500 w-full h-64 object-cover"
-                                    alt="{{ $product->name }}">
-                            </a>
+                            @if($variant)
+                                <a href="{{ route('products.show', $variant->id) }}">
+                                    <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}"
+                                        class="group-hover:scale-110 duration-500 w-full h-64 object-cover"
+                                        alt="{{ $product->name }}">
+                                </a>
+                            @else
+                                <div>
+                                    <img src="{{ $product->thumbnails->where('is_primary', 1)->first() ? asset('storage/' . $product->thumbnails->where('is_primary', 1)->first()->url) : asset('assets/images/no-image.jpg') }}"
+                                        class="group-hover:scale-110 duration-500 w-full h-64 object-cover"
+                                        alt="{{ $product->name }}">
+                                </div>
+                            @endif
                             <div class="absolute -bottom-20 group-hover:bottom-3 start-3 end-3 duration-500">
                                 @if ($variant)
                                     <a href="{{ route('products.show', $variant->id) }}"
@@ -203,22 +227,30 @@
                             <ul
                                 class="list-none absolute top-[10px] end-4 opacity-0 group-hover:opacity-100 duration-500 space-y-1">
                                 <li>
-                                    <button onclick="toggleWishlist({{ $variant->id }}, this)"
-                                        class="wishlist-btn size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow cursor-pointer"
-                                        data-product-variant-id="{{ $variant->id }}">
-                                        <i data-feather="heart" class="size-4"></i>
-                                    </button>
+                                    @if($variant)
+                                        <button onclick="toggleWishlist({{ $variant->id }}, this)"
+                                            class="wishlist-btn size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow cursor-pointer"
+                                            data-product-variant-id="{{ $variant->id }}">
+                                            <i data-feather="heart" class="size-4"></i>
+                                        </button>
+                                    @endif
                                 </li>
-                                <li class="mt-1"><a href="{{ route('products.show', $variant->id) }}"
-                                        class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
-                                            data-feather="eye" class="size-4"></i></a></li>
+                                @if($variant)
+                                    <li class="mt-1"><a href="{{ route('products.show', $variant->id) }}"
+                                            class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
+                                                data-feather="eye" class="size-4"></i></a></li>
+                                @endif
                                 <li class="mt-1"><a href="javascript:void(0)"
                                         class="size-10 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-center rounded-full bg-white text-slate-900 hover:bg-slate-900 hover:text-white shadow"><i
                                             data-feather="bookmark" class="size-4"></i></a></li>
                             </ul>
                         </div>
                         <div class="mt-4">
-                            <a href="{{ route('products.show', $variant->id) }}" class="hover:text-orange-500 text-lg font-medium">{{ $product->name }}</a>
+                            @if($variant)
+                                <a href="{{ route('products.show', $variant->id) }}" class="hover:text-orange-500 text-lg font-medium">{{ $product->name }}</a>
+                            @else
+                                <span class="text-lg font-medium text-gray-500">{{ $product->name }}</span>
+                            @endif
                             <div class="flex justify-between items-center mt-1">
                                 <p>
                                     @if ($variant)
@@ -339,7 +371,11 @@
                             </div>
 
                             <div class="mt-4">
+                                @if($variant)
                                 <a href="{{ route('products.show', $variant->id) }}" class="hover:text-orange-500 text-lg font-medium">{{ $product->name }}</a>
+                            @else
+                                <span class="text-lg font-medium text-gray-500">{{ $product->name }}</span>
+                            @endif
                                 <div class="flex justify-between items-center mt-1">
                                     <p>
                                         @if ($variant)

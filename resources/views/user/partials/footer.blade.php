@@ -22,23 +22,25 @@
                             <div class="grid md:grid-cols-12 grid-cols-1">
                                 <div class="md:col-span-4">
                                     <ul class="list-none footer-list mt-6">
-                                        <li><a href="{{ route('products.list') }}?category=laptop" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Laptop</a></li>
-                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?category=mobile" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Điện thoại</a></li>
-                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?category=tablet" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Máy tính bảng</a></li>
-                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?category=accessory" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Phụ kiện</a></li>
-                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?category=smartwatch" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Đồng hồ thông minh</a></li>
-                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?category=audio" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Âm thanh</a></li>
+                                        @foreach($menuCategories->take(6) as $category)
+                                        <li class="{{ !$loop->first ? 'mt-[10px]' : '' }}">
+                                            <a href="{{ route('products.list') }}?category={{ urlencode($category->name) }}" class="text-gray-300 hover:text-orange-500 transition-all duration-500">
+                                                <i class="mdi mdi-chevron-right"></i> {{ $category->name }}
+                                            </a>
+                                        </li>
+                                        @endforeach
                                     </ul>
                                 </div>
 
                                 <div class="md:col-span-4">
                                     <ul class="list-none footer-list mt-6">
-                                        <li><a href="{{ route('products.list') }}?brand=Apple" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Apple</a></li>
-                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?brand=Samsung" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Samsung</a></li>
-                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?brand=Xiaomi" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Xiaomi</a></li>
-                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?brand=Dell" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Dell</a></li>
-                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?brand=HP" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> HP</a></li>
-                                        <li class="mt-[10px]"><a href="{{ route('products.list') }}?brand=Lenovo" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Lenovo</a></li>
+                                        @foreach($topBrands as $brand)
+                                        <li class="{{ !$loop->first ? 'mt-[10px]' : '' }}">
+                                            <a href="{{ route('products.list') }}?brand={{ urlencode($brand->name) }}" class="text-gray-300 hover:text-orange-500 transition-all duration-500">
+                                                <i class="mdi mdi-chevron-right"></i> {{ $brand->name }}
+                                            </a>
+                                        </li>
+                                        @endforeach
                                     </ul>
                                 </div>
 

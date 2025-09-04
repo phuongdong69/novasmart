@@ -15,14 +15,13 @@ class HomeController extends Controller
         // Lấy sản phẩm mới nhất có biến thể có sẵn
         $products = Product::with(['thumbnails', 'variants' => function($q) {
             $q->where('quantity', '>', 0);
-        }])
+        }, 'ratings'])
         ->whereHas('variants', function($q) {
             $q->where('quantity', '>', 0);
         })
         ->latest()
         ->take(8)
         ->get();
-        $products = Product::with(['thumbnails', 'variants', 'ratings'])->latest()->take(8)->get();
         
         // Lấy id các status đơn hàng hợp lệ
         $statusCodes = ['completed', 'delivered', 'confirmed'];

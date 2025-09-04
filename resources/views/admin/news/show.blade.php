@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-
+@section('title', 'Chi tiết tin tức')
 @section('content')
 <div class="w-full px-6 py-6 mx-auto">
     <div class="flex flex-wrap -mx-3">
