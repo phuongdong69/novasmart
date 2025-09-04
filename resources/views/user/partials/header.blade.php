@@ -25,72 +25,6 @@
 
                     @include('user.partials.mega-menu')
 
-                    <li class="has-submenu parent-parent-menu-item">
-                        <a href="javascript:void(0)">Thông tin</a><span class="menu-arrow"></span>
-                        <ul class="submenu">
-                            <li><a href="{{ route('about') }}" class="sub-menu-item">Về chúng tôi</a></li>
-
-                            <li class="has-submenu parent-menu-item">
-                                <a href="javascript:void(0)">Tài khoản của tôi</a><span class="submenu-arrow"></span>
-                                <ul class="submenu">
-                                    <li><a href="user-account.html" class="sub-menu-item">Tài khoản người dùng</a></li>
-                                    <li><a href="user-billing.html" class="sub-menu-item">Hóa đơn</a></li>
-                                    <li><a href="user-payment.html" class="sub-menu-item">Thanh toán</a></li>
-                                    <li><a href="user-invoice.html" class="sub-menu-item">Đơn hàng</a></li>
-                                    <li><a href="user-social.html" class="sub-menu-item">Mạng xã hội</a></li>
-                                    <li><a href="user-notification.html" class="sub-menu-item">Thông báo</a></li>
-                                    <li><a href="user-setting.html" class="sub-menu-item">Cài đặt</a></li>
-                                </ul>
-                            </li>
-
-                            <li class="has-submenu parent-menu-item">
-                                <a href="javascript:void(0)">Mẫu Email</a><span class="submenu-arrow"></span>
-                                <ul class="submenu">
-                                    <li><a href="email-confirmation.html" class="sub-menu-item">Xác nhận</a></li>
-                                    <li><a href="email-cart.html" class="sub-menu-item">Giỏ hàng</a></li>
-                                    <li><a href="email-offers.html" class="sub-menu-item">Ưu đãi</a></li>
-                                    <li><a href="email-order-success.html" class="sub-menu-item">Đặt hàng thành công</a>
-                                    </li>
-                                    <li><a href="email-gift-voucher.html" class="sub-menu-item">Phiếu quà tặng</a></li>
-                                    <li><a href="email-reset-password.html" class="sub-menu-item">Đặt lại mật khẩu</a>
-                                    </li>
-                                    <li><a href="email-item-review.html" class="sub-menu-item">Đánh giá sản phẩm</a></li>
-                                </ul>
-                            </li>
-
-                            <li><a href="{{ route('news.index') }}" class="sub-menu-item">Tin tức</a></li>
-
-                            <li><a href="career.html" class="sub-menu-item">Tuyển dụng</a></li>
-
-                            <li class="has-submenu parent-menu-item">
-                                <a href="javascript:void(0)">Trung tâm trợ giúp</a><span class="submenu-arrow"></span>
-                                <ul class="submenu">
-                                    <li><a href="helpcenter.html" class="sub-menu-item">Tổng quan</a></li>
-                                    <li><a href="helpcenter-faqs.html" class="sub-menu-item">Câu hỏi thường gặp</a></li>
-                                    <li><a href="helpcenter-guides.html" class="sub-menu-item">Hướng dẫn</a></li>
-                                    <li><a href="helpcenter-support.html" class="sub-menu-item">Hỗ trợ</a></li>
-                                </ul>
-                            </li>
-
-                            <li class="has-submenu parent-menu-item">
-                                <a href="javascript:void(0)">Trang xác thực</a><span class="submenu-arrow"></span>
-                                <ul class="submenu">
-                                    <li><a href="login.html" class="sub-menu-item">Đăng nhập</a></li>
-                                    <li><a href="signup.html" class="sub-menu-item">Đăng ký</a></li>
-                                    <li><a href="forgot-password.html" class="sub-menu-item">Quên mật khẩu</a></li>
-                                    <li><a href="lock-screen.html" class="sub-menu-item">Khóa màn hình</a></li>
-                                </ul>
-                            </li>
-
-                            <li class="has-submenu parent-menu-item">
-                                <a href="javascript:void(0)">Tiện ích</a><span class="submenu-arrow"></span>
-                                <ul class="submenu">
-                                    <li><a href="terms.html" class="sub-menu-item">Điều khoản dịch vụ</a></li>
-                                    <li><a href="privacy.html" class="sub-menu-item">Chính sách bảo mật</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
 
 
                     <li><a href="{{ route('news.index') }}" class="sub-menu-item">Tin tức</a></li>
@@ -99,11 +33,8 @@
                 </ul>
             </div>
         </div>
-        <ul class="buy-button list-none mb-0 flex items-center">
+        <ul class="buy-button list-none mb-0 flex items-center space-x-2">
             <li class="dropdown inline-block relative pe-1">
-                <button data-dropdown-toggle="dropdown" class="dropdown-toggle align-middle inline-flex" type="button">
-                    <i data-feather="search" class="size-5"></i>
-                </button>
                 <!-- Dropdown menu -->
                 <div class="dropdown-menu absolute overflow-hidden end-0 m-0 mt-5 z-10 md:w-52 w-48 rounded-md bg-white dark:bg-slate-900 shadow-sm dark:shadow-gray-800 hidden"
                     onclick="event.stopPropagation();">
@@ -116,7 +47,7 @@
                 </div>
             </li>
 
-            <li class="dropdown inline-block relative ps-0.5">
+            <li class="dropdown inline-block relative ps-2">
                 <button data-dropdown-toggle="dropdown"
                     class="dropdown-toggle size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full bg-orange-500 border border-orange-500 text-white"
                     type="button">
@@ -188,7 +119,7 @@
                 </div>
             </li>
 
-            <li class="dropdown inline-block relative ps-0.5">
+            <li class="dropdown inline-block relative ps-2">
                 <button data-dropdown-toggle="wishlist-dropdown"
                     class="dropdown-toggle size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full bg-orange-500 text-white relative"
                     type="button">
@@ -225,7 +156,7 @@
 
             <!-- Nếu đã đăng nhập thì hiển thị avatar -->
             @auth
-                <li class="dropdown inline-block relative ps-0.5">
+                <li class="dropdown inline-block relative ps-2">
                     <button data-dropdown-toggle="dropdown" class="dropdown-toggle items-center" type="button">
                         <span
                             class="size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full border border-orange-500 bg-orange-500 text-white">
@@ -285,16 +216,20 @@
 
             <!-- Nếu chưa đăng nhập thì hiển thị Sign in / Sign up -->
             @guest
-                <button onclick="window.location.href='{{ route('login') }}'"
-                    class="px-4 py-2 inline-flex items-center justify-center gap-2 tracking-wide align-middle duration-500 text-sm text-center rounded-full bg-orange-500 hover:bg-orange-600 border border-orange-500 text-white hover:scale-105 transition-all">
-                    <i data-feather="log-in" class="h-4 w-4"></i>
-                    Đăng nhập
-                </button>
-                <button onclick="window.location.href='{{ route('register') }}'"
-                    class="px-4 py-2 inline-flex items-center justify-center gap-2 tracking-wide align-middle duration-500 text-sm text-center rounded-full bg-orange-500 hover:bg-orange-600 border border-orange-500 text-white hover:scale-105 transition-all">
-                    <i data-feather="user-plus" class="h-4 w-4"></i>
-                    Đăng ký
-                </button>
+                <li class="ml-2">
+                    <button onclick="window.location.href='{{ route('login') }}'"
+                        class="px-4 py-2 inline-flex items-center justify-center gap-2 tracking-wide align-middle duration-500 text-sm text-center rounded-full bg-orange-500 hover:bg-orange-600 border border-orange-500 text-white hover:scale-105 transition-all">
+                        <i data-feather="log-in" class="h-4 w-4"></i>
+                        Đăng nhập
+                    </button>
+                </li>
+                <li class="ml-2">
+                    <button onclick="window.location.href='{{ route('register') }}'"
+                        class="px-4 py-2 inline-flex items-center justify-center gap-2 tracking-wide align-middle duration-500 text-sm text-center rounded-full bg-orange-500 hover:bg-orange-600 border border-orange-500 text-white hover:scale-105 transition-all">
+                        <i data-feather="user-plus" class="h-4 w-4"></i>
+                        Đăng ký
+                    </button>
+                </li>
             @endguest
 
         </ul>
