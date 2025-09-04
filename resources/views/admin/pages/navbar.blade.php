@@ -11,7 +11,7 @@
           {{ $pageTitle ?? 'Dashboard' }}
         </li>
       </ol>
-      <h3 class="mb-0 font-bold text-white capitalize">{{ $pageTitle ?? 'Dashboard' }}</h3>
+      
     </nav>
 
     <div class="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">

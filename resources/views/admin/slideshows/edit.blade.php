@@ -90,15 +90,13 @@
                             </label>
                         </div>
 
-                        <div class="flex gap-3">
-                            <button type="submit" 
-                                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150"
-                                    style="background-color: #2563eb !important; color: white !important;">
-                                <i class="fas fa-save mr-2"></i> Cập nhật
+                        <div class="flex justify-end gap-4">
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-6 rounded">
+                                Lưu thay đổi
                             </button>
-                            <a href="{{ route('admin.slideshows.index') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                                <i class="fas fa-arrow-left mr-2"></i> Quay lại
+                            <a href="{{ route('admin.slideshows.index') }}"
+                                class="border border-slate-400 text-slate-700 hover:bg-slate-100 hover:text-slate-900 text-sm font-medium py-2 px-6 rounded transition-all duration-150">
+                                Quay lại
                             </a>
                         </div>
                     </form>
