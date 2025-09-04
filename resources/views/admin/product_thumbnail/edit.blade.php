@@ -35,9 +35,14 @@
             <label for="sort_order" class="block font-medium mb-1">Thứ tự</label>
             <input type="number" class="w-full border rounded px-3 py-2" id="sort_order" name="sort_order" value="{{ $thumbnail->sort_order }}">
         </div>
-        <div class="flex gap-2">
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Cập nhật</button>
-            <a href="{{ route('admin.product_thumbnail.index') }}" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">Quay lại</a>
+        <div class="flex justify-end gap-4">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-6 rounded">
+                Cập nhật
+            </button>
+            <a href="{{ route('admin.product_thumbnail.index') }}"
+                class="border border-slate-400 text-slate-700 hover:bg-slate-100 hover:text-slate-900 text-sm font-medium py-2 px-6 rounded transition-all duration-150">
+                Quay lại
+            </a>
         </div>
     </form>
 </div>
