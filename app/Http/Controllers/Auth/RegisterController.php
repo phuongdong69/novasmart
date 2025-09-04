@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
+use App\Models\Status;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
@@ -44,15 +45,19 @@ class RegisterController extends Controller
             ]);
         }
 
+        $status = Status::where('code', 'active')   // lấy theo code
+            ->where('type', 'user')                 // chỉ lấy loại user
+            ->first();
+
         User::create([
-            'role_id' => $role->id,
-            'name' => $validatedData['fullname'],
-            'email' => $validatedData['email'],
-            'password' => Hash::make($validatedData['password']),
+            'role_id'     => $role->id,
+            'name'        => $validatedData['fullname'],
+            'email'       => $validatedData['email'],
+            'password'    => Hash::make($validatedData['password']),
             'phoneNumber' => $validatedData['phone'],
-             'status_id' => 12, 
-            'image_user' => null,
-            'address' => null,
+            'status_id'   => $status?->id,  // gán đúng id trạng thái "Tài khoản đang hoạt động"
+            'image_user'  => null,
+            'address'     => null,
         ]);
 
         return redirect()->route('login')->with('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
