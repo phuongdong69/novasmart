@@ -40,6 +40,7 @@ class StoreProductRequest extends FormRequest
             'variants.*.sku' => 'required_with:variants|string|max:255|distinct|unique:product_variants,sku',
             'variants.*.price' => 'required_with:variants|numeric|min:0',
             'variants.*.quantity' => 'required_with:variants|integer|min:0',
+            'variants.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
             'variants.*.status' => 'nullable|string|max:50',
 
             // Validate thuộc tính cho từng biến thể (nếu có)

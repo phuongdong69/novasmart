@@ -1,0 +1,87 @@
+{
+  "database_layout": {
+    "canvas_size": {
+      "width": 1400,
+      "height": 900
+    },
+    "groups": {
+      "auth": {
+        "position": { "x": 50, "y": 50 },
+        "color": "#E3F2FD",
+        "tables": {
+          "users": { "x": 100, "y": 100 },
+          "roles": { "x": 100, "y": 50 },
+          "statuses": { "x": 100, "y": 200 }
+        }
+      },
+      "products": {
+        "position": { "x": 350, "y": 50 },
+        "color": "#F3E5F5",
+        "tables": {
+          "categories": { "x": 400, "y": 50 },
+          "brands": { "x": 550, "y": 50 },
+          "origins": { "x": 700, "y": 50 },
+          "products": { "x": 400, "y": 150 },
+          "product_variants": { "x": 400, "y": 250 },
+          "product_thumbnails": { "x": 550, "y": 250 }
+        }
+      },
+      "attributes": {
+        "position": { "x": 850, "y": 50 },
+        "color": "#E8F5E8",
+        "tables": {
+          "attributes": { "x": 900, "y": 100 },
+          "attribute_values": { "x": 900, "y": 200 },
+          "variant_attribute_values": { "x": 900, "y": 300 }
+        }
+      },
+      "commerce": {
+        "position": { "x": 50, "y": 400 },
+        "color": "#FFF3E0",
+        "tables": {
+          "carts": { "x": 100, "y": 450 },
+          "cart_items": { "x": 250, "y": 450 },
+          "orders": { "x": 100, "y": 550 },
+          "order_details": { "x": 250, "y": 550 },
+          "payments": { "x": 100, "y": 650 }
+        }
+      },
+      "features": {
+        "position": { "x": 750, "y": 400 },
+        "color": "#FCE4EC",
+        "tables": {
+          "vouchers": { "x": 800, "y": 450 },
+          "product_returns": { "x": 800, "y": 550 },
+          "wishlists": { "x": 950, "y": 450 },
+          "likes": { "x": 950, "y": 550 }
+        }
+      },
+      "content_logs": {
+        "position": { "x": 350, "y": 700 },
+        "color": "#F1F8E9",
+        "tables": {
+          "news": { "x": 400, "y": 750 },
+          "slideshows": { "x": 400, "y": 850 },
+          "comments": { "x": 550, "y": 750 },
+          "ratings": { "x": 550, "y": 850 },
+          "status_logs": { "x": 700, "y": 750 },
+          "refunds": { "x": 700, "y": 850 },
+          "order_cancellations": { "x": 850, "y": 750 }
+        }
+      }
+    },
+    "relationships": {
+      "primary_flows": [
+        "users → orders → order_details",
+        "products → product_variants → cart_items",
+        "categories → products → wishlists",
+        "orders → product_returns → refunds"
+      ],
+      "secondary_flows": [
+        "statuses → (users, products, orders, vouchers)",
+        "attributes → attribute_values → variant_attribute_values",
+        "users → (carts, wishlists, likes, comments)"
+      ]
+    }
+  }
+}

@@ -15,7 +15,7 @@ class DashBoardController extends Controller
 {
     private function getDateRange($period, $customStart = null, $customEnd = null)
     {
-        if ($period === 'custom' && $customStart && $customEnd) {
+        if ($customStart && $customEnd) {
             return [
                 Carbon::parse($customStart)->startOfDay(),
                 Carbon::parse($customEnd)->endOfDay()
@@ -133,8 +133,7 @@ class DashBoardController extends Controller
             ->get();
 
         // Top order mới nhất (theo orders filter)
-        $latestOrders = Order::with(['user', 'orderStatus'])
-            ->whereBetween('orders.created_at', [$ordersStartDate, $ordersEndDate])
+        $latestOrders = Order::with(['user', 'orderStatus', 'orderDetails.productVariant.product'])
             ->orderByDesc('orders.created_at')
             ->take(5)
             ->get();
@@ -157,19 +156,90 @@ class DashBoardController extends Controller
         $latestOrdersChartLabels = $latestOrders->pluck('order_code')->toArray();
         $latestOrdersChartData = $latestOrders->pluck('total_price')->toArray();
 
-        // Chuẩn bị dữ liệu cho biểu đồ doanh thu theo ngày
-        $revenueChartData = Order::join('statuses', 'orders.status_id', '=', 'statuses.id')
-            ->whereBetween('orders.created_at', [$revenueStartDate, $revenueEndDate])
-            ->whereIn('statuses.code', ['confirmed', 'delivered', 'completed'])
-            ->selectRaw('DATE(orders.created_at) as date, SUM(orders.total_price) as daily_revenue')
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
-        
-        $revenueChartLabels = $revenueChartData->pluck('date')->map(function($date) {
-            return \Carbon\Carbon::parse($date)->format('d/m');
+        // Chuẩn bị JSON chi tiết đơn hàng cho popup
+        $latestOrdersJson = $latestOrders->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'code' => $order->order_code,
+                'customer' => $order->user->name ?? '-',
+                'total' => $order->total_price,
+                'status' => $order->orderStatus->name ?? '-',
+                'created_at' => $order->created_at ? $order->created_at->format('d/m/Y H:i') : '-',
+                'items' => $order->orderDetails->map(function ($detail) {
+                    $variant = $detail->productVariant;
+                    return [
+                        'product' => $variant->product->name ?? '-',
+                        'variant' => $variant->name ?? '-',
+                        'quantity' => $detail->quantity,
+                        'price' => $detail->price,
+                    ];
+                })->toArray(),
+            ];
         })->toArray();
-        $revenueChartValues = $revenueChartData->pluck('daily_revenue')->toArray();
+
+        // Chuẩn bị dữ liệu cho biểu đồ doanh thu
+        $revenueQuery = Order::join('statuses', 'orders.status_id', '=', 'statuses.id')
+            ->whereBetween('orders.created_at', [$revenueStartDate, $revenueEndDate])
+            ->whereIn('statuses.code', ['confirmed', 'delivered', 'completed']);
+
+        // Chuẩn bị dữ liệu biểu đồ dựa vào period
+        switch ($revenuePeriod) {
+            case 'year':
+                // Gộp theo năm (label: YYYY)
+                $revenueChartData = $revenueQuery
+                    ->selectRaw('YEAR(orders.created_at) as period, SUM(orders.total_price) as total_revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+
+                $revenueChartLabels = $revenueChartData->pluck('period')->map(fn($y) => (string) $y)->toArray();
+                $revenueChartValues = $revenueChartData->pluck('total_revenue')->toArray();
+                break;
+            case 'quarter':
+                // Gộp theo quý (label: Qn/YYYY)
+                $revenueChartData = $revenueQuery
+                    ->selectRaw('YEAR(orders.created_at) as year, QUARTER(orders.created_at) as q, SUM(orders.total_price) as total_revenue')
+                    ->groupByRaw('year, q')
+                    ->orderByRaw('year, q')
+                    ->get();
+
+                $revenueChartLabels = $revenueChartData->map(fn($row) => 'Q' . $row->q . '/' . $row->year)->toArray();
+                $revenueChartValues = $revenueChartData->pluck('total_revenue')->toArray();
+                break;
+            case 'month':
+                // Gộp theo tháng (label: mm/YYYY)
+                $revenueChartData = $revenueQuery
+                    ->selectRaw('DATE_FORMAT(orders.created_at, "%Y-%m") as period, SUM(orders.total_price) as total_revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+
+                $revenueChartLabels = $revenueChartData->pluck('period')->map(fn($p) => \Carbon\Carbon::createFromFormat('Y-m', $p)->format('m/Y'))->toArray();
+                $revenueChartValues = $revenueChartData->pluck('total_revenue')->toArray();
+                break;
+            case 'week':
+                // Gộp theo tuần (label: Tuần n/YYYY)
+                $revenueChartData = $revenueQuery
+                    ->selectRaw('YEAR(orders.created_at) as year, WEEK(orders.created_at, 3) as w, SUM(orders.total_price) as total_revenue')
+                    ->groupByRaw('year, w')
+                    ->orderByRaw('year, w')
+                    ->get();
+
+                $revenueChartLabels = $revenueChartData->map(fn($row) => 'Tuần ' . $row->w . '/' . $row->year)->toArray();
+                $revenueChartValues = $revenueChartData->pluck('total_revenue')->toArray();
+                break;
+            default:
+                // today & custom -> gộp theo ngày (label: dd/mm)
+                $revenueChartData = $revenueQuery
+                    ->selectRaw('DATE(orders.created_at) as period, SUM(orders.total_price) as total_revenue')
+                    ->groupBy('period')
+                    ->orderBy('period')
+                    ->get();
+
+                $revenueChartLabels = $revenueChartData->pluck('period')->map(fn($date) => \Carbon\Carbon::parse($date)->format('d/m'))->toArray();
+                $revenueChartValues = $revenueChartData->pluck('total_revenue')->toArray();
+                break;
+        }
 
         return view('admin.dashboard', compact(
             'revenue', 'topUsers', 'topProducts', 'latestOrders', 'newCustomers', 'totalOrders',
@@ -179,7 +249,7 @@ class DashBoardController extends Controller
             'ordersPeriod', 'ordersStart', 'ordersEnd',
             'topUsersChartLabels', 'topUsersChartData',
             'topProductsChartLabels', 'topProductsChartData',
-            'latestOrdersChartLabels', 'latestOrdersChartData',
+            'latestOrdersChartLabels', 'latestOrdersChartData', 'latestOrdersJson',
             'revenueChartLabels', 'revenueChartValues'
         ))->with('title', 'Dashboard');
     }

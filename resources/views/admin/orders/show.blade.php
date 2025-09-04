@@ -86,6 +86,7 @@
                     </div>
                     <div class="flex items-center py-2 border-b last:border-b-0">
                         <span class="text-gray-600 font-medium w-2/5 text-left">Trạng thái:</span>
+
                         <span class="w-3/5 text-left flex items-center gap-2">
                             @php
                                 $orderStatuses = \App\Models\Status::where('type', 'order')
@@ -115,6 +116,10 @@
                                 style="display: inline-block; padding: 6px 12px; background-color: {{ $currentStatus?->color ?? '#6b7280' }}; color: white; border-radius: 4px; font-size: 12px; font-weight: 500; min-width: 80px;">
                                 {{ $currentStatus?->name ?? 'Chưa có trạng thái' }}
                             </span>
+                            @if (!empty($order->cancel_reason))
+                                 Lý do: ( {{ $order->cancel_reason }} )
+                            @endif
+
                             @if (!$isCompleted && !$isDelivered && $nextStatus && !($currentStatus && $currentStatus->code === 'cancelled'))
                                 <form action="{{ route('admin.orders.update_status', $order->id) }}" method="POST"
                                     style="display:inline-block; margin-left:10px;">
@@ -132,6 +137,7 @@
                                     </button>
                                 </form>
                             @endif
+
                             <button type="button" onclick="showOrderStatusLogModalUnique()"
                                 class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs font-semibold"
                                 style="margin-left:100px;">Xem lịch sử</button>

@@ -35,6 +35,9 @@
                 
                 <!-- Các nút lọc thời gian -->
                 <div class="flex flex-wrap gap-2">
+                    <button onclick="setRevenuePeriod('today')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($revenuePeriod ?? 'week') == 'today' ? 'background-color: #f59e0b; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #fde68a; color: #92400e; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Ngày
+                    </button>
                     <button onclick="setRevenuePeriod('week')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($revenuePeriod ?? 'week') == 'week' ? 'background-color: #f59e0b; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #fde68a; color: #92400e; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
                         Tuần
                     </button>
@@ -121,6 +124,9 @@
                 
                 <!-- Các nút lọc thời gian -->
                 <div class="flex flex-wrap gap-2">
+                    <button onclick="setUsersPeriod('today')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($usersPeriod ?? 'week') == 'today' ? 'background-color: #3b82f6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #bfdbfe; color: #1e40af; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Ngày
+                    </button>
                     <button onclick="setUsersPeriod('week')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($usersPeriod ?? 'week') == 'week' ? 'background-color: #3b82f6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #bfdbfe; color: #1e40af; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
                         Tuần
                     </button>
@@ -214,6 +220,9 @@
                 
                 <!-- Các nút lọc thời gian -->
                 <div class="flex flex-wrap gap-2">
+                    <button onclick="setProductsPeriod('today')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($productsPeriod ?? 'week') == 'today' ? 'background-color: #10b981; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #a7f3d0; color: #065f46; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Ngày
+                    </button>
                     <button onclick="setProductsPeriod('week')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($productsPeriod ?? 'week') == 'week' ? 'background-color: #10b981; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #a7f3d0; color: #065f46; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
                         Tuần
                     </button>
@@ -285,10 +294,10 @@
                 <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
                     <i class="fas fa-shopping-cart text-purple-600"></i>
                 </div>
-                <h2 class="text-xl font-semibold text-gray-800">Top Order Mới Nhất</h2>
+                <h2 class="text-xl font-semibold text-gray-800">5 Đơn Hàng Mới Nhất</h2>
             </div>
-            <!-- Bộ lọc cho orders -->
-            <div class="flex flex-wrap items-center gap-2">
+            <!-- Bộ lọc cho orders (đã ẩn) -->
+            <div class="flex flex-wrap items-center gap-2 hidden">
                 <!-- Giữ các filter khác -->
                 <form method="GET" action="{{ route('admin.dashboard') }}" class="hidden" id="orders-form">
                     <input type="hidden" name="revenue_period" value="{{ $revenuePeriod ?? 'week' }}">
@@ -307,6 +316,9 @@
                 
                 <!-- Các nút lọc thời gian -->
                 <div class="flex flex-wrap gap-2">
+                    <button onclick="setOrdersPeriod('today')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($ordersPeriod ?? 'week') == 'today' ? 'background-color: #8b5cf6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #ddd6fe; color: #5b21b6; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
+                        Ngày
+                    </button>
                     <button onclick="setOrdersPeriod('week')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200" style="{{ ($ordersPeriod ?? 'week') == 'week' ? 'background-color: #8b5cf6; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);' : 'background-color: #ddd6fe; color: #5b21b6; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);' }}">
                         Tuần
                     </button>
@@ -338,9 +350,9 @@
                 </div>
             </div>
         </div>
-        <!-- Biểu đồ cột Latest Orders -->
+        <!-- Biểu đồ cột Latest Orders (đã ẩn) -->
         <div class="mb-6">
-            <canvas id="latestOrdersChart" width="400" height="200"></canvas>
+            <canvas id="latestOrdersChart" class="hidden" width="400" height="200"></canvas>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
@@ -356,7 +368,7 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($latestOrders as $order)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ $order->order_code }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium"><a href="{{ route('admin.orders.show', $order->id) }}" class="text-violet-600 hover:underline">{{ $order->order_code }}</a></td>
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ $order->user->name ?? '-' }}</td>
                             <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-green-600">{{ number_format($order->total_price, 0, ',', '.') }} ₫</td>
                             <td class="px-4 py-3 whitespace-nowrap">
@@ -384,13 +396,20 @@
     </div>
 </div>
 
+<!-- Modal chi tiết đơn hàng -->
+<div id="orderDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000] opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-white w-full max-w-xl p-6 rounded-lg relative shadow-lg z-[1010]">
+        <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onclick="closeOrderModal()">&times;</button>
+        <div id="orderDetailContent" class="max-h-[70vh] overflow-y-auto"></div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // Revenue section functions
     function setRevenuePeriod(period) {
         document.getElementById('revenue-period-input').value = period;
-        document.getElementById('revenue-start-input').value = '';
-        document.getElementById('revenue-end-input').value = '';
+        // Không reset ngày, cho phép kết hợp với bộ lọc thời gian tuỳ chỉnh
         document.getElementById('revenue-form').submit();
     }
 
@@ -398,7 +417,7 @@
         const startDate = document.getElementById('revenue-start-date').value;
         const endDate = document.getElementById('revenue-end-date').value;
         if (startDate && endDate) {
-            document.getElementById('revenue-period-input').value = 'custom';
+            // Giữ nguyên period hiện tại để dùng làm đơn vị gộp
             document.getElementById('revenue-start-input').value = startDate;
             document.getElementById('revenue-end-input').value = endDate;
             document.getElementById('revenue-form').submit();
@@ -410,8 +429,6 @@
     // Users section functions
     function setUsersPeriod(period) {
         document.getElementById('users-period-input').value = period;
-        document.getElementById('users-start-input').value = '';
-        document.getElementById('users-end-input').value = '';
         document.getElementById('users-form').submit();
     }
 
@@ -419,7 +436,6 @@
         const startDate = document.getElementById('users-start-date').value;
         const endDate = document.getElementById('users-end-date').value;
         if (startDate && endDate) {
-            document.getElementById('users-period-input').value = 'custom';
             document.getElementById('users-start-input').value = startDate;
             document.getElementById('users-end-input').value = endDate;
             document.getElementById('users-form').submit();
@@ -431,8 +447,6 @@
     // Products section functions
     function setProductsPeriod(period) {
         document.getElementById('products-period-input').value = period;
-        document.getElementById('products-start-input').value = '';
-        document.getElementById('products-end-input').value = '';
         document.getElementById('products-form').submit();
     }
 
@@ -440,7 +454,6 @@
         const startDate = document.getElementById('products-start-date').value;
         const endDate = document.getElementById('products-end-date').value;
         if (startDate && endDate) {
-            document.getElementById('products-period-input').value = 'custom';
             document.getElementById('products-start-input').value = startDate;
             document.getElementById('products-end-input').value = endDate;
             document.getElementById('products-form').submit();
@@ -452,8 +465,6 @@
     // Orders section functions
     function setOrdersPeriod(period) {
         document.getElementById('orders-period-input').value = period;
-        document.getElementById('orders-start-input').value = '';
-        document.getElementById('orders-end-input').value = '';
         document.getElementById('orders-form').submit();
     }
 
@@ -461,7 +472,6 @@
         const startDate = document.getElementById('orders-start-date').value;
         const endDate = document.getElementById('orders-end-date').value;
         if (startDate && endDate) {
-            document.getElementById('orders-period-input').value = 'custom';
             document.getElementById('orders-start-input').value = startDate;
             document.getElementById('orders-end-input').value = endDate;
             document.getElementById('orders-form').submit();
@@ -516,7 +526,7 @@
                 x: {
                     title: {
                         display: true,
-                        text: 'Ngày'
+                        text: 'Doanh thu'
                     }
                 }
             },
@@ -543,7 +553,55 @@
     // Dữ liệu cho biểu đồ Latest Orders
     const latestOrdersLabels = @json($latestOrdersChartLabels ?? []);
     const latestOrdersData = @json($latestOrdersChartData ?? []);
+    const latestOrdersDetail = @json($latestOrdersJson ?? []);
 
+    window.showOrderDetail = function(code) {
+        const order = latestOrdersDetail.find(o => String(o.code) === String(code));
+        console.log('showOrderDetail lookup result', order);
+        if (!order) { alert('Không tìm thấy chi tiết đơn hàng'); return; }
+        const modal = document.getElementById('orderDetailModal');
+        const content = document.getElementById('orderDetailContent');
+        let html = `<h3 class=\"text-lg font-semibold mb-4\">Chi tiết đơn ${code}</h3>`;
+        html += `<p><strong>Khách hàng:</strong> ${order.customer}</p>`;
+        html += `<p><strong>Tổng tiền:</strong> ${new Intl.NumberFormat('vi-VN').format(order.total)} ₫</p>`;
+        html += `<p><strong>Trạng thái:</strong> ${order.status}</p>`;
+        html += `<p><strong>Ngày tạo:</strong> ${order.created_at}</p>`;
+        html += '<h4 class=\"font-semibold mt-4 mb-2\">Sản phẩm</h4>';
+        html += '<ul class=\"list-disc pl-5 space-y-1\">';
+        order.items.forEach(item => {
+            const price = new Intl.NumberFormat('vi-VN').format(item.price);
+            html += `<li>${item.product} - ${item.variant} (x${item.quantity}) - ${price} ₫</li>`;
+        });
+        html += '</ul>';
+        content.innerHTML = html;
+        if (!document.body.contains(modal)) document.body.appendChild(modal);
+        modal.style.zIndex = '9999';
+        modal.classList.remove('pointer-events-none');
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        modal.style.display = 'flex';
+    }
+    // Delegated click listener for order code links
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('.order-code-link');
+        if (target) {
+            console.log('Clicked order code link', target.dataset.code);
+            const code = target.dataset.code;
+            showOrderDetail(code);
+        }
+    });
+
+    window.closeOrderModal = function() {
+        const modal = document.getElementById('orderDetailModal');
+        modal.classList.add('pointer-events-none');
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
+        modal.style.opacity = '0';
+        modal.style.display = 'none';
+    }
+
+    
     // Biểu đồ cột Top Users
     const topUsersCtx = document.getElementById('topUsersChart').getContext('2d');
     new Chart(topUsersCtx, {

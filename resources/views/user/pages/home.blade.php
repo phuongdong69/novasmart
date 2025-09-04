@@ -139,8 +139,7 @@
                         class="absolute inset-0 bg-[url('../../assets/images/hero/bg-shape.html')] bg-center bg-no-repeat bg-cover">
                     </div>
                     <div class="grid grid-cols-1 justify-center text-center relative z-1">
-                        <h3 class="text-4xl leading-normal tracking-wide font-bold text-white">Khuyến Mãi Cuối Mùa <br> Giảm
-                            Giá Lên Đến 30%</h3>
+                        <h3 class="text-4xl leading-normal tracking-wide font-bold text-white">Thả ga mua sắm với voucher : novasmart 
                         <div id="countdown" class="mt-6">
                             <ul class="count-down list-none inline-block space-x-1">
                                 <li id="days"

@@ -28,11 +28,12 @@
                             <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
                         @enderror
                     </div>
-                    <div class="mt-6">
-                        <button type="submit" class="inline-block rounded-lg bg-blue-500 px-8 py-3 text-center align-middle font-sans text-sm font-medium uppercase text-white shadow-md transition-all hover:bg-blue-600 hover:shadow-lg hover:opacity-[0.95] active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none dark:bg-blue-500 dark:text-white">
+                    <div class="flex justify-end gap-4">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-6 rounded">
                             Lưu thay đổi
                         </button>
-                        <a href="{{ route('admin.brands.index') }}" class="inline-block rounded-lg bg-gray-500 px-8 py-3 text-center align-middle font-sans text-sm font-medium uppercase text-white shadow-md transition-all hover:bg-gray-600 hover:shadow-lg hover:opacity-[0.95] active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none dark:bg-gray-500 dark:text-white">
+                        <a href="{{ route('admin.brands.index') }}"
+                            class="border border-slate-400 text-slate-700 hover:bg-slate-100 hover:text-slate-900 text-sm font-medium py-2 px-6 rounded transition-all duration-150">
                             Quay lại
                         </a>
                     </div>

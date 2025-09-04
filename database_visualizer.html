@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaSmart Database Schema Visualizer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .schema-canvas {
+            position: relative;
+            width: 1400px;
+            height: 900px;
+            border: 2px solid #ddd;
+            margin: 0 auto;
+            background: #f8f9fa;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        
+        .group {
+            position: absolute;
+            border: 2px dashed #999;
+            border-radius: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .group-label {
+            position: absolute;
+            top: -15px;
+            left: 10px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 12px;
+            color: #555;
+        }
+        
+        .table {
+            position: absolute;
+            background: white;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            min-width: 120px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: move;
+            transition: all 0.3s ease;
+        }
+        
+        .table:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        
+        .table-header {
+            background: #007bff;
+            color: white;
+            padding: 8px 12px;
+            font-weight: bold;
+            font-size: 14px;
+            border-radius: 6px 6px 0 0;
+        }
+        
+        .table-body {
+            padding: 8px 12px;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+        
+        .field {
+            margin: 2px 0;
+            color: #555;
+        }
+        
+        .primary-key {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .foreign-key {
+            color: #28a745;
+        }
+        
+        .connection {
+            position: absolute;
+            height: 2px;
+            background: #6c757d;
+            z-index: 1;
+            opacity: 0.6;
+        }
+        
+        .connection::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #6c757d;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+        }
+        
+        .auth { border-color: #2196F3; }
+        .auth .table-header { background: #2196F3; }
+        
+        .products { border-color: #9C27B0; }
+        .products .table-header { background: #9C27B0; }
+        
+        .attributes { border-color: #4CAF50; }
+        .attributes .table-header { background: #4CAF50; }
+        
+        .commerce { border-color: #FF9800; }
+        .commerce .table-header { background: #FF9800; }
+        
+        .features { border-color: #E91E63; }
+        .features .table-header { background: #E91E63; }
+        
+        .content-logs { border-color: #8BC34A; }
+        .content-logs .table-header { background: #8BC34A; }
+        
+        .legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        .stats {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ NovaSmart Database Schema</h1>
+        
+        <div class="schema-canvas" id="canvas">
+            <!-- Legend -->
+            <div class="legend">
+                <h4 style="margin-top: 0;">📋 Legend</h4>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2196F3;"></div>
+                    <span>Authentication & Users</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9C27B0;"></div>
+                    <span>Product Management</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4CAF50;"></div>
+                    <span>Attributes System</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FF9800;"></div>
+                    <span>Commerce & Orders</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #E91E63;"></div>
+                    <span>User Features</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #8BC34A;"></div>
+                    <span>Content & Logs</span>
+                </div>
+            </div>
+            
+            <!-- Groups will be generated by JavaScript -->
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">32+</div>
+                <div class="stat-label">Total Tables</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">6</div>
+                <div class="stat-label">Main Modules</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Relationships</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1</div>
+                <div class="stat-label">New Returns Table</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tables = {
+            // AUTH GROUP
+            users: {
+                x: 100, y: 100, group: 'auth',
+                fields: ['id (PK)', 'name', 'email', 'password', 'phone_number', 'image_user', 'gender', 'birthday', 'role_id (FK)', 'deleted_at', 'created_at', 'updated_at']
+            },
+            roles: {
+                x: 100, y: 50, group: 'auth',
+                fields: ['id (PK)', 'name', 'description', 'created_at', 'updated_at']
+            },
+            statuses: {
+                x: 100, y: 200, group: 'auth',
+                fields: ['id (PK)', 'name', 'type', 'description', 'created_at', 'updated_at']
+            },
+            
+            // PRODUCTS GROUP
+            categories: {
+                x: 400, y: 50, group: 'products',
+                fields: ['id (PK)', 'name', 'status_id (FK)', 'deleted_at', 'created_at', 'updated_at']
+            },
+            brands: {
+                x: 550, y: 50, group: 'products',
+                fields: ['id (PK)', 'name', 'category_id (FK)', 'status_id (FK)', 'created_at', 'updated_at']
+            },
+            origins: {
+                x: 700, y: 50, group: 'products',
+                fields: ['id (PK)', 'name', 'status_id (FK)', 'created_at', 'updated_at']
+            },
+            products: {
+                x: 400, y: 150, group: 'products',
+                fields: ['id (PK)', 'name', 'description', 'category_id (FK)', 'brand_id (FK)', 'origin_id (FK)', 'status_id (FK)', 'created_at', 'updated_at']
+            },
+            product_variants: {
+                x: 400, y: 250, group: 'products',
+                fields: ['id (PK)', 'product_id (FK)', 'sku', 'price', 'stock_quantity', 'status_id (FK)', 'created_at', 'updated_at']
+            },
+            product_thumbnails: {
+                x: 550, y: 250, group: 'products',
+                fields: ['id (PK)', 'product_id (FK)', 'image_path', 'is_primary', 'created_at', 'updated_at']
+            },
+            
+            // ATTRIBUTES GROUP
+            attributes: {
+                x: 900, y: 100, group: 'attributes',
+                fields: ['id (PK)', 'name', 'created_at', 'updated_at']
+            },
+            attribute_values: {
+                x: 900, y: 200, group: 'attributes',
+                fields: ['id (PK)', 'attribute_id (FK)', 'value', 'created_at', 'updated_at']
+            },
+            variant_attribute_values: {
+                x: 900, y: 300, group: 'attributes',
+                fields: ['id (PK)', 'variant_id (FK)', 'attr_value_id (FK)', 'created_at', 'updated_at']
+            },
+            
+            // COMMERCE GROUP
+            carts: {
+                x: 100, y: 450, group: 'commerce',
+                fields: ['id (PK)', 'user_id (FK)', 'created_at', 'updated_at']
+            },
+            cart_items: {
+                x: 250, y: 450, group: 'commerce',
+                fields: ['id (PK)', 'cart_id (FK)', 'variant_id (FK)', 'quantity', 'created_at', 'updated_at']
+            },
+            orders: {
+                x: 100, y: 550, group: 'commerce',
+                fields: ['id (PK)', 'user_id (FK)', 'voucher_id (FK)', 'payment_id (FK)', 'status_id (FK)', 'name', 'phoneNumber', 'email', 'address', 'total_price', 'discount_amount', 'order_code', 'cancel_reason', 'created_at', 'updated_at']
+            },
+            order_details: {
+                x: 250, y: 550, group: 'commerce',
+                fields: ['id (PK)', 'order_id (FK)', 'variant_id (FK)', 'quantity', 'price', 'created_at', 'updated_at']
+            },
+            payments: {
+                x: 100, y: 650, group: 'commerce',
+                fields: ['id (PK)', 'method', 'status', 'amount', 'transaction_id', 'created_at', 'updated_at']
+            },
+            
+            // FEATURES GROUP
+            vouchers: {
+                x: 800, y: 450, group: 'features',
+                fields: ['id (PK)', 'status_id (FK)', 'code', 'discount_type', 'discount_value', 'expired_at', 'quantity', 'created_at', 'updated_at']
+            },
+            product_returns: {
+                x: 800, y: 550, group: 'features',
+                fields: ['id (PK)', 'order_id (FK)', 'user_id (FK)', 'guest_name', 'guest_email', 'guest_phone', 'reason', 'status', 'refund_amount', 'return_type', 'admin_notes', 'processed_by (FK)', 'processed_at', 'created_at', 'updated_at']
+            },
+            wishlists: {
+                x: 950, y: 450, group: 'features',
+                fields: ['id (PK)', 'user_id (FK)', 'product_id (FK)', 'created_at', 'updated_at']
+            },
+            likes: {
+                x: 950, y: 550, group: 'features',
+                fields: ['id (PK)', 'user_id (FK)', 'product_id (FK)', 'created_at', 'updated_at']
+            },
+            
+            // CONTENT & LOGS GROUP
+            news: {
+                x: 400, y: 750, group: 'content-logs',
+                fields: ['id (PK)', 'title', 'slug', 'content', 'image', 'excerpt', 'status', 'published_at', 'author_id (FK)', 'product_link', 'created_at', 'updated_at']
+            },
+            slideshows: {
+                x: 400, y: 850, group: 'content-logs',
+                fields: ['id (PK)', 'title', 'image', 'link', 'order', 'is_active', 'created_at', 'updated_at']
+            },
+            comments: {
+                x: 550, y: 750, group: 'content-logs',
+                fields: ['id (PK)', 'user_id (FK)', 'order_id (FK)', 'content', 'created_at', 'updated_at']
+            },
+            ratings: {
+                x: 550, y: 850, group: 'content-logs',
+                fields: ['id (PK)', 'user_id (FK)', 'order_id (FK)', 'rating', 'review', 'created_at', 'updated_at']
+            },
+            status_logs: {
+                x: 700, y: 750, group: 'content-logs',
+                fields: ['id (PK)', 'loggable_type', 'loggable_id', 'status_id (FK)', 'user_id (FK)', 'note', 'created_at', 'updated_at']
+            },
+            refunds: {
+                x: 700, y: 850, group: 'content-logs',
+                fields: ['id (PK)', 'order_id (FK)', 'amount', 'reason', 'status', 'processed_by (FK)', 'processed_at', 'created_at', 'updated_at']
+            },
+            order_cancellations: {
+                x: 850, y: 750, group: 'content-logs',
+                fields: ['id (PK)', 'order_id (FK)', 'reason', 'cancelled_by (FK)', 'cancelled_at', 'created_at', 'updated_at']
+            }
+        };
+
+        function createTable(name, config) {
+            const table = document.createElement('div');
+            table.className = `table ${config.group}`;
+            table.style.left = config.x + 'px';
+            table.style.top = config.y + 'px';
+            table.id = name;
+
+            const header = document.createElement('div');
+            header.className = 'table-header';
+            header.textContent = name;
+
+            const body = document.createElement('div');
+            body.className = 'table-body';
+            
+            config.fields.forEach(field => {
+                const fieldDiv = document.createElement('div');
+                fieldDiv.className = 'field';
+                if (field.includes('(PK)')) {
+                    fieldDiv.className += ' primary-key';
+                } else if (field.includes('(FK)')) {
+                    fieldDiv.className += ' foreign-key';
+                }
+                fieldDiv.textContent = field;
+                body.appendChild(fieldDiv);
+            });
+
+            table.appendChild(header);
+            table.appendChild(body);
+            
+            return table;
+        }
+
+        function init() {
+            const canvas = document.getElementById('canvas');
+            
+            // Create all tables
+            Object.entries(tables).forEach(([name, config]) => {
+                const table = createTable(name, config);
+                canvas.appendChild(table);
+            });
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
