@@ -179,8 +179,8 @@
             </table>
         </div>
 
-        <div class="mt-4">
-            {{ $orders->appends(request()->except('page'))->links() }}
+        <div class="mt-6">
+            {{ $orders->onEachSide(1)->links('pagination::tailwind-right') }}
         </div>
     </div>
 @endsection

@@ -17,7 +17,7 @@ class StatusSeeder extends Seeder
         DB::table('statuses')->delete();
         DB::statement('ALTER TABLE statuses AUTO_INCREMENT = 1');
 
-        // Chèn đúng 19 bản ghi như ảnh
+        // Chèn 23 bản ghi chuẩn hóa cho các loại status
         DB::table('statuses')->insert([
             // 1-2: product
             ['id' => 1,  'name' => 'Kích hoạt',        'code' => 'active',    'type' => 'product',        'color' => '#22c55e', 'priority' => 1, 'is_active' => 1, 'description' => 'Đang hoạt động',           'created_at' => '2025-07-22 16:36:27', 'updated_at' => '2025-07-22 16:36:27'],
@@ -36,9 +36,9 @@ class StatusSeeder extends Seeder
             ['id' => 10, 'name' => 'Còn hàng',         'code' => 'in_stock',  'type' => 'product_variant', 'color' => '#22c55e', 'priority' => 1, 'is_active' => 1, 'description' => 'Sản phẩm còn hàng',       'created_at' => '2025-07-22 16:36:27', 'updated_at' => '2025-07-22 16:36:27'],
             ['id' => 11, 'name' => 'Hết hàng',         'code' => 'out_of_stock', 'type' => 'product_variant', 'color' => '#ef4444', 'priority' => 2, 'is_active' => 1, 'description' => 'Sản phẩm hết hàng',     'created_at' => '2025-07-22 16:36:27', 'updated_at' => '2025-07-22 16:36:27'],
 
-            // 12-13: payment (timestamps = NULL)
-            ['id' => 12, 'name' => 'Chưa thanh toán',  'code' => 'unpaid',    'type' => 'payment',        'color' => '#eab308', 'priority' => 1, 'is_active' => 1, 'description' => 'Đơn hàng chưa được thanh toán', 'created_at' => null, 'updated_at' => null],
-            ['id' => 13, 'name' => 'Đã thanh toán',    'code' => 'paid',      'type' => 'payment',        'color' => '#10b981', 'priority' => 2, 'is_active' => 1, 'description' => 'Đơn hàng đã được thanh toán', 'created_at' => null, 'updated_at' => null],
+            // 12-13: payment
+            ['id' => 12, 'name' => 'Chưa thanh toán',  'code' => 'unpaid',    'type' => 'payment',        'color' => '#eab308', 'priority' => 1, 'is_active' => 1, 'description' => 'Đơn hàng chưa được thanh toán', 'created_at' => '2025-07-22 16:36:27', 'updated_at' => '2025-07-22 16:36:27'],
+            ['id' => 13, 'name' => 'Đã thanh toán',    'code' => 'paid',      'type' => 'payment',        'color' => '#10b981', 'priority' => 2, 'is_active' => 1, 'description' => 'Đơn hàng đã được thanh toán', 'created_at' => '2025-07-22 16:36:27', 'updated_at' => '2025-07-22 16:36:27'],
 
             // 14-15: category
             ['id' => 14, 'name' => 'Kích hoạt',        'code' => 'active',    'type' => 'category',       'color' => '#22c55e', 'priority' => 1, 'is_active' => 1, 'description' => 'Đang hoạt động',           'created_at' => '2025-07-22 16:36:27', 'updated_at' => '2025-07-22 16:36:27'],
@@ -51,10 +51,18 @@ class StatusSeeder extends Seeder
             // 18-19: voucher
             ['id' => 18, 'name' => 'Đang hoạt động',   'code' => 'active',    'type' => 'voucher',        'color' => '#22c55e', 'priority' => 1, 'is_active' => 1, 'description' => 'Voucher còn sử dụng được', 'created_at' => '2025-08-10 07:26:46', 'updated_at' => '2025-08-10 07:26:46'],
             ['id' => 19, 'name' => 'Hết hạn',          'code' => 'expired',   'type' => 'voucher',        'color' => '#6b7280', 'priority' => 2, 'is_active' => 1, 'description' => 'Voucher đã hết hạn sử dụng', 'created_at' => '2025-08-10 07:26:46', 'updated_at' => '2025-08-10 07:26:46'],
+
+            // 20-21: brand
+            ['id' => 20, 'name' => 'Kích hoạt',        'code' => 'active',    'type' => 'brand',          'color' => '#22c55e', 'priority' => 1, 'is_active' => 1, 'description' => 'Thương hiệu đang hoạt động', 'created_at' => '2025-07-22 16:36:27', 'updated_at' => '2025-07-22 16:36:27'],
+            ['id' => 21, 'name' => 'Ngừng hoạt động',  'code' => 'inactive',  'type' => 'brand',          'color' => '#ef4444', 'priority' => 2, 'is_active' => 1, 'description' => 'Thương hiệu không hoạt động', 'created_at' => '2025-07-22 16:36:27', 'updated_at' => '2025-07-22 16:36:27'],
+
+            // 22-23: comment
+            ['id' => 22, 'name' => 'Kích hoạt',        'code' => 'active',    'type' => 'comment',        'color' => '#22c55e', 'priority' => 1, 'is_active' => 1, 'description' => 'Bình luận hiển thị',        'created_at' => '2025-07-22 16:36:27', 'updated_at' => '2025-07-22 16:36:27'],
+            ['id' => 23, 'name' => 'Ẩn',               'code' => 'inactive',  'type' => 'comment',        'color' => '#6b7280', 'priority' => 2, 'is_active' => 1, 'description' => 'Bình luận bị ẩn',          'created_at' => '2025-07-22 16:36:27', 'updated_at' => '2025-07-22 16:36:27'],
         ]);
 
-        // Đặt lại AUTO_INCREMENT về 20 giống DB
-        DB::statement('ALTER TABLE statuses AUTO_INCREMENT = 20');
+        // Đặt lại AUTO_INCREMENT về 24
+        DB::statement('ALTER TABLE statuses AUTO_INCREMENT = 24');
 
         // Bật lại FK
         Schema::enableForeignKeyConstraints();
