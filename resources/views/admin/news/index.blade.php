@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-
+@section('title', 'Danh sách sản phẩm')
 @section('content')
 <!-- Flash Messages -->
 @if(session('success'))

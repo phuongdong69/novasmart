@@ -1,4 +1,5 @@
 @extends('admin.layouts.app')
+@section('title', 'Chi tiết đơn hàng')
 @section('content')
     <div class="w-full px-6 py-6 mx-auto">
         <div class="flex justify-between items-center mb-6">
