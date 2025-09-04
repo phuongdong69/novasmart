@@ -1,6 +1,5 @@
 <li class="has-submenu parent-parent-menu-item">
     <a href="javascript:void(0)">Sản phẩm</a>
-    <span class="menu-arrow"></span>
     
     <ul class="submenu megamenu">
         <li>
@@ -35,12 +34,14 @@
             </ul>
         </li>
 
-         <li>
+        <li>
             <ul>
-                <li class="megamenu-head">Máy tính bảng</li>
-                <li><a href="{{ route('products.list') }}?brand=Apple" class="sub-menu-item">Apple (iPad)</a></li>
+                <li class="megamenu-head">Thương hiệu nổi bật</li>
+                <li><a href="{{ route('products.list') }}?brand=Apple" class="sub-menu-item">Apple</a></li>
                 <li><a href="{{ route('products.list') }}?brand=Samsung" class="sub-menu-item">Samsung</a></li>
-                <li><a href="{{ route('products.list') }}?brand=Xiaomi" class="sub-menu-item">Xiaomi</a></li>
+                <li><a href="{{ route('products.list') }}?brand=Dell" class="sub-menu-item">Dell</a></li>
+                <li><a href="{{ route('products.list') }}?brand=HP" class="sub-menu-item">HP</a></li>
+                <li><a href="{{ route('products.list') }}?brand=Lenovo" class="sub-menu-item">Lenovo</a></li>
             </ul>
         </li>
         

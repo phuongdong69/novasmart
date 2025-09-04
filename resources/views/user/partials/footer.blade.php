@@ -14,13 +14,6 @@
                                 </div>
                             </a>
                             <p class="mt-6 text-gray-300">NovaSmart - Đối tác tin cậy của bạn trong lĩnh vực công nghệ. Chúng tôi cung cấp các sản phẩm điện tử chất lượng cao với giá cả hợp lý và dịch vụ hậu mãi tận tâm.</p>
-                            <ul class="list-none mt-6">
-                                <li class="inline"><a href="#" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="facebook" class="size-4"></i></a></li>
-                                <li class="inline"><a href="#" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="instagram" class="size-4"></i></a></li>
-                                <li class="inline"><a href="#" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="twitter" class="size-4"></i></a></li>
-                                <li class="inline"><a href="#" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="youtube" class="size-4"></i></a></li>
-                                <li class="inline"><a href="mailto:contact@novasmart.com" class="size-8 inline-flex items-center justify-center tracking-wide align-middle text-base text-center border border-gray-600 rounded-md text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-500 me-1"><i data-feather="mail" class="size-4"></i></a></li>
-                            </ul>
                         </div>
 
                         <div class="lg:col-span-6 md:col-span-12">
@@ -52,11 +45,11 @@
                                 <div class="md:col-span-4">
                                     <ul class="list-none footer-list mt-6">
                                         <li><a href="{{ route('about') }}" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Về chúng tôi</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Tài khoản của tôi</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Lịch sử đơn hàng</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Sản phẩm yêu thích</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Bảo hành & Sửa chữa</a></li>
-                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Hướng dẫn sử dụng</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('profile.edit') }}" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Tài khoản của tôi</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('user.orders.index') }}" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Đơn hàng của tôi</a></li>
+                                        <li class="mt-[10px]"><a href="{{ route('wishlist.index') }}" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Sản phẩm yêu thích</a></li>
+                                        {{-- <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Bảo hành & Sửa chữa</a></li>
+                                        <li class="mt-[10px]"><a href="#" class="text-gray-300 hover:text-orange-500 transition-all duration-500"><i class="mdi mdi-chevron-right"></i> Hướng dẫn sử dụng</a></li> --}}
                                     </ul>
                                 </div>
                             </div>
@@ -82,24 +75,10 @@
                                     <i class="mdi mdi-email text-orange-500 text-lg mt-1 me-3"></i>
                                     <div>
                                         <p class="text-gray-300 text-sm">yepiamlong@gmail.com</p>
-                                        <p class="text-gray-300 text-sm">yepiamlong@gmail.com</p>
+                                            <p class="text-gray-300 text-sm">yepiamlong@gmail.com</p>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <h5 class="tracking-[1px] text-gray-100 font-semibold mt-6">Đăng ký nhận tin</h5>
-                            <p class="mt-3 text-sm text-gray-300">Nhận thông tin về sản phẩm mới và khuyến mãi đặc biệt</p>
-                            <form class="mt-4">
-                                <div class="grid grid-cols-1">
-                                    <div class="mb-3">
-                                        <div class="form-icon relative">
-                                            <i data-feather="mail" class="size-4 absolute top-3 start-3 text-gray-400"></i>
-                                            <input type="email" class="ps-10 rounded w-full py-2 px-3 h-10 bg-gray-800 border border-gray-700 text-gray-100 focus:border-orange-500 focus:ring-0 placeholder:text-gray-400 outline-none text-sm" placeholder="" name="email" required="">
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="py-2 px-4 inline-block font-medium tracking-wide align-middle duration-500 text-sm text-center bg-orange-500 hover:bg-orange-600 text-white rounded-md transition-all duration-500">Đăng ký</button>
-                                </div>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -141,14 +120,6 @@
                 <div class="md:text-start text-center">
                     <p class="mb-0 text-gray-400">© <script>document.write(new Date().getFullYear())</script> NovaSmart. Tất cả quyền được bảo lưu.</p>
                 </div>
-
-                <ul class="list-none md:text-end text-center mt-6 md:mt-0">
-                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/visa.jpg')}}" class="max-h-6 rounded inline me-2" title="Visa" alt=""></a></li>
-                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/mastercard.jpg')}}" class="max-h-6 rounded inline me-2" title="Master Card" alt=""></a></li>
-                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/paypal.jpg')}}" class="max-h-6 rounded inline me-2" title="Paypal" alt=""></a></li>
-                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/momo.jpg')}}" class="max-h-6 rounded inline me-2" title="MoMo" alt=""></a></li>
-                    <li class="inline"><a href="#"><img src="{{ asset('assets/user/images/payments/zalopay.jpg')}}" class="max-h-6 rounded inline me-2" title="ZaloPay" alt=""></a></li>
-                </ul>
             </div>
         </div>
     </div>
