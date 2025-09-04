@@ -10,6 +10,11 @@ class VoucherSeeder extends Seeder
 {
     public function run(): void
     {
+        $statusActive = \DB::table('statuses')
+            ->where('type', 'voucher')
+            ->where('code', 'active')
+            ->value('id') ?: 1;
+
         Voucher::create([
             'code' => 'GIAM10K',
             'description' => 'Giảm 10.000đ cho đơn hàng bất kỳ',
@@ -17,7 +22,7 @@ class VoucherSeeder extends Seeder
             'discount_value' => 10000,
             'quantity' => 100,
             'expired_at' => Carbon::now()->addDays(30),
-            'status_id' => 1, // bạn cần đảm bảo status_id = 1 đang tồn tại (ví dụ "Đang hoạt động")
+            'status_id' => $statusActive,
         ]);
 
         Voucher::create([
@@ -27,7 +32,7 @@ class VoucherSeeder extends Seeder
             'discount_value' => 50,
             'quantity' => 50,
             'expired_at' => Carbon::now()->addDays(15),
-            'status_id' => 1,
+            'status_id' => $statusActive,
         ]);
     }
 }

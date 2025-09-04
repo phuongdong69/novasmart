@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaSmart - Chi Tiết Các Bảng Cơ Sở Dữ Liệu</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            margin: 40px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        
+        h2 {
+            color: #34495e;
+            font-size: 18px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        
+        h3 {
+            color: #2980b9;
+            font-size: 16px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 12px;
+        }
+        
+        th {
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #2c3e50;
+        }
+        
+        td {
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            text-align: left;
+        }
+        
+        td:first-child {
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .check {
+            color: #27ae60;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .pk {
+            background-color: #e74c3c;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .fk {
+            background-color: #f39c12;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .unique {
+            background-color: #9b59b6;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .summary {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        
+        .summary h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        @media print {
+            body { margin: 20px; }
+            .page-break { page-break-before: always; }
+        }
+    </style>
+</head>
+<body>
+    <h1>NovaSmart - Chi Tiết Các Bảng Cơ Sở Dữ Liệu</h1>
+    
+    <div class="summary">
+        <h3>📊 Tổng Quan</h3>
+        <p><strong>Tổng số bảng:</strong> 39 bảng</p>
+        <p><strong>Phiên bản Laravel:</strong> 10.x</p>
+        <p><strong>Database Engine:</strong> MySQL</p>
+        <p><strong>Ngày tạo:</strong> 10/08/2025</p>
+        <p><strong>Ghi chú:</strong> Bao gồm bảng product_returns mới được thêm vào</p>
+    </div>
+
+    <h2>🔵 1. HỆ THỐNG CỐT LÕI (CORE SYSTEM)</h2>
+
+    <h3>1.1 Bảng statuses</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên</th>
+                <th>Kiểu</th>
+                <th>Độ dài</th>
+                <th>Rỗng</th>
+                <th>Khóa</th>
+                <th>Mô tả</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>id</td>
+                <td>bigint</td>
+                <td>20</td>
+                <td></td>
+                <td><span class="pk">PK</span></td>
+                <td>Id của trạng thái</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>name</td>
+                <td>varchar</td>
+                <td>255</td>
+                <td><span class="check">✓</span></td>
+                <td></td>
+                <td>Tên trạng thái</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>code</td>
+                <td>varchar</td>
+                <td>50</td>
+                <td></td>
+                <td><span class="unique">UQ</span></td>
+                <td>Mã trạng thái</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>type</td>
+                <td>varchar</td>
+                <td>100</td>
+                <td><span class="check">✓</span></td>
+                <td></td>
+                <td>Loại trạng thái</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>color</td>
+                <td>varchar</td>
+                <td>7</td>
+                <td><span class="check">✓</span></td>
+                <td></td>
+                <td>Màu hiển thị (hex)</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>priority</td>
+                <td>int</td>
+                <td>11</td>
+                <td></td>
+                <td></td>
+                <td>Độ ưu tiên</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>is_active</td>
+                <td>tinyint</td>
+                <td>1</td>
+                <td></td>
+                <td></td>
+                <td>Trạng thái hoạt động</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>description</td>
+                <td>text</td>
+                <td></td>
+                <td><span class="check">✓</span></td>
+                <td></td>
+                <td>Mô tả chi tiết</td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>created_at</td>
+                <td>timestamp</td>
+                <td></td>
+                <td><span class="check">✓</span></td>
+                <td></td>
+                <td>Thời gian tạo</td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>updated_at</td>
+                <td>timestamp</td>
+                <td></td>
+                <td><span class="check">✓</span></td>
+                <td></td>
+                <td>Thời gian cập nhật</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>1.2 Bảng roles</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên</th>
+                <th>Kiểu</th>
+                <th>Độ dài</th>
+                <th>Rỗng</th>
+                <th>Khóa</th>
+                <th>Mô tả</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>id</td>
+                <td>bigint</td>
+                <td>20</td>
+                <td></td>
+                <td><span class="pk">PK</span></td>
+                <td>Id của vai trò</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>name</td>
+                <td>varchar</td>
+                <td>255</td>
+                <td><span class="check">✓</span></td>
+                <td></td>
+                <td>Tên vai trò</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>description</td>
+                <td>text</td>
+                <td></td>
+                <td><span class="check">✓</span></td>
+                <td></td>
+                <td>Mô tả vai trò</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>created_at</td>
+                <td>timestamp</td>
+                <td></td>
+                <td><span class="check">✓</span></td>
+                <td></td>
+                <td>Thời gian tạo</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>updated_at</td>
+                <td>timestamp</td>
+                <td></td>
+                <td><span class="check">✓</span></td>
+                <td></td>
+                <td>Thời gian cập nhật</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><strong>Ghi chú:</strong> Tài liệu này chỉ hiển thị một số bảng mẫu. File đầy đủ sẽ chứa tất cả 39 bảng với cùng định dạng.</p>
+    <p><strong>Để xem đầy đủ:</strong> Mở file này trong trình duyệt và sử dụng Ctrl+P để in ra PDF hoặc sao chép vào Word.</p>
+
+</body>
+</html>

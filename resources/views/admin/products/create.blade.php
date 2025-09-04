@@ -252,6 +252,12 @@
                                             <input type="number" name="variants[0][quantity]"
                                                 class="w-full px-4 py-2 border border-gray-300 rounded-md">
                                         </div>
+                                        <!-- Ảnh biến thể -->
+                                        <div class="basis-full">
+                                            <label class="block text-sm font-medium text-slate-600 mb-2">Ảnh biến thể</label>
+                                            <input type="file" name="variants[0][image]" accept="image/*" class="variant-image-input w-full px-4 py-2 border border-gray-300 rounded-md">
+                                            <div class="preview-variant-image flex gap-2 mt-2"></div>
+                                        </div>
                                     </div>
                                     <div class="attribute-container">
                                         <div class="attribute-item">
@@ -324,6 +330,29 @@
                         </div>
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
+                                // Preview ảnh biến thể
+                                window.attachVariantImagePreview = function(input){
+                                    const previewDiv = input.closest('.flex-row').querySelector('.preview-variant-image');
+                                    if(!previewDiv) return;
+                                    input.addEventListener('change', function(e){
+                                        previewDiv.innerHTML='';
+                                        const file=e.target.files[0];
+                                        if(file && file.type.startsWith('image/')){
+                                            const reader=new FileReader();
+                                            reader.onload=function(ev){
+                                                const img=document.createElement('img');
+                                                img.src=ev.target.result;
+                                                img.className='w-[100px] h-[100px] object-cover rounded border';
+                                                img.style.width='100px';
+                                                img.style.height='100px';
+                                                previewDiv.appendChild(img);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    });
+                                }
+
+                                document.querySelectorAll('.variant-image-input').forEach(window.attachVariantImagePreview);
                                 // Preview cho ảnh phụ
                                 const input = document.getElementById('thumbnails');
                                 const preview = document.getElementById('preview-thumbnails');
@@ -336,8 +365,9 @@
                                                 reader.onload = function(ev) {
                                                     const img = document.createElement('img');
                                                     img.src = ev.target.result;
-                                                    img.className =
-                                                        'w-20 h-20 object-cover rounded border border-gray-300';
+                                                    img.className = 'w-[100px] h-[100px] object-cover rounded border border-gray-300';
+                                                    img.style.width = '100px';
+                                                    img.style.height = '100px';
                                                     preview.appendChild(img);
                                                 };
                                                 reader.readAsDataURL(file);
@@ -357,8 +387,9 @@
                                             reader.onload = function(ev) {
                                                 const img = document.createElement('img');
                                                 img.src = ev.target.result;
-                                                img.className =
-                                                    'w-24 h-24 object-cover rounded border border-blue-500 shadow';
+                                                img.className = 'w-[100px] h-[100px] object-cover rounded border border-blue-500 shadow';
+                                                    img.style.width = '100px';
+                                                    img.style.height = '100px';
                                                 previewPrimary.appendChild(img);
                                             };
                                             reader.readAsDataURL(file);
@@ -431,6 +462,12 @@
                             <div class="flex-1 min-w-[100px]">
                                 <label class="block text-sm font-medium text-slate-600 mb-2">Số lượng</label>
                                 <input type="number" name="variants[${variantCount}][quantity]" class="w-full px-4 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            <!-- Ảnh biến thể -->
+                            <div class="basis-full">
+                                <label class="block text-sm font-medium text-slate-600 mb-2">Ảnh biến thể</label>
+                                <input type="file" name="variants[${variantCount}][image]" accept="image/*" class="variant-image-input w-full px-4 py-2 border border-gray-300 rounded-md">
+                                <div class="preview-variant-image flex gap-2 mt-2"></div>
                             </div>
                         </div>
         <div class="attribute-container">

@@ -179,9 +179,12 @@
                                                                 @foreach ($variant->variantAttributeValues as $i => $attrValue)
                                                                     <tr class="hover:bg-gray-50">
                                                                         @if ($i == 0)
-                                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center"
-                                                                                rowspan="{{ $attrCount }}">
-                                                                                {{ $variant->sku }}</td>
+                                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center" rowspan="{{ $attrCount }}">
+                                                                                <div class="flex items-center justify-center gap-2" style="gap:10px;">
+                                                                                    <img src="{{ $variant->thumbnailUrl() }}" alt="Variant image" class="w-12 h-12 object-cover rounded border">
+                                                                                    <span>{{ $variant->sku }}</span>
+                                                                                </div>
+                                                                            </td>
                                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium text-center"
                                                                                 rowspan="{{ $attrCount }}">
                                                                                 {{ number_format($variant->price, 0, ',', '.') }}
@@ -228,7 +231,7 @@
                                                                         <div class="bg-white p-4 rounded-lg border">
                                                                             <h4 class="text-lg font-semibold mb-4">Sửa biến thể</h4>
                                                                             
-                                                                            <form class="edit-variant-form" method="POST" action="/admin/products/{{ $product->id }}/variants/{{ $variant->id }}">
+                                                                            <form class="edit-variant-form" enctype="multipart/form-data" method="POST" action="/admin/products/{{ $product->id }}/variants/{{ $variant->id }}">
                                                                                 @csrf
                                                                                 @method('PUT')
                                                                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -305,6 +308,15 @@
                                                                                     <button type="button" class="add-edit-attribute-btn" data-product-id="{{ $product->id }}" data-variant-id="{{ $variant->id }}" style="background-color: #16a34a !important; color: white !important; border: none !important; padding: 8px 16px !important; border-radius: 4px !important; font-size: 14px !important; font-weight: 600 !important; cursor: pointer !important;">+ Thêm thuộc tính</button>
                                                                                 </div>
                                                                                 
+                                                                                {{-- Ảnh biến thể --}}
+                                                                                <div class="mb-4">
+                                                                                    <!-- <label class="block text-sm font-medium text-gray-700 mb-2">Ảnh hiện tại</label> -->
+                                                                                    <img src="{{ $variant->thumbnailUrl() }}" alt="Current Image" class="w-[100px] h-[100px] object-cover rounded border mb-2">
+                                                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Chọn ảnh mới</label>
+                                                                                    <input type="file" name="image" accept="image/*" class="edit-variant-image-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                                                                    <div class="edit-preview-image flex gap-2 mt-2"></div>
+                                                                                </div>
+
                                                                                 <div class="flex justify-end gap-2">
                                                                                     <button type="button" class="cancel-edit-variant-btn" data-product-id="{{ $product->id }}" data-variant-id="{{ $variant->id }}"
                                                                                         style="background-color: #6b7280 !important; color: white !important; border: none !important; padding: 8px 16px !important; border-radius: 4px !important; font-size: 14px !important; font-weight: 600 !important; cursor: pointer !important;">
@@ -323,7 +335,11 @@
                                                                 <tr class="hover:bg-gray-50">
                                                                     <td
                                                                         class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                                                                        {{ $variant->sku }}</td>
+                                                                        <div class="flex items-center justify-center gap-2" style="gap:50px;">
+                                                                            <img src="{{ $variant->thumbnailUrl() }}" alt="Variant image" class="w-12 h-12 object-cover rounded border">
+                                                                            <span>{{ $variant->sku }}</span>
+                                                                        </div>
+                                                                    </td>
                                                                     <td
                                                                         class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium text-center">
                                                                         {{ number_format($variant->price, 0, ',', '.') }} ₫
@@ -362,7 +378,7 @@
                                                                         <div class="bg-white p-4 rounded-lg border">
                                                                             <h4 class="text-lg font-semibold mb-4">Sửa biến thể</h4>
                                                                             
-                                                                            <form class="edit-variant-form" method="POST" action="/admin/products/{{ $product->id }}/variants/{{ $variant->id }}">
+                                                                            <form class="edit-variant-form" enctype="multipart/form-data" method="POST" action="/admin/products/{{ $product->id }}/variants/{{ $variant->id }}">
                                                                                 @csrf
                                                                                 @method('PUT')
                                                                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -409,6 +425,15 @@
                                                                                     <button type="button" class="add-edit-attribute-btn" data-product-id="{{ $product->id }}" data-variant-id="{{ $variant->id }}" style="background-color: #16a34a !important; color: white !important; border: none !important; padding: 8px 16px !important; border-radius: 4px !important; font-size: 14px !important; font-weight: 600 !important; cursor: pointer !important;">+ Thêm thuộc tính</button>
                                                                                 </div>
                                                                                 
+                                                                                {{-- Ảnh biến thể --}}
+                                                                                <div class="mb-4">
+                                                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Ảnh hiện tại</label>
+                                                                                    <img src="{{ $variant->thumbnailUrl() }}" alt="Current Image" class="w-[100px] h-[100px] object-cover rounded border mb-2">
+                                                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Chọn ảnh mới</label>
+                                                                                    <input type="file" name="image" accept="image/*" class="edit-variant-image-input w-full px-3 py-2 border border-gray-300 rounded-md">
+                                                                                    <div class="edit-preview-image flex gap-2 mt-2"></div>
+                                                                                </div>
+
                                                                                 <div class="flex justify-end gap-2">
                                                                                     <button type="button" class="cancel-edit-variant-btn" data-product-id="{{ $product->id }}" data-variant-id="{{ $variant->id }}"
                                                                                         style="background-color: #6b7280 !important; color: white !important; border: none !important; padding: 8px 16px !important; border-radius: 4px !important; font-size: 14px !important; font-weight: 600 !important; cursor: pointer !important;">
@@ -448,7 +473,7 @@
                                                                 <div class="bg-white p-4 rounded-lg border">
                                                                     <h4 class="text-lg font-semibold mb-4">Thêm biến thể mới</h4>
                                                                     
-                                                                    <form class="add-variant-form" method="POST" action="/admin/products/{{ $product->id }}/variants">
+                                                                    <form class="add-variant-form" enctype="multipart/form-data" method="POST" action="/admin/products/{{ $product->id }}/variants">
                                                                         @csrf
                                                                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                                                                         
@@ -471,6 +496,12 @@
                                                                         </div>
                                                                         
                                                                         
+                                                                        <div class="mb-4">
+                                                                            <label class="block text-sm font-medium text-gray-700 mb-2">Ảnh biến thể</label>
+                                                                            <input type="file" name="image" accept="image/*"
+                                                                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                                        </div>
+
                                                                         <div class="mb-4">
                                                                             <label class="block text-sm font-medium text-gray-700 mb-2">Thuộc tính</label>
                                                                             <div class="attributes-container-{{ $product->id }}">
@@ -521,7 +552,7 @@
                                                 <table class="min-w-full divide-y divide-gray-200 mb-2">
                                                     <thead>
                                                         <tr>
-                                                            <th
+                                                                                                                        <th
                                                                 class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                                 SKU</th>
                                                             <th
@@ -539,7 +570,11 @@
                                                         @forelse($product->variants as $variant)
                                                             <tr>
                                                                 <td class="px-4 py-2 text-sm text-gray-900">
-                                                                    {{ $variant->sku }}</td>
+                                                                    <div class="flex items-center gap-2" style="gap:50px;">
+                                                                        <img src="{{ $variant->thumbnailUrl() }}" alt="Variant image" class="w-10 h-10 object-cover rounded border">
+                                                                        <span>{{ $variant->sku }}</span>
+                                                                    </div>
+                                                                </td>
                                                                 <td class="px-4 py-2 text-sm">
                                                                     @if ($variant->status && is_object($variant->status))
                                                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
@@ -581,6 +616,11 @@
     </div>
 
 
+
+    {{-- Pagination --}}
+    <div class="mt-6">
+        {{ $products->onEachSide(1)->links('pagination::tailwind-right') }}
+    </div>
 
     @push('scripts')
         <script>
@@ -969,6 +1009,27 @@
 
             // Add event listeners when DOM is loaded
             document.addEventListener('DOMContentLoaded', function() {
+                // Preview ảnh mới cho biến thể khi sửa
+                document.querySelectorAll('.edit-variant-image-input').forEach(function(input) {
+                    const previewDiv = input.parentElement.querySelector('.edit-preview-image');
+                    input.addEventListener('change', function(e) {
+                        previewDiv.innerHTML = '';
+                        const file = e.target.files[0];
+                        if (file && file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(ev) {
+                                const img = document.createElement('img');
+                                img.src = ev.target.result;
+                                img.className = 'w-[100px] h-[100px] object-cover rounded border';
+                                img.style.width = '100px';
+                                img.style.height = '100px';
+                                previewDiv.appendChild(img);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                });
+
                 // Add click event listeners for all "Thêm biến thể" buttons
                 document.querySelectorAll('.add-variant-btn').forEach(function(btn) {
                     btn.addEventListener('click', function(e) {

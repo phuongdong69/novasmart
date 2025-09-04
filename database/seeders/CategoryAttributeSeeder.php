@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class CategoryAttributeSeeder extends Seeder
 {
@@ -13,11 +12,29 @@ class CategoryAttributeSeeder extends Seeder
         $now = now();
 
         $getCatId = function ($name) {
-            return DB::table('categories')->where('slug', Str::slug($name))->value('id')
-                ?: DB::table('categories')->where('name', $name)->value('id');
+            // Bảng categories không có cột slug => tra theo name
+            return DB::table('categories')->where('name', $name)->value('id');
         };
 
-        
+        // Map slug thuộc tính -> tên thuộc tính trong bảng attributes
+        $getAttrId = function ($slug) {
+            $map = [
+                'mau-sac'                 => 'Màu sắc',
+                'man-hinh'                => 'Màn hình',
+                'ram'                     => 'RAM',
+                'cpu'                     => 'CPU',
+                'luu-tru'                 => 'Lưu trữ',
+                'gpu'                     => 'GPU',
+                'kich-thuoc-trong-luong'  => 'Kích thước & trọng lượng',
+                'camera'                  => 'Camera',
+                'he-dieu-hanh'            => 'Hệ điều hành',
+                'cong-ket-noi'            => 'Cổng kết nối',
+                'tan-so-quet'             => 'Tần số quét',
+            ];
+            $name = $map[$slug] ?? null;
+            if (!$name) return null;
+            return DB::table('attributes')->where('name', $name)->value('id');
+        };
 
         // Nhóm danh mục -> danh sách slug thuộc tính
         $map = [

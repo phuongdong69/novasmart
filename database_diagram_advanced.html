@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaSmart Database ERD - Advanced</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            overflow-x: auto;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            min-width: 1600px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        .diagram-container {
+            position: relative;
+            width: 1600px;
+            height: 1200px;
+            border: 1px solid #ddd;
+            margin: 0 auto;
+            background: #fafafa;
+            background-image: 
+                linear-gradient(rgba(0,0,0,.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .table {
+            position: absolute;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 6px;
+            min-width: 180px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 11px;
+            z-index: 10;
+        }
+        
+        .table-header {
+            background: #4a90e2;
+            color: white;
+            padding: 8px 10px;
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 4px 4px 0 0;
+            text-align: center;
+        }
+        
+        .table-body {
+            padding: 6px 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .field {
+            margin: 3px 0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .field-icon {
+            width: 12px;
+            height: 12px;
+            margin-right: 6px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        
+        .pk { background: #ffebee; }
+        .pk .field-icon { background: #f44336; }
+        
+        .fk { background: #e8f5e8; }
+        .fk .field-icon { background: #4caf50; }
+        
+        .regular { background: #f9f9f9; }
+        .regular .field-icon { background: #9e9e9e; }
+        
+        /* Group Colors */
+        .auth { border-color: #2196f3; }
+        .auth .table-header { background: #2196f3; }
+        
+        .products { border-color: #9c27b0; }
+        .products .table-header { background: #9c27b0; }
+        
+        .attributes { border-color: #4caf50; }
+        .attributes .table-header { background: #4caf50; }
+        
+        .commerce { border-color: #ff9800; }
+        .commerce .table-header { background: #ff9800; }
+        
+        .features { border-color: #e91e63; }
+        .features .table-header { background: #e91e63; }
+        
+        .content { border-color: #8bc34a; }
+        .content .table-header { background: #8bc34a; }
+        
+        /* SVG Connections */
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .connection-line {
+            stroke: #666;
+            stroke-width: 1.5;
+            fill: none;
+            opacity: 0.7;
+        }
+        
+        .connection-arrow {
+            fill: #666;
+            opacity: 0.7;
+        }
+        
+        .legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 11px;
+            z-index: 20;
+        }
+        
+        .legend h4 {
+            margin: 0 0 10px 0;
+            font-size: 13px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 4px 0;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ NovaSmart Database ERD</h1>
+        
+        <div class="diagram-container" id="diagram">
+            <!-- Legend -->
+            <div class="legend">
+                <h4>📋 Legend</h4>
+                <div class="legend-item">
+                    <div class="field-icon pk"></div>
+                    <span>Primary Key</span>
+                </div>
+                <div class="legend-item">
+                    <div class="field-icon fk"></div>
+                    <span>Foreign Key</span>
+                </div>
+                <div class="legend-item">
+                    <div class="field-icon regular"></div>
+                    <span>Regular Field</span>
+                </div>
+                <hr style="margin: 10px 0;">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2196f3;"></div>
+                    <span>Auth & Users</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9c27b0;"></div>
+                    <span>Products</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4caf50;"></div>
+                    <span>Attributes</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff9800;"></div>
+                    <span>Commerce</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #e91e63;"></div>
+                    <span>Features</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #8bc34a;"></div>
+                    <span>Content</span>
+                </div>
+            </div>
+            
+            <!-- SVG for connections -->
+            <svg class="connections" id="connections">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                            refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" class="connection-arrow" />
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        const tables = {
+            // AUTH GROUP
+            statuses: { x: 50, y: 50, group: 'auth', fields: [
+                {name: 'id', type: 'pk'}, {name: 'name', type: 'regular'}, {name: 'type', type: 'regular'}
+            ]},
+            users: { x: 50, y: 200, group: 'auth', fields: [
+                {name: 'id', type: 'pk'}, {name: 'name', type: 'regular'}, {name: 'email', type: 'regular'}, 
+                {name: 'role_id', type: 'fk'}, {name: 'created_at', type: 'regular'}
+            ]},
+            
+            // PRODUCTS GROUP
+            categories: { x: 300, y: 50, group: 'products', fields: [
+                {name: 'id', type: 'pk'}, {name: 'name', type: 'regular'}, {name: 'status_id', type: 'fk'}
+            ]},
+            products: { x: 300, y: 200, group: 'products', fields: [
+                {name: 'id', type: 'pk'}, {name: 'name', type: 'regular'}, {name: 'category_id', type: 'fk'}
+            ]},
+            product_variants: { x: 300, y: 350, group: 'products', fields: [
+                {name: 'id', type: 'pk'}, {name: 'product_id', type: 'fk'}, {name: 'price', type: 'regular'}
+            ]},
+            
+            // COMMERCE GROUP
+            orders: { x: 50, y: 500, group: 'commerce', fields: [
+                {name: 'id', type: 'pk'}, {name: 'user_id', type: 'fk'}, {name: 'total_price', type: 'regular'}
+            ]},
+            order_details: { x: 250, y: 500, group: 'commerce', fields: [
+                {name: 'id', type: 'pk'}, {name: 'order_id', type: 'fk'}, {name: 'variant_id', type: 'fk'}
+            ]},
+            
+            // FEATURES GROUP
+            product_returns: { x: 600, y: 200, group: 'features', fields: [
+                {name: 'id', type: 'pk'}, {name: 'order_id', type: 'fk'}, {name: 'user_id', type: 'fk'}, 
+                {name: 'reason', type: 'regular'}, {name: 'status', type: 'regular'}, {name: 'refund_amount', type: 'regular'}
+            ]},
+            vouchers: { x: 600, y: 50, group: 'features', fields: [
+                {name: 'id', type: 'pk'}, {name: 'code', type: 'regular'}, {name: 'discount_value', type: 'regular'}
+            ]}
+        };
+
+        const relationships = [
+            {from: 'statuses', to: 'users', fromField: 'id', toField: 'status_id'},
+            {from: 'statuses', to: 'categories', fromField: 'id', toField: 'status_id'},
+            {from: 'categories', to: 'products', fromField: 'id', toField: 'category_id'},
+            {from: 'products', to: 'product_variants', fromField: 'id', toField: 'product_id'},
+            {from: 'users', to: 'orders', fromField: 'id', toField: 'user_id'},
+            {from: 'orders', to: 'order_details', fromField: 'id', toField: 'order_id'},
+            {from: 'product_variants', to: 'order_details', fromField: 'id', toField: 'variant_id'},
+            {from: 'orders', to: 'product_returns', fromField: 'id', toField: 'order_id'},
+            {from: 'users', to: 'product_returns', fromField: 'id', toField: 'user_id'}
+        ];
+
+        function createTable(name, config) {
+            const table = document.createElement('div');
+            table.className = `table ${config.group}`;
+            table.style.left = config.x + 'px';
+            table.style.top = config.y + 'px';
+            table.id = name;
+
+            const header = document.createElement('div');
+            header.className = 'table-header';
+            header.textContent = name;
+
+            const body = document.createElement('div');
+            body.className = 'table-body';
+            
+            config.fields.forEach(field => {
+                const fieldDiv = document.createElement('div');
+                fieldDiv.className = `field ${field.type}`;
+                
+                const icon = document.createElement('div');
+                icon.className = 'field-icon';
+                
+                const text = document.createElement('span');
+                text.textContent = field.name;
+                
+                fieldDiv.appendChild(icon);
+                fieldDiv.appendChild(text);
+                body.appendChild(fieldDiv);
+            });
+
+            table.appendChild(header);
+            table.appendChild(body);
+            
+            return table;
+        }
+
+        function drawConnections() {
+            const svg = document.getElementById('connections');
+            svg.innerHTML = '<defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" class="connection-arrow" /></marker></defs>';
+            
+            relationships.forEach(rel => {
+                const fromTable = document.getElementById(rel.from);
+                const toTable = document.getElementById(rel.to);
+                
+                if (fromTable && toTable) {
+                    const fromRect = fromTable.getBoundingClientRect();
+                    const toRect = toTable.getBoundingClientRect();
+                    const containerRect = document.getElementById('diagram').getBoundingClientRect();
+                    
+                    const fromX = fromRect.right - containerRect.left;
+                    const fromY = fromRect.top + fromRect.height/2 - containerRect.top;
+                    const toX = toRect.left - containerRect.left;
+                    const toY = toRect.top + toRect.height/2 - containerRect.top;
+                    
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    line.setAttribute('d', `M ${fromX} ${fromY} L ${toX} ${toY}`);
+                    line.setAttribute('class', 'connection-line');
+                    line.setAttribute('marker-end', 'url(#arrowhead)');
+                    
+                    svg.appendChild(line);
+                }
+            });
+        }
+
+        function init() {
+            const diagram = document.getElementById('diagram');
+            
+            // Create all tables
+            Object.entries(tables).forEach(([name, config]) => {
+                const table = createTable(name, config);
+                diagram.appendChild(table);
+            });
+            
+            // Draw connections after tables are rendered
+            setTimeout(drawConnections, 100);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('resize', () => setTimeout(drawConnections, 100));
+    </script>
+</body>
+</html>

@@ -41,6 +41,20 @@ class ProductVariant extends Model
     {
         return $this->hasMany(Rating::class);
     }
+
+    /**
+     * Thumbnail linked via product_thumbnails.product_variant_id
+     */
+    public function thumbnail()
+    {
+        return $this->hasOne(ProductThumbnail::class, 'product_variant_id');
+    }
+
+    public function thumbnailUrl()
+    {
+        $thumb = $this->thumbnail;
+        return $thumb ? asset('storage/' . $thumb->url) : asset('assets/images/placeholder.png');
+    }
         public function imageUrl()
     {
         return $this->image ? asset('storage/' . $this->image) : asset('assets/images/placeholder.png');
