@@ -4,6 +4,8 @@
 
 @section('content')
     <div class="max-w-3xl mx-auto px-6 py-8">
+        <script src="https://cdn.tailwindcss.com"></script>
+
         <div class="bg-white shadow-lg rounded-xl p-6">
             <div class="mb-6 border-b pb-4 flex justify-between items-center">
                 <h1 class="text-xl font-semibold text-gray-800">Cập nhật chức vụ</h1>
