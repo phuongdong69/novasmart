@@ -25,7 +25,7 @@
 
                     @include('user.partials.mega-menu')
 
-
+                    @include('user.partials.mega-menu-brands')
 
                     <li><a href="{{ route('news.index') }}" class="sub-menu-item">Tin tức</a></li>
 

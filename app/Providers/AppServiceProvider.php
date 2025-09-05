@@ -60,16 +60,31 @@ class AppServiceProvider extends ServiceProvider
             $cart['total_price'] = $total;
         }
 
-        // Lấy dữ liệu cho mega menu - hiển thị tất cả categories
+        // Lấy dữ liệu cho mega menu - chỉ hiển thị categories và brands có status active
         $menuCategories = Category::with(['brands' => function($query) {
-                // Load tất cả brands, không cần điều kiện whereHas('products')
-                $query->orderBy('name');
+                // Chỉ load brands có status active
+                $query->whereHas('status', function($statusQuery) {
+                    $statusQuery->where('code', 'active');
+                })->orderBy('name');
             }])
+            ->whereHas('status', function($query) {
+                $query->where('code', 'active');
+            })
             ->orderBy('name')
             ->get();
 
-        // Lấy top brands có nhiều sản phẩm nhất
+        // Lấy top brands có nhiều sản phẩm nhất và có status active
         $topBrands = Brand::whereHas('products')
+            ->whereHas('status', function($query) {
+                $query->where('code', 'active');
+            })
+            ->with(['products' => function($query) {
+                $query->whereHas('status', function($statusQuery) {
+                    $statusQuery->where('code', 'active');
+                })->whereHas('variants', function($variantQuery) {
+                    $variantQuery->where('quantity', '>', 0);
+                })->latest()->take(6);
+            }])
             ->withCount('products')
             ->orderByDesc('products_count')
             ->take(5)
