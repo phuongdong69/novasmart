@@ -48,7 +48,7 @@ class ShopController extends Controller
         }])
         ->where('brand_id', $brand->id)
         ->whereHas('status', function($query) {
-            $query->where('code', 'active');
+            $query->where('code', 'active')->where('type', 'product');
         })
         ->whereHas('variants', function($q) {
             $q->where('quantity', '>', 0);
@@ -74,7 +74,7 @@ class ShopController extends Controller
         }])
         ->where('category_id', $category->id)
         ->whereHas('status', function($query) {
-            $query->where('code', 'active');
+            $query->where('code', 'active')->where('type', 'product');
         })
         ->whereHas('variants', function($q) {
             $q->where('quantity', '>', 0);
@@ -93,7 +93,7 @@ class ShopController extends Controller
             $q->where('quantity', '>', 0);
         }])
         ->whereHas('status', function($query) {
-            $query->where('code', 'active');
+            $query->where('code', 'active')->where('type', 'product');
         })
         ->whereHas('variants', function($q) {
             $q->where('quantity', '>', 0);

@@ -12,12 +12,15 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Lấy sản phẩm mới nhất có biến thể có sẵn
+        // Lấy sản phẩm mới nhất có biến thể có sẵn và trạng thái active
         $products = Product::with(['thumbnails', 'variants' => function($q) {
             $q->where('quantity', '>', 0);
-        }, 'ratings'])
+        }, 'ratings', 'status'])
         ->whereHas('variants', function($q) {
             $q->where('quantity', '>', 0);
+        })
+        ->whereHas('status', function($q) {
+            $q->where('code', 'active')->where('type', 'product');
         })
         ->latest()
         ->take(8)
@@ -40,9 +43,12 @@ class HomeController extends Controller
         $popularProducts = Product::whereHas('variants', function($q) use ($topVariantIds) {
             $q->whereIn('id', $topVariantIds);
         })
+        ->whereHas('status', function($q) {
+            $q->where('code', 'active')->where('type', 'product');
+        })
         ->with(['thumbnails', 'variants' => function($q) use ($topVariantIds) {
             $q->whereIn('id', $topVariantIds);
-        }])
+        }, 'status'])
         ->get();
 
         // Lấy top brands có nhiều sản phẩm nhất
@@ -57,10 +63,13 @@ class HomeController extends Controller
         foreach ($topBrands as $brand) {
             $brandProducts = Product::with(['thumbnails', 'variants' => function($q) {
                 $q->where('quantity', '>', 0);
-            }, 'ratings'])
+            }, 'ratings', 'status'])
             ->where('brand_id', $brand->id)
             ->whereHas('variants', function($q) {
                 $q->where('quantity', '>', 0);
+            })
+            ->whereHas('status', function($q) {
+                $q->where('code', 'active')->where('type', 'product');
             })
             ->latest()
             ->take(10)
