@@ -79,6 +79,9 @@ class StoreProductRequest extends FormRequest
             $attributes = $this->input('attributes', []);
             if (!empty($attributes)) {
                 $attrPairs = collect($attributes)
+                    ->filter(function($item) { 
+                        return isset($item['attribute_id']) && isset($item['value']) && !empty($item['value']); 
+                    })
                     ->map(function($item) { return $item['attribute_id'] . '-' . $item['value']; })
                     ->sort()
                     ->implode('|');
@@ -101,10 +104,15 @@ class StoreProductRequest extends FormRequest
                 if (empty($attrs)) continue;
                 // signature: attribute_id-value|attribute_id-value|...
                 $sig = collect($attrs)
+                    ->filter(function($item) { 
+                        return isset($item['attribute_id']) && isset($item['value']) && !empty($item['value']); 
+                    })
                     ->sortBy('attribute_id')
                     ->map(function($item) { return $item['attribute_id'] . '-' . $item['value']; })
                     ->implode('|');
-                $signatures[] = $sig;
+                if (!empty($sig)) {
+                    $signatures[] = $sig;
+                }
             }
             if (empty($signatures)) return;
             // Lấy tất cả các biến thể đã tồn tại có cùng signature
@@ -123,9 +131,13 @@ class StoreProductRequest extends FormRequest
                 $attrs = $variant['attributes'] ?? [];
                 if (empty($attrs)) continue;
                 $sig = collect($attrs)
+                    ->filter(function($item) { 
+                        return isset($item['attribute_id']) && isset($item['value']) && !empty($item['value']); 
+                    })
                     ->sortBy('attribute_id')
                     ->map(function($item) { return $item['attribute_id'] . '-' . $item['value']; })
                     ->implode('|');
+                if (empty($sig)) continue;
                 if ($existing->filter(function($group) use ($sig) {
                     $groupSig = $group->sortBy('attribute_id')
                         ->map(function($item) { return $item->attribute_id . '-' . $item->value; })

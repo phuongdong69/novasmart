@@ -60,9 +60,10 @@ class AppServiceProvider extends ServiceProvider
             $cart['total_price'] = $total;
         }
 
-        // Lấy dữ liệu cho mega menu - tất cả categories (kể cả chưa có sản phẩm)
+        // Lấy dữ liệu cho mega menu - hiển thị tất cả categories
         $menuCategories = Category::with(['brands' => function($query) {
-                $query->whereHas('products');
+                // Load tất cả brands, không cần điều kiện whereHas('products')
+                $query->orderBy('name');
             }])
             ->orderBy('name')
             ->get();
