@@ -18,4 +18,14 @@ class ProductThumbnail extends Model
         'is_primary',
         'sort_order',
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function productVariant()
+    {
+        return $this->belongsTo(ProductVariant::class);
+    }
 } 

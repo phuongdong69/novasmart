@@ -146,11 +146,81 @@
                     @endforelse
                 </div>
 
-                <!-- Phân trang -->
+                <!-- Phân trang tùy chỉnh -->
                 @if($products->hasPages())
                 <div class="grid md:grid-cols-12 grid-cols-1 mt-6">
                     <div class="md:col-span-12 text-center">
-                        {{ $products->links() }}
+                        <div class="custom-pagination">
+                            <!-- Nút Previous -->
+                            @if($products->currentPage() > 1)
+                                <a href="{{ $products->previousPageUrl() }}" class="pagination-btn pagination-prev">
+                                    <i class="mdi mdi-chevron-left"></i>
+                                    Trước
+                                </a>
+                            @else
+                                <span class="pagination-btn pagination-disabled">
+                                    <i class="mdi mdi-chevron-left"></i>
+                                    Trước
+                                </span>
+                            @endif
+
+                            <!-- Số trang -->
+                            <div class="pagination-numbers">
+                                @php
+                                    $currentPage = $products->currentPage();
+                                    $lastPage = $products->lastPage();
+                                    $startPage = max(1, $currentPage - 2);
+                                    $endPage = min($lastPage, $currentPage + 2);
+                                    
+                                    // Đảm bảo hiển thị ít nhất 5 trang nếu có thể
+                                    if ($endPage - $startPage < 4) {
+                                        if ($startPage == 1) {
+                                            $endPage = min($lastPage, $startPage + 4);
+                                        } else {
+                                            $startPage = max(1, $endPage - 4);
+                                        }
+                                    }
+                                @endphp
+
+                                <!-- Trang đầu -->
+                                @if($startPage > 1)
+                                    <a href="{{ $products->url(1) }}" class="pagination-number">1</a>
+                                    @if($startPage > 2)
+                                        <span class="pagination-dots">...</span>
+                                    @endif
+                                @endif
+
+                                <!-- Các trang giữa -->
+                                @for($i = $startPage; $i <= $endPage; $i++)
+                                    @if($i == $currentPage)
+                                        <span class="pagination-number pagination-active">{{ $i }}</span>
+                                    @else
+                                        <a href="{{ $products->url($i) }}" class="pagination-number">{{ $i }}</a>
+                                    @endif
+                                @endfor
+
+                                <!-- Trang cuối -->
+                                @if($endPage < $lastPage)
+                                    @if($endPage < $lastPage - 1)
+                                        <span class="pagination-dots">...</span>
+                                    @endif
+                                    <a href="{{ $products->url($lastPage) }}" class="pagination-number">{{ $lastPage }}</a>
+                                @endif
+                            </div>
+
+                            <!-- Nút Next -->
+                            @if($products->hasMorePages())
+                                <a href="{{ $products->nextPageUrl() }}" class="pagination-btn pagination-next">
+                                    Sau
+                                    <i class="mdi mdi-chevron-right"></i>
+                                </a>
+                            @else
+                                <span class="pagination-btn pagination-disabled">
+                                    Sau
+                                    <i class="mdi mdi-chevron-right"></i>
+                                </span>
+                            @endif
+                        </div>
                     </div>
                 </div>
                 @endif
@@ -229,6 +299,172 @@
 @keyframes progressBar {
     from { width: 100%; }
     to { width: 0%; }
+}
+
+/* Custom Pagination Styles */
+.custom-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background-color: #f8fafc;
+    color: #475569;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.pagination-btn:hover {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.pagination-disabled {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+    border-color: #e2e8f0;
+}
+
+.pagination-disabled:hover {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    transform: none;
+    box-shadow: none;
+}
+
+.pagination-numbers {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 12px;
+}
+
+.pagination-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #f8fafc;
+    color: #475569;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.pagination-number:hover {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.pagination-active {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.pagination-dots {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: #94a3b8;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.pagination-info {
+    margin-top: 16px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .pagination-btn {
+        background-color: #1e293b;
+        color: #cbd5e1;
+        border-color: #334155;
+    }
+    
+    .pagination-btn:hover {
+        background-color: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+    
+    .pagination-disabled {
+        background-color: #0f172a;
+        color: #64748b;
+        border-color: #334155;
+    }
+    
+    .pagination-number {
+        background-color: #1e293b;
+        color: #cbd5e1;
+        border-color: #334155;
+    }
+    
+    .pagination-number:hover {
+        background-color: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+    
+    .pagination-dots {
+        color: #64748b;
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .custom-pagination {
+        gap: 4px;
+    }
+    
+    .pagination-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    .pagination-number {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+    
+    .pagination-dots {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+    
+    .pagination-numbers {
+        margin: 0 8px;
+    }
 }
 </style>
 <script src="{{ asset('assets/user/js/shop-cart.js') }}"></script>
