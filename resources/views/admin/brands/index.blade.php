@@ -67,12 +67,6 @@
                     <td class="px-6 py-3 text-sm">
                       <div class="flex items-center gap-2">
                         <a href="{{ route('admin.brands.edit', $brand->id) }}" class="text-blue-600 hover:underline">Sửa</a>
-                        <a href="{{ route('admin.brands.show', $brand->id) }}" class="text-green-600 hover:underline">Xem</a>
-                        <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhãn hiệu này không?')">
-                          @csrf
-                          @method('DELETE')
-                          <button type="submit" class="text-red-600 hover:underline">Xóa</button>
-                        </form>
                       </div>
                     </td>
                   </tr>

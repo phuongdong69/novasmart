@@ -8,8 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Brand extends Model
 {
     use HasFactory;
+
+    protected $with = ['status'];
     public $fillable = [
         'name',
+        'status_id',
         'category_id',
     ];
 
@@ -21,5 +24,10 @@ class Brand extends Model
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
     }
 }

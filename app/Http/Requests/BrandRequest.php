@@ -23,6 +23,7 @@ class BrandRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255|unique:brands,name' . ($this->brand ? ',' . $this->brand->id : ''),
+            'status_id' => 'nullable|exists:statuses,id',
         ];
     }
 }
