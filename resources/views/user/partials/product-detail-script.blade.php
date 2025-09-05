@@ -92,6 +92,12 @@
                     priceElement.textContent = new Intl.NumberFormat('vi-VN').format(product.price) + ' VNĐ';
                 }
                 
+                // Update product description
+                const descriptionElement = document.querySelector('.text-slate-400.mt-2');
+                if (descriptionElement) {
+                    descriptionElement.textContent = product.product.description || 'Chưa có mô tả cho sản phẩm này.';
+                }
+                
                 // Update product images
                 updateProductImages(product.product.thumbnails);
                 
@@ -203,6 +209,113 @@
                         quantityCell.textContent = product.quantity + ' sản phẩm';
                     }
                 }
+                
+                // Update brand - find by text content
+                const brandRow = Array.from(document.querySelectorAll('tr')).find(row => 
+                    row.textContent.includes('Thương hiệu')
+                );
+                if (brandRow && product.product.brand) {
+                    const brandCell = brandRow.querySelector('td:last-child');
+                    if (brandCell) {
+                        brandCell.textContent = product.product.brand.name || 'N/A';
+                    }
+                }
+                
+                // Update origin - find by text content
+                const originRow = Array.from(document.querySelectorAll('tr')).find(row => 
+                    row.textContent.includes('Xuất xứ')
+                );
+                if (originRow && product.product.origin) {
+                    const originCell = originRow.querySelector('td:last-child');
+                    if (originCell) {
+                        originCell.textContent = product.product.origin.country || 'N/A';
+                    }
+                }
+                
+                // Update category - find by text content
+                const categoryRow = Array.from(document.querySelectorAll('tr')).find(row => 
+                    row.textContent.includes('Danh mục')
+                );
+                if (categoryRow && product.product.category) {
+                    const categoryCell = categoryRow.querySelector('td:last-child');
+                    if (categoryCell) {
+                        categoryCell.textContent = product.product.category.name || 'N/A';
+                    }
+                }
+                
+                // Update product attributes
+                updateProductAttributes(product);
+            }
+            
+            function updateProductAttributes(product) {
+                // Get all attribute rows (excluding the fixed ones like SKU, quantity, etc.)
+                const allRows = Array.from(document.querySelectorAll('#addinfo tr'));
+                const fixedRowTexts = ['Thương hiệu', 'Xuất xứ', 'Danh mục', 'SKU', 'Tồn kho'];
+                
+                // Remove existing attribute rows (keep only fixed ones)
+                allRows.forEach(row => {
+                    const firstCell = row.querySelector('td:first-child');
+                    if (firstCell) {
+                        const cellText = firstCell.textContent.trim();
+                        if (!fixedRowTexts.includes(cellText)) {
+                            row.remove();
+                        }
+                    }
+                });
+                
+                // Add new attribute rows
+                if (product.variant_attribute_values && product.variant_attribute_values.length > 0) {
+                    const tbody = document.querySelector('#addinfo tbody');
+                    if (tbody) {
+                        product.variant_attribute_values.forEach(attrValue => {
+                            if (attrValue.attribute && attrValue.attribute_value) {
+                                const newRow = document.createElement('tr');
+                                newRow.className = 'bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-gray-700';
+                                
+                                const attributeName = attrValue.attribute.name || 'Thuộc tính';
+                                const attributeValue = attrValue.attribute_value.value || 'N/A';
+                                
+                                // Check if it's a color attribute
+                                const isColorAttribute = 
+                                    attributeName.toLowerCase().includes('màu') ||
+                                    attributeName.toLowerCase().includes('color') ||
+                                    attributeName.toLowerCase().includes('màu sắc');
+                                
+                                // Check if it's a size attribute
+                                const isSizeAttribute = 
+                                    attributeName.toLowerCase().includes('size') ||
+                                    attributeName.toLowerCase().includes('kích thước');
+                                
+                                let valueContent = '';
+                                if (isColorAttribute) {
+                                    valueContent = `
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-6 h-6 rounded-full border border-gray-300 shadow-sm"
+                                                style="background-color: ${attributeValue};">
+                                            </div>
+                                            <span class="font-medium">${attributeValue}</span>
+                                        </div>
+                                    `;
+                                } else if (isSizeAttribute) {
+                                    valueContent = `
+                                        <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded-md font-medium text-sm">
+                                            ${attributeValue.toUpperCase()}
+                                        </span>
+                                    `;
+                                } else {
+                                    valueContent = `<span class="font-medium">${attributeValue}</span>`;
+                                }
+                                
+                                newRow.innerHTML = `
+                                    <td class="font-semibold pt-4">${attributeName}</td>
+                                    <td class="text-slate-400 pt-4">${valueContent}</td>
+                                `;
+                                
+                                tbody.appendChild(newRow);
+                            }
+                        });
+                    }
+                }
             }
             
             function updateVariantOptions(relatedVariants, currentVariantId) {
@@ -219,7 +332,13 @@
                         const variantOption = document.createElement('a');
                         variantOption.href = 'javascript:void(0)';
                         variantOption.setAttribute('data-variant-id', variant.id);
-                        variantOption.className = 'variant-option border-2 rounded-lg p-3 transition-all duration-300 flex-shrink-0 cursor-pointer border-gray-200 hover:border-orange-500 hover:bg-gray-50';
+                        
+                        // Set active class for current variant
+                        const isActive = variant.id == currentVariantId;
+                        variantOption.className = `variant-option border-2 rounded-lg p-3 transition-all duration-300 flex-shrink-0 cursor-pointer ${
+                            isActive ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-orange-500 hover:bg-gray-50'
+                        }`;
+                        
                         variantOption.innerHTML = `
                             <div class="w-10 h-10 mb-2">
                                 <img src="${imageUrl}" 
@@ -255,6 +374,9 @@
                         
                         variantsContainer.appendChild(variantOption);
                     });
+                    
+                    // Re-add event listeners for size and color buttons
+                    addSizeColorEventListeners();
                 }
             }
             
@@ -337,6 +459,39 @@
             function isAuthenticated() {
                 return document.querySelector('meta[name="auth-status"]')?.getAttribute('content') === 'true';
             }
+            
+            // Add event listeners for size and color buttons
+            function addSizeColorEventListeners() {
+                // Size buttons
+                const sizeButtons = document.querySelectorAll('a[href*="products/"]');
+                sizeButtons.forEach(button => {
+                    const href = button.getAttribute('href');
+                    if (href && href.includes('/products/')) {
+                        button.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const variantId = href.split('/products/')[1];
+                            if (variantId) {
+                                showLoading();
+                                fetch(`/api/product-variant/${variantId}`)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            updateProductContent(data.product, data.relatedVariants);
+                                            updateURL(variantId);
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error fetching variant:', error);
+                                        hideLoading();
+                                    });
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Initialize size and color event listeners
+            addSizeColorEventListeners();
         });
     </script>
     
