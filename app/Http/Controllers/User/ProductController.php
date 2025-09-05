@@ -17,11 +17,15 @@ class ProductController extends Controller
             'origin', 
             'category',
             'thumbnails',
+            'status',
             'variants' => function($q) {
                 $q->where('quantity', '>', 0)
                   ->with(['variantAttributeValues.attribute', 'variantAttributeValues.attributeValue']);
             }
-        ]);
+        ])
+        ->whereHas('status', function($q) {
+            $q->where('code', 'active')->where('type', 'product');
+        });
 
         // Tìm kiếm theo tên sản phẩm
         if ($request->filled('search')) {
@@ -158,19 +162,28 @@ class ProductController extends Controller
             'product.origin',
             'product.category', 
             'product.thumbnails',
+            'product.status',
             'variantAttributeValues.attribute',
             'variantAttributeValues.attributeValue'
-        ])->findOrFail($id);
+        ])
+        ->whereHas('product.status', function($q) {
+            $q->where('code', 'active')->where('type', 'product');
+        })
+        ->findOrFail($id);
 
         // Lấy các biến thể khác của cùng sản phẩm
         $relatedVariants = ProductVariant::with([
             'product.thumbnails',
+            'product.status',
             'variantAttributeValues.attribute',
             'variantAttributeValues.attributeValue'
         ])
         ->where('product_id', $product->product_id)
         ->where('id', '!=', $id)
         ->where('quantity', '>', 0)
+        ->whereHas('product.status', function($q) {
+            $q->where('code', 'active')->where('type', 'product');
+        })
         ->get();
 
         return view('user.pages.product-detail', compact('product', 'relatedVariants'));
