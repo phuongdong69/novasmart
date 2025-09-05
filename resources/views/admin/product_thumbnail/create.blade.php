@@ -24,20 +24,25 @@
                         @csrf
                         
                         <div class="mb-4">
-                            <label for="product_id" class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Product ID</label>
-                            <input type="number" 
-                                   class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:border-slate-600 dark:text-white @error('product_id') border-red-500 @enderror" 
-                                   id="product_id" name="product_id" value="{{ old('product_id') }}" required>
+                            <label for="product_id" class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Sản phẩm</label>
+                            <select id="product_id" name="product_id" 
+                                    class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:border-slate-600 dark:text-white @error('product_id') border-red-500 @enderror" required>
+                                <option value="">-- Chọn sản phẩm --</option>
+                                @foreach($products as $p)
+                                    <option value="{{ $p->id }}" {{ old('product_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+                                @endforeach
+                            </select>
                             @error('product_id')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div class="mb-4">
-                            <label for="product_variant_id" class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Product Variant ID</label>
-                            <input type="number" 
-                                   class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:border-slate-600 dark:text-white @error('product_variant_id') border-red-500 @enderror" 
-                                   id="product_variant_id" name="product_variant_id" value="{{ old('product_variant_id') }}" required>
+                            <label for="product_variant_id" class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Biến thể</label>
+                            <select id="product_variant_id" name="product_variant_id"
+                                    class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:border-slate-600 dark:text-white @error('product_variant_id') border-red-500 @enderror" required>
+                                <option value="">-- Chọn biến thể --</option>
+                            </select>
                             @error('product_variant_id')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -88,7 +93,41 @@
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
+            </div>
 </div>
+
+@push('scripts')
+<script>
+    const productsData = @json($products);
+    const variantSelect = document.getElementById('product_variant_id');
+    const productSelect = document.getElementById('product_id');
+
+    function populateVariants(productId) {
+        // reset
+        variantSelect.innerHTML = '<option value="">-- Chọn biến thể --</option>';
+        if (!productId) return;
+        const product = productsData.find(p => p.id == productId);
+        if (product && product.variants) {
+            product.variants.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.id;
+                opt.textContent = v.sku;
+                variantSelect.appendChild(opt);
+            });
+        }
+    }
+
+    productSelect.addEventListener('change', (e) => {
+        populateVariants(e.target.value);
+    });
+
+    // preselect if old value exists
+    window.addEventListener('DOMContentLoaded', () => {
+        const oldProduct = productSelect.value;
+        if (oldProduct) populateVariants(oldProduct);
+        const oldVariant = '{{ old('product_variant_id') }}';
+        if (oldVariant) variantSelect.value = oldVariant;
+    });
+</script>
+@endpush
 @endsection 
