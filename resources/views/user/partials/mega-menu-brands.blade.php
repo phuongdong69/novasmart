@@ -1,15 +1,15 @@
 <li class="has-submenu parent-parent-menu-item">
-    <a href="javascript:void(0)">Sản phẩm</a>
+    <a href="javascript:void(0)">Thương hiệu</a>
     
     <ul class="submenu megamenu">
-        @foreach($menuCategories as $category)
+        @foreach($topBrands as $brand)
         <li>
             <ul>
-                <li class="megamenu-head">{{ $category->name }}</li>
-                @if($category->brands->count() > 0)
-                    @foreach($category->brands->take(6) as $brand)
-                        @if($brand->status && $brand->status->code === 'active')
-                        <li><a href="{{ route('products.list') }}?brand={{ urlencode($brand->name) }}" class="sub-menu-item">{{ $brand->name }}</a></li>
+                <li class="megamenu-head">{{ $brand->name }}</li>
+                @if($brand->products->count() > 0)
+                    @foreach($brand->products->take(6) as $product)
+                        @if($product->status && $product->status->code === 'active')
+                        <li><a href="{{ route('products.show', $product->id) }}" class="sub-menu-item">{{ $product->name }}</a></li>
                         @endif
                     @endforeach
                 @endif
@@ -32,4 +32,4 @@
             </ul>
         </li>
     </ul>
-</li> 
+</li>

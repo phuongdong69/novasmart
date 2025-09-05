@@ -11,6 +11,7 @@ class Brand extends Model
     public $fillable = [
         'name',
         'category_id',
+        'status_id',
     ];
 
     public function category()
@@ -21,5 +22,10 @@ class Brand extends Model
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'status_id');
     }
 }
