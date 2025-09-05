@@ -17,13 +17,15 @@ class ProductThumbnailController extends Controller
 
     public function create()
     {
-        return view('admin.product_thumbnail.create');
+        $products = \App\Models\Product::with('variants:id,product_id,sku')->select('id','name')->get();
+        return view('admin.product_thumbnail.create', compact('products'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
             'product_id' => 'required|integer',
+            'product_variant_id' => 'required|integer',
             'url' => 'required|image',
             'is_primary' => 'required|boolean',
             'sort_order' => 'nullable|integer',
@@ -38,13 +40,15 @@ class ProductThumbnailController extends Controller
     public function edit($id)
     {
         $thumbnail = ProductThumbnail::findOrFail($id);
-        return view('admin.product_thumbnail.edit', compact('thumbnail'));
+        $products = \App\Models\Product::with('variants:id,product_id,sku')->select('id','name')->get();
+        return view('admin.product_thumbnail.edit', compact('thumbnail','products'));
     }
 
     public function update(Request $request, $id)
     {
         $data = $request->validate([
             'product_id' => 'required|integer',
+            'product_variant_id' => 'required|integer',
             'url' => 'nullable|image',
             'is_primary' => 'required|boolean',
             'sort_order' => 'nullable|integer',

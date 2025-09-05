@@ -26,6 +26,14 @@
                             <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
                         @enderror
                     </div>
+                    <div class="mb-6">
+                        <label class="mb-2.5 block text-sm font-medium dark:text-white">Trạng thái</label>
+                        <select name="status_id" class="w-full rounded-lg border border-stroke bg-transparent py-3 px-4.5 text-black dark:border-form-strokedark dark:bg-form-input dark:text-white">
+                            @foreach($statuses as $s)
+                                <option value="{{ $s->id }}" {{ $s->code == 'active' ? 'selected' : '' }}>{{ $s->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="flex justify-end gap-4">
                         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-6 rounded">
                             Lưu

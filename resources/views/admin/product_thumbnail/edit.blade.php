@@ -7,12 +7,19 @@
         @csrf
         @method('PUT')
         <div>
-            <label for="product_id" class="block font-medium mb-1">Product ID</label>
-            <input type="number" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" id="product_id" name="product_id" value="{{ $thumbnail->product_id }}" required>
+            <label for="product_id" class="block font-medium mb-1">Sản phẩm</label>
+            <select id="product_id" name="product_id" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" required>
+                <option value="">-- Chọn sản phẩm --</option>
+                @foreach($products as $p)
+                    <option value="{{ $p->id }}" {{ ($thumbnail->product_id == $p->id) ? 'selected' : '' }}>{{ $p->name }}</option>
+                @endforeach
+            </select>
         </div>
         <div>
-            <label for="product_variant_id" class="block font-medium mb-1">Product Variant ID</label>
-            <input type="number" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" id="product_variant_id" name="product_variant_id" value="{{ $thumbnail->product_variant_id }}" required>
+            <label for="product_variant_id" class="block font-medium mb-1">Biến thể</label>
+            <select id="product_variant_id" name="product_variant_id" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" required>
+                <option value="">-- Chọn biến thể --</option>
+            </select>
         </div>
         <div>
             <label for="url" class="block font-medium mb-1">Ảnh mới (nếu muốn thay đổi)</label>
@@ -46,4 +53,34 @@
         </div>
     </form>
 </div>
-@endsection 
+
+@push('scripts')
+<script>
+    const productsData = @json($products);
+    const variantSelect = document.getElementById('product_variant_id');
+    const productSelect = document.getElementById('product_id');
+
+    function populateVariants(productId) {
+        variantSelect.innerHTML = '<option value="">-- Chọn biến thể --</option>';
+        if (!productId) return;
+        const product = productsData.find(p => p.id == productId);
+        if (product && product.variants) {
+            product.variants.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.id;
+                opt.textContent = v.sku;
+                variantSelect.appendChild(opt);
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        populateVariants(productSelect.value);
+        const currentVariant = '{{ $thumbnail->product_variant_id }}';
+        if (currentVariant) variantSelect.value = currentVariant;
+    });
+
+    productSelect.addEventListener('change', (e) => populateVariants(e.target.value));
+</script>
+@endpush
+@endsection
